@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class StatusScreen extends StatelessWidget {
-  const StatusScreen({super.key});
+class BookMarkScreen extends StatelessWidget {
+  const BookMarkScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("세번째 화면"),
+      child: Text("네번째 화면"),
     );
   }
 }

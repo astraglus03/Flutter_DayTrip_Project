@@ -6,7 +6,7 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("네번째 화면"),
+      child: Text("두번째 화면"),
     );;
   }
 }
