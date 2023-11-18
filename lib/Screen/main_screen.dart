@@ -1,8 +1,8 @@
-import 'package:final_project/Screen/camera_screen.dart';
-import 'package:final_project/Screen/control_screen.dart';
+import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/home_screen.dart';
 import 'package:final_project/Screen/map_screen.dart';
-import 'package:final_project/Screen/status_screen.dart';
+import 'package:final_project/Screen/bookmark_screen.dart';
+import 'package:final_project/Screen/plus_widget.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -10,7 +10,7 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 class _MainScreenState extends State<MainScreen> {
-  // hello jaemin
+
   int _selectedIndex = 0;
 
   // 페이지 목록
@@ -18,17 +18,17 @@ class _MainScreenState extends State<MainScreen> {
     // 바텀내비바 홈화면
     HomeScreen(),
 
-    // 바텀내비바 제어
-    ControlScreen(),
-
-    // 바텀내비바 상태
-    StatusScreen(),
-
-    // 바텀내비바 지도
+  // 바텀내비바 지도
     MapScreen(),
 
+    // 3번은 스크린이 아니라 위젯으로 포함되는게 맞을거같아서 임시로 컨테이너 넣어두었다.
+    PlusWidget(),
+
+    // 바텀내비바 상태
+    BookMarkScreen(),
+
     // 바텀내비바 카메라
-    CameraScreen(),
+    MyPageScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -46,23 +46,23 @@ class _MainScreenState extends State<MainScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: '홈',
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.phone_iphone),
-            label: '제어',
+            icon: Icon(Icons.search),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: '상태',
+            icon: Icon(Icons.add_circle_outline),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_outward_outlined),
-            label: '지도',
+            icon: Icon(Icons.bookmark),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_outlined),
-            label: '카메라',
+            icon: Icon(Icons.account_circle_rounded),
+            label: '',
           ),
         ],
         currentIndex: _selectedIndex,
