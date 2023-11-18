@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ControlScreen extends StatelessWidget {
-  const ControlScreen({super.key});
+class PlusWidget extends StatelessWidget {
+  const PlusWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("두번째 화면"),
+      child: Text("임시 위젯"),
     );
   }
 }
