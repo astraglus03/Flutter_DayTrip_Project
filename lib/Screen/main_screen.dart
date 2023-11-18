@@ -10,6 +10,7 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 class _MainScreenState extends State<MainScreen> {
+  // hello jaemin
   int _selectedIndex = 0;
 
   // 페이지 목록
