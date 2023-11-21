@@ -6,5 +6,4 @@ void main() {
     debugShowCheckedModeBanner: false,
     home: MainScreen(),
   ));
-
 }

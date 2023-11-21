@@ -30,7 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   carousel_slider: ^4.0.0 # home_screen : 이미지 슬라이드
+
+  google_maps_flutter: ^2.0.10
+  geolocator: ^10.1.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
