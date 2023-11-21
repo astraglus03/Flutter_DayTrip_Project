@@ -37,7 +37,7 @@ class HomeScreen extends StatefulWidget {
                 ),
                 SizedBox(height: 20),
                 Title(
-                  title: "최근 피드",
+                  title: "최신 피드",
                   showAll: true,
                 ),
                 SizedBox(height: 10),
@@ -127,84 +127,6 @@ class Title extends StatelessWidget {
     );
   }
 }
-/*
-class ImageSlider extends StatefulWidget {
-  const ImageSlider({Key? key}) : super(key: key);
-
-  @override
-  _ImageSliderState createState() => _ImageSliderState();
-}
-
-class _ImageSliderState extends State<ImageSlider> {
-  final List<String> imagePaths = [
-    'asset/img/school1.jpg',
-    'asset/img/school2.jpg',
-    'asset/img/school3.jpg',
-    'asset/img/friend1.jpg',
-    'asset/img/friend2.jpg',
-  ];
-  int currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: PageView.builder(
-              itemCount: imagePaths.length,
-              onPageChanged: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return Image.asset(
-                  imagePaths[index],
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          ),
-          Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle action when 전체보기 버튼 is clicked
-              },
-              child: Text('전체보기'),
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              imagePaths.length,
-                  (index) => buildDot(index: index),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildDot({required int index}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: currentIndex == index ? 10 : 6,
-        height: 6,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: currentIndex == index ? Colors.blue : Colors.grey,
-        ),
-      ),
-    );
-  }
-}
-*/
 
 // 최신 피드 : 카루셀 Carousel (이미지 슬라이드)
 class RecentPost extends StatelessWidget {
