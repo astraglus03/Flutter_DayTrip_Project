@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:final_project/Screen/home_popular.dart';
+
+import 'home_recent.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -22,12 +25,19 @@ class HomeScreen extends StatefulWidget {
     @override
     Widget build(BuildContext context) {
       return Scaffold(
+        appBar: AppBar(
+          // 추가 부분
+          title: Text('추천',
+              style: TextStyle(color:Colors.white)),
+          backgroundColor: Colors.black,
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /*
                 SizedBox(height: 20),
                 Text(
                   "추천",
@@ -35,10 +45,16 @@ class HomeScreen extends StatefulWidget {
                     fontSize: 25,
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 20),*/
                 Title(
                   title: "최신 피드",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeRecent()),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 //ImageSlider(),
@@ -56,6 +72,12 @@ class HomeScreen extends StatefulWidget {
                 Title(
                   title: "다가오는 전시 ∙ 행사 일정",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePopular()),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 ExhibitionSchedule(
@@ -77,6 +99,12 @@ class HomeScreen extends StatefulWidget {
                 Title(
                   title: "인기 피드",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePopular()),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 PopularPost(
@@ -99,8 +127,9 @@ class HomeScreen extends StatefulWidget {
 class Title extends StatelessWidget {
   final String title;
   final bool showAll; // 전체보기 클릭했는지 안 했는지
+  final VoidCallback onTap; // 콜백함수.
 
-  const Title({required this.title, required this.showAll});
+  const Title({required this.title, required this.showAll, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +144,7 @@ class Title extends StatelessWidget {
         ),
         if (showAll)
           GestureDetector(
-            onTap: () {},
+            onTap: onTap,
             child: Text(
               "전체보기>",
               style: TextStyle(
