@@ -3,6 +3,7 @@ import 'package:final_project/Screen/home_screen.dart';
 import 'package:final_project/Screen/map_screen.dart';
 import 'package:final_project/Screen/bookmark_screen.dart';
 import 'package:final_project/Screen/plus_widget.dart';
+import 'package:final_project/ThirdComponent/write_oneline.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -89,6 +90,7 @@ class _MainScreenState extends State<MainScreen> {
                 onTap: () {
                   // 현재는 이벤트 처리 말고 그냥 닫히게 해뒀음.
                   Navigator.pop(context);
+                  _showCustomBottomSheet1(context);
                 },
               ),
               SizedBox(height: 10,),
@@ -119,6 +121,34 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 10,),
+              ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.grey[300],
+                  ),
+                  child: Icon(Icons.place, color: Colors.white,),
+                ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("공간 추가", style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),),
+                    SizedBox(height: 3,),
+                    Text("새로운 공간을 추가해 보세요.", style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 14,
+                    ),),
+                  ],
+                ),
+                onTap: () {
+                  // 현재는 이벤트 처리 말고 그냥 닫히게 해뒀음.
+                  Navigator.pop(context);
+                },
+              ),
               SizedBox(height: 30,),
             ],
           ),
@@ -126,6 +156,22 @@ class _MainScreenState extends State<MainScreen> {
       },
     );
   }
+
+  void _showCustomBottomSheet1(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return WriteOneLine();
+      },
+    );
+  }
+
 
 
   @override
