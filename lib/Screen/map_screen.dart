@@ -224,6 +224,7 @@ class _MapScreenState extends State<MapScreen> {
             left: 16.0,
             right: 16.0,
             child: CupertinoSearchTextField(
+              backgroundColor: Colors.black, // 원하는 배경색으로 설정
               onTap: () {
                 // 검색 바를 탭했을 때 SearchScreen을 엽니다.
                 Navigator.push(
