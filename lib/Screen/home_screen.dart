@@ -38,15 +38,6 @@ class HomeScreen extends StatefulWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /*
-                SizedBox(height: 20),
-                Text(
-                  "추천",
-                  style: TextStyle(
-                    fontSize: 25,
-                  ),
-                ),
-                SizedBox(height: 20),*/
                 Title(
                   title: "최신 피드",
                   showAll: true,
@@ -261,8 +252,8 @@ class DayButton extends StatelessWidget {
 }
 
 
-//
-class SelectedDay extends StatelessWidget {
+
+class SelectedDay extends StatefulWidget {
   final String selectedDay;
 
   const SelectedDay({
@@ -270,9 +261,21 @@ class SelectedDay extends StatelessWidget {
   });
 
   @override
+  _SelectedDayState createState() => _SelectedDayState();
+}
+
+class _SelectedDayState extends State<SelectedDay> {
+  late String _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = widget.selectedDay;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 선택된 요일에 따른 정보 표시
-    switch (selectedDay) {
+    switch (_selectedDay) {
       case '일':
       // 일요일에 대한 정보
         return Row(
