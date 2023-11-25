@@ -15,6 +15,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);//현재위치 저장
+  Set<Marker> _markers = {}; // 수정된 부분
   final darkMapStyle = '''
 [
   {
@@ -184,6 +185,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _getCurrentLocation();
   }
+
   Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
@@ -202,46 +204,38 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Google Map
           GoogleMap(
             onMapCreated: (controller) {
               setState(() {
                 mapController = controller;
               });
 
-              // 지도 스타일을 설정합니다.
               mapController.setMapStyle(darkMapStyle);
             },
             initialCameraPosition: CameraPosition(
               target: LatLng(36.83407, 127.1793),
               zoom: 16.0,
             ),
+            markers: _markers,
           ),
 
-          // Floating Search Bar 검색창
           Positioned(
             top: 40.0,
             left: 16.0,
             right: 16.0,
             child: CupertinoSearchTextField(
-              backgroundColor: Colors.black, // 원하는 배경색으로 설정
+              backgroundColor: Colors.black,
               onTap: () {
-                // 검색 바를 탭했을 때 SearchScreen을 엽니다.
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SearchScreen()),
                 );
               },
-              onChanged: (String value) {
-                //
-              },
-              onSubmitted: (String value) {
-                //
-              },
+              onChanged: (String value) {},
+              onSubmitted: (String value) {},
             ),
           ),
 
-          // Search Buttons
           Positioned(
             top: 85.0,
             left: 16.0,
@@ -257,7 +251,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
 
-          // Draggable Scrollable Sheet
           DraggableScrollableSheet(
             initialChildSize: 0.2,
             minChildSize: 0.1,
@@ -265,7 +258,7 @@ class _MapScreenState extends State<MapScreen> {
             builder: (context, scrollController) {
               return Container(
                 decoration: BoxDecoration(
-                  color: Colors.black, // Set your desired background color here
+                  color: Colors.black,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
                   boxShadow: [
                     BoxShadow(
@@ -288,30 +281,24 @@ class _MapScreenState extends State<MapScreen> {
             },
           ),
 
-
-          // Floating Button (위로 이동)
           Positioned(
             bottom: 16.0,
             right: 16.0,
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white, // 원하는 배경색으로 설정
+                color: Colors.white,
               ),
               child: FloatingActionButton(
                 onPressed: () {
-                  // 버튼이 클릭되었을 때 수행할 동작 추가
-                  mapController.animateCamera(
-                    CameraUpdate.newLatLng(currentLocation),
-                  );
+                  _addMarker();
                 },
-                backgroundColor: Colors.white, // 버튼의 배경색 설정
-                foregroundColor: Colors.black54, // 아이콘 색상 설정
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black54,
                 child: Icon(Icons.navigation_rounded),
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -320,7 +307,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget _buildSearchButton(String label) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black, // 배경 색을 하얀색으로 변경
+        color: Colors.black,
         borderRadius: BorderRadius.circular(30.0),
         border: Border.all(color: Colors.white, width: 1.0),
       ),
@@ -328,9 +315,7 @@ class _MapScreenState extends State<MapScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
-          onTap: () {
-            // 각 버튼이 클릭되었을 때 수행할 동작 추가
-          },
+          onTap: () {},
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
@@ -339,6 +324,93 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _addMarker() {
+    final Marker marker = Marker(
+      markerId: MarkerId(currentLocation.toString()),
+      position: currentLocation,
+      infoWindow: InfoWindow(
+        title: '현재 위치',
+        snippet: '여기에 있습니다.',
+      ),
+    );
+
+    setState(() {
+      _markers.clear();
+      _markers.add(marker);
+    });
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLng(currentLocation),
+    );
+  }
+}
+
+class SearchScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Search Screen'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+        leading: Container(),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 100,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                CircularIconButton(icon: Icons.camera),
+                CircularIconButton(icon: Icons.album),
+                CircularIconButton(icon: Icons.location_on),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 20,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text('Item $index'),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CircularIconButton extends StatelessWidget {
+  final IconData icon;
+
+  const CircularIconButton({Key? key, required this.icon}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.blue,
+      ),
+      child: IconButton(
+        icon: Icon(icon),
+        color: Colors.white,
+        onPressed: () {},
       ),
     );
   }
