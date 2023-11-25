@@ -16,6 +16,6 @@ void main() async {
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: AuthPage(),
+    home: MainScreen(),
   ));
 }

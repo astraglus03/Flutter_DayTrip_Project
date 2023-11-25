@@ -43,7 +43,7 @@ class IntroduceAndLogout extends StatelessWidget {
                 ),
                 child: TextButton(
                   onPressed: () {
-                   signUserOut();
+                   // signUserOut();
                   },
                   child: Text('로그아웃'),
                   style: TextButton.styleFrom(
@@ -105,8 +105,8 @@ class CardImage extends StatelessWidget {
 }
 
 class ProfileName extends StatelessWidget {
-  final user = FirebaseAuth.instance.currentUser!;
-  final viewModel = MainViewModel(KakaoLogin());
+  // final user = FirebaseAuth.instance.currentUser!;
+  // final viewModel = MainViewModel(KakaoLogin());
 
   ProfileName({super.key});
 
@@ -115,7 +115,8 @@ class ProfileName extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("${user.displayName}", style: TextStyle(
+        // ${user.displayName}
+        Text("astraglus", style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 24,
         ),),

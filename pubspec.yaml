@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
 
   carousel_slider: ^4.0.0 # home_screen : 이미지 슬라이드
-  intl: 0.17.0
   table_calendar: 3.0.7
   google_maps_flutter: ^2.0.10
   geolocator: ^10.1.0
@@ -48,6 +47,9 @@ dependencies:
   kakao_flutter_sdk_user: ^1.7.0
   http: ^1.1.0
   google_sign_in: ^6.1.6
+  flutter_search_bar: ^3.0.0-dev.1
+  intl: ^0.17.0
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -73,8 +75,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - asset/img/
-     - asset/
+    - asset/
+    - asset/img/
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

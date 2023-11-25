@@ -3,6 +3,8 @@ import 'package:final_project/Screen/home_screen.dart';
 import 'package:final_project/Screen/map_screen.dart';
 import 'package:final_project/Screen/bookmark_screen.dart';
 import 'package:final_project/Screen/plus_widget.dart';
+import 'package:final_project/ThirdComponent/add_newspace.dart';
+import 'package:final_project/ThirdComponent/write_daylog.dart';
 import 'package:final_project/ThirdComponent/write_oneline.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("빠른 체크인", style: TextStyle(
+                    Text("한 줄 메모", style: TextStyle(
                       fontWeight: FontWeight.w700,
                     ),),
                     SizedBox(height: 3,),
@@ -88,7 +90,6 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 onTap: () {
-                  // 현재는 이벤트 처리 말고 그냥 닫히게 해뒀음.
                   Navigator.pop(context);
                   _showCustomBottomSheet1(context);
                 },
@@ -117,8 +118,11 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 onTap: () {
-                  // 현재는 이벤트 처리 말고 그냥 닫히게 해뒀음.
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WriteDayLog()),
+                  );
                 },
               ),
               SizedBox(height: 10,),
@@ -145,8 +149,11 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 onTap: () {
-                  // 현재는 이벤트 처리 말고 그냥 닫히게 해뒀음.
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddNewSpace()),
+                  );
                 },
               ),
               SizedBox(height: 30,),
