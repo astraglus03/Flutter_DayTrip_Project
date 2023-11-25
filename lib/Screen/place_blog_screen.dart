@@ -6,7 +6,7 @@ class PlaceBlogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('place_blog_screen'),
+        title: Text('장소 블로그 화면'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -19,14 +19,13 @@ class PlaceBlogScreen extends StatelessWidget {
                 Image.asset('asset/img/school1.jpg'),
                 Image.asset('asset/img/school2.jpg'),
                 Image.asset('asset/img/school3.jpg'),
-                // Add more image paths as needed
                 // 추가 이미지...
               ],
               options: CarouselOptions(
-                height: 200.0, // 이미지 슬라이더의 기본 높이
+                height: 400.0, // 이미지 슬라이더의 기본 높이
                 enlargeCenterPage: true,
                 autoPlay: true,
-                aspectRatio: 2.0, // 이 부분을 조절하여 이미지의 화면 차지 비율을 조절
+                aspectRatio: 1.0, // 이 부분을 조절하여 이미지의 화면 차지 비율을 조절
               ),
             ),
 
@@ -34,7 +33,7 @@ class PlaceBlogScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                '장소이름이 들어갈 부분.',
+                '장소 이름이 들어갈 부분.',
                 style: TextStyle(fontSize: 18.0),
               ),
             ),
@@ -43,19 +42,58 @@ class PlaceBlogScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                // 사용자 1 버튼
                 ElevatedButton(
                   onPressed: () {
-                    // 사용자1 선택 시 처리
+                    // 사용자 1 선택 시 처리
                   },
-                  child: Text('사용자1'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent, // 배경을 투명으로 설정
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('asset/img/friend2.jpg'),
+                    radius: 30.0, // 버튼 크기 조절
+                  ),
                 ),
+
+                // 사용자 2 버튼
                 ElevatedButton(
                   onPressed: () {
-                    // 사용자2 선택 시 처리
+                    // 사용자 2 선택 시 처리
                   },
-                  child: Text('사용자2'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent, // 배경을 투명으로 설정
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('asset/img/friend1.jpg'),
+                    radius: 30.0, // 버튼 크기 조절
+                  ),
                 ),
                 // 추가 사용자 버튼...
+                ElevatedButton(
+                  onPressed: () {
+                    // 사용자 3 선택 시 처리
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent, // 배경을 투명으로 설정
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('asset/img/friend3.jpg'),
+                    radius: 30.0, // 버튼 크기 조절
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // 사용자 4 선택 시 처리
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent, // 배경을 투명으로 설정
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('asset/img/friend1.jpg'),
+                    radius: 30.0, // 버튼 크기 조절
+                  ),
+                ),
               ],
             ),
 
@@ -73,10 +111,6 @@ class PlaceBlogScreen extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 추가적인 위젯들 또는 페이지 컨텐츠를 계속 추가할 수 있습니다.
-            // ...
-
           ],
         ),
       ),
