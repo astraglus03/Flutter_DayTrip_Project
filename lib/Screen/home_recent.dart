@@ -4,10 +4,10 @@ class HomeRecent extends StatefulWidget {
   const HomeRecent({Key? key}) : super(key: key);
 
   @override
-  _HomePopularState createState() => _HomePopularState();
+  _HomeRecentState createState() => _HomeRecentState();
 }
 
-class _HomePopularState extends State<HomeRecent> {
+class _HomeRecentState extends State<HomeRecent> {
   int _currentIndex = 0;
 
   @override

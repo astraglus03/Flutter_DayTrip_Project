@@ -1,8 +1,9 @@
+import 'package:final_project/Screen/home_exhibition.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:final_project/Screen/home_popular.dart';
-
 import 'home_recent.dart';
+import 'home_exhibition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -75,7 +76,7 @@ class HomeScreen extends StatefulWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePopular()),
+                      MaterialPageRoute(builder: (context) => HomeExhibition()),
                     );
                   },
                 ),
@@ -286,7 +287,7 @@ class SelectedDay extends StatelessWidget {
             Expanded(
               flex: 3, // Row의 3/4 영역 차지
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0), // 수평 방향(좌우로) 여백
+                padding: const EdgeInsets.symmetric(horizontal: 15.0), // 수평 방향(좌우로) 여백
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -344,7 +345,7 @@ class SelectedDay extends StatelessWidget {
             Expanded(
               flex: 3, // Row의 3/4 영역 차지
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0), // 수평 방향(좌우로) 여백
+                padding: const EdgeInsets.symmetric(horizontal: 15.0), // 수평 방향(좌우로) 여백
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
