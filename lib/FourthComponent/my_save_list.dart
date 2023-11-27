@@ -11,9 +11,9 @@ class MySavedList extends StatefulWidget {
 class _MySavedListState extends State<MySavedList> {
   bool isLiked = false;
   final List<String> assetImages = [
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
+    // 'asset/github.png',
+    // 'asset/apple.jpg',
+    // 'asset/apple.jpg',
   ];
 
   @override

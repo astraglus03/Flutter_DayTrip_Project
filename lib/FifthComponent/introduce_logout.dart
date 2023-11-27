@@ -1,8 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk_auth/kakao_flutter_sdk_auth.dart' as kakao;
-import 'package:final_project/login//kakao_login/kakao_login.dart';
-import 'package:final_project/login/kakao_login/main_view_model.dart';
 
 class IntroduceAndLogout extends StatelessWidget {
 
@@ -23,37 +20,53 @@ class IntroduceAndLogout extends StatelessWidget {
           SizedBox(height: 10,),
 
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // 내 계정 프로필
-
-              GestureDetector(
-                onTap: (){},
-                  child: Text("탭하고 소개 글을 입력해 보세요", style: TextStyle(
-                    color: Colors.grey[500],
-                  ),)
-              ),
-
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(
-                    color: Colors.black,
+                  Flexible(
+                    flex: 3,
+                    child: Container(
+                      color: Colors.transparent,
+                      // height: 20,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: '탭하고 소개 글을 입력해 보세요.',
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: TextButton(
-                  onPressed: () {
-                   // signUserOut();
-                  },
-                  child: Text('로그아웃'),
-                  style: TextButton.styleFrom(
-                    primary: Colors.black,
-                    backgroundColor: Colors.transparent,
-                    splashFactory: InkSplash.splashFactory,
-                    minimumSize: Size(80, 20),
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          signUserOut();
+                        },
+                        child: Text('로그아웃'),
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                          backgroundColor: Colors.transparent,
+                          splashFactory: InkSplash.splashFactory,
+                          minimumSize: Size(80, 20),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+
+              // GestureDetector(
+              //   onTap: (){},
+              //     child: Text("탭하고 소개 글을 입력해 보세요", style: TextStyle(
+              //       color: Colors.grey[500],
+              //     ),)
+              // ),
+
+
 
             ],
           ),
@@ -73,32 +86,47 @@ class ProfileTile extends StatelessWidget {
       child: Row(
         children: [
           // 카드 이미지
-          CardImage(),
+          Flexible(
+            flex: 1,
+            child: CardImage(),
+          ),
 
           SizedBox(width: 15,),
 
           // 이름, 친구수
-          ProfileName(),
-
-          SizedBox(height: 10,),
+          Flexible(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ProfileName(),
+                SizedBox(height: 10,),
+                // 다른 정보 추가 가능
+              ],
+            ),
+          ),
         ],
       ),
+
     );
   }
 }
 
 class CardImage extends StatelessWidget {
-  const CardImage({super.key});
+  // final user = FirebaseAuth.instance.currentUser!;
+  CardImage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // print("user ${user.photoURL}");
     return ClipRRect(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(50),
           bottomRight: Radius.circular(50)
       ),
       child: Container(
-          child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
+        // child: Image.network("${user.photoURL}", width: 80, height: 80, fit: BoxFit.cover,),
+        child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
       ),
     );
   }
@@ -106,7 +134,6 @@ class CardImage extends StatelessWidget {
 
 class ProfileName extends StatelessWidget {
   // final user = FirebaseAuth.instance.currentUser!;
-  // final viewModel = MainViewModel(KakaoLogin());
 
   ProfileName({super.key});
 
@@ -121,7 +148,7 @@ class ProfileName extends StatelessWidget {
           fontSize: 24,
         ),),
         SizedBox(height: 5,),
-        Text("팔로워 0 | 팔로잉 0"),
+        Text("작성한 게시물 수: ??"),
       ],
     );
   }

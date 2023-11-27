@@ -5,11 +5,12 @@ class PostList extends StatefulWidget {
   PostList({super.key});
 
   @override
-  State<PostList> createState() => _MySavedListState();
+  State<PostList> createState() => _PostListState();
 }
 
-class _MySavedListState extends State<PostList> {
-  bool isLiked = false;
+class _PostListState extends State<PostList> {
+  late List<bool> likedList;
+
   final List<String> assetImages = [
     'asset/github.png',
     'asset/apple.jpg',
@@ -27,6 +28,13 @@ class _MySavedListState extends State<PostList> {
     'asset/apple.jpg',
     'asset/apple.jpg',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    likedList = List.generate(assetImages.length, (index) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +63,8 @@ class _MySavedListState extends State<PostList> {
         Wrap(
           spacing: 6.0,
           runSpacing: 8.0,
-          children: assetImages.map((path) {
+          children: List.generate(assetImages.length, (index) {
+            String path = assetImages[index];
             String imageName = path.split('/').last.split('.').first;
 
             return Stack(
@@ -91,12 +100,12 @@ class _MySavedListState extends State<PostList> {
                   top: -5,
                   right: -5,
                   child: IconButton(
-                    icon: isLiked ? Icon(Icons.favorite, color: Colors.red,)
-                        : Icon(Icons.favorite_border, color: Colors.red,),
+                    icon: likedList[index]
+                        ? Icon(Icons.favorite, color: Colors.red)
+                        : Icon(Icons.favorite_border, color: Colors.red),
                     onPressed: () {
-                      // 좋아요 토글 기능 구현
                       setState(() {
-                        isLiked = !isLiked;
+                        likedList[index] = !likedList[index];
                       });
                     },
                   ),
