@@ -1,9 +1,7 @@
 import 'package:final_project/FourthComponent/my_saved_list.dart';
-import 'package:final_project/FourthComponent/save_class.dart';
 import 'package:final_project/FourthComponent/post_list.dart';
 import 'package:final_project/FourthComponent/title_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class BookMarkScreen extends StatelessWidget {
 

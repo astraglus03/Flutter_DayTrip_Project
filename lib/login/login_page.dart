@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/login/kakao_login/kakao_login.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:final_project/login/kakao_login/main_view_model.dart';
 import 'package:final_project/login/login_button.dart';
 import 'package:final_project/login/services/auth_service.dart';

@@ -58,16 +58,6 @@ class IntroduceAndLogout extends StatelessWidget {
                       ),
                     ),
                   ),
-
-              // GestureDetector(
-              //   onTap: (){},
-              //     child: Text("탭하고 소개 글을 입력해 보세요", style: TextStyle(
-              //       color: Colors.grey[500],
-              //     ),)
-              // ),
-
-
-
             ],
           ),
         ],

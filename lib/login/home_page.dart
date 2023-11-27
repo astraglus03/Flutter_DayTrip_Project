@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk_auth/kakao_flutter_sdk_auth.dart' as kakao;
 import 'package:final_project/login/kakao_login/kakao_login.dart';
 import 'package:final_project/login/kakao_login/main_view_model.dart';
 
