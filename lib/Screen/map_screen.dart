@@ -16,7 +16,10 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);//현재위치 저장
-  Set<Marker> _markers = {}; // 수정된 부분
+  Set<Marker> _markers = {}; // 현재위치 마커
+  Set<Marker> food_markers = {}; //음식점 마커
+  LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
+
   final darkMapStyle = '''
 [
   {
@@ -185,6 +188,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _foodmarker();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -218,6 +222,7 @@ class _MapScreenState extends State<MapScreen> {
               zoom: 16.0,
             ),
             markers: _markers,
+
           ),
 
           Positioned(
@@ -349,7 +354,7 @@ class _MapScreenState extends State<MapScreen> {
     );
 
     setState(() {
-      _markers.clear();
+      //_markers.clear();
       _markers.add(marker);
     });
 
@@ -357,4 +362,64 @@ class _MapScreenState extends State<MapScreen> {
       CameraUpdate.newLatLng(currentLocation),
     );
   }
+  void _foodmarker() async{
+    // 커스텀 마커 바꾸기
+    //BitmapDescriptor customMarker = await BitmapDescriptor.fromAssetImage(
+    //  ImageConfiguration(size: Size(48, 48)), // 사이즈 변경
+    //  'asset/img/foodmarker.png', // Replace with your image file
+    //);
+    final Marker marker = Marker(
+      markerId: MarkerId(exampleLocation.toString()),
+      position: exampleLocation,
+     // icon: customMarker,
+      infoWindow: InfoWindow(
+        title: '식당 위치',
+        snippet: '여기에 있습니다.',
+      ),
+      onTap: (){
+        _showFoodDialog();
+      }
+    );
+
+    setState(() {
+      //_markers.clear();
+      _markers.add(marker);
+    });
+  }
+
+  void _showFoodDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('음식점 정보'),
+          content: Container(
+            width: 300, // AlertDialog의 너비 제한
+            height: 200,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Column의 크기를 최소화하여 콘텐츠에 맞게 조절
+              children: [
+                Image.asset(
+                  'asset/img/school1.jpg',
+                  width: 200, // 이미지의 너비
+                  height: 100, // 이미지의 높이
+                ),
+                SizedBox(height: 10),
+                Text('음식점 설명 텍스트'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
