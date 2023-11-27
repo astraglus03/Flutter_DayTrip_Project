@@ -394,15 +394,15 @@ class _MapScreenState extends State<MapScreen> {
         return AlertDialog(
           title: Text('음식점 정보'),
           content: Container(
-            width: 300, // AlertDialog의 너비 제한
+            width: 300,
             height: 200,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Column의 크기를 최소화하여 콘텐츠에 맞게 조절
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
                   'asset/img/school1.jpg',
-                  width: 200, // 이미지의 너비
-                  height: 100, // 이미지의 높이
+                  width: 200,
+                  height: 100,
                 ),
                 SizedBox(height: 10),
                 Text('음식점 설명 텍스트'),
@@ -410,6 +410,19 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           actions: <Widget>[
+            TextButton(
+              child: Text('관련 글 보기'), // 추가한 버튼
+              onPressed: () {
+                // 더보기 버튼이 눌렸을 때 수행할 동작 추가
+                // 예: 다른 다이얼로그 띄우기, 추가 정보 표시 등
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceBlogScreen(),
+                  ), // 괄호를 닫아주어야 합니다.
+                );
+              },
+            ),
             TextButton(
               child: Text('닫기'),
               onPressed: () {
@@ -421,5 +434,6 @@ class _MapScreenState extends State<MapScreen> {
       },
     );
   }
+
 
 }
