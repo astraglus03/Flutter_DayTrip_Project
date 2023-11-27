@@ -7,27 +7,73 @@ import 'package:intl/date_symbol_data_local.dart'; // 이거 써야 한국어 �
 import 'package:horizontal_calendar/horizontal_calendar.dart';
 
 class HomeExhibition extends StatefulWidget {
-  const HomeExhibition({Key? key}) : super(key: key);
+  final Function(DateTime) onDateSelectedFromCalendar;
+  final Function(DateTime) onDateSelectedFromCustom;
+
+  const HomeExhibition({
+    Key? key,
+    required this.onDateSelectedFromCalendar,
+    required this.onDateSelectedFromCustom,
+  }) : super(key: key);
 
   @override
   _HomeExhibitionState createState() => _HomeExhibitionState();
+
 }
 
 class _HomeExhibitionState extends State<HomeExhibition> {
-  DateTime selectedDate =
-      DateTime.now(); // Add this line to store selected date
+  DateTime selectedDate = DateTime.now();
   DateTime currentDate = DateTime.now(); // 현재 날짜 저장
+  late DateTime selectedDateState; // 선택된 날짜 상태 변수
 
   // 날짜 선택했을 때, 전시 정보 띄우기
   String selectedDay = ''; // 선택된 요일 추적을 위한 변수
-  int selectedDayIndex = 0; // 선택된 요일을 추적하기 위한 변수
+  int selectedDayIndex = 0; // 선택된 '일' 추적하기 위한 변수(25일, 13일 등)
   DateTime now = DateTime.now();
 
-  void onDaySelected(int day) {
+  // 수평 슬라이드 캘린더 선택 함수
+  void onDaySelected1(int day) {
     setState(() {
-      selectedDayIndex = day; // 선택된 요일 업데이트
+      this.selectedDayIndex = day; // 선택된 요일 업데이트
     });
     //print('Selected day: $day');
+    // DatePickerCustom로 선택된 날짜를 전달
+    widget.onDateSelectedFromCustom(selectedDate);
+  }
+
+  // 메인 캘린더 함수
+  void onDaySelected2(DateTime selectedDate, DateTime focusedDate) {
+    setState(() {
+      this.selectedDate = selectedDate; // 선택한 날짜 업데이트
+
+      selectedDay = DateFormat('d').format(selectedDate); // 선택된 날짜로 '일' 값을 문자열로 업데이트
+      int dayNumber = int.parse(selectedDay); // '일' 값을 정수로 변환
+      this.selectedDayIndex = dayNumber; // 선택한 날짜를 상태로 업데이트
+      onDaySelected1(dayNumber); // 변경된 '일' 값을 전달해주기 위해 함수 호출
+      Navigator.pop(context); // Modal을 닫습니다.
+    });
+    //Navigator.pop(context); // Modal을 닫습니다.
+
+    // DatePickerCustom로 선택된 날짜를 전달
+    //widget.onDateSelectedFromCustom(selectedDate);
+  }
+
+  // DateCustomPicker 메서드인데, HomeExhibition에 정의되어야만 쓸 수 있음.
+  void onDateSelectedFromCalendar(DateTime selectedDate) {
+
+  }
+
+  void onDateSelectedFromCustom(DateTime selectedDate) {
+  }
+
+  DateTime getSelectedDate() {
+    return selectedDate;
+  }
+
+  void setSelectedDate(DateTime date) {
+    setState(() {
+      selectedDate = date;
+    });
   }
 
   @override
@@ -76,11 +122,19 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                   selectedDate = date;
                   selectedDay = DateFormat('d').format(date); // 선택된 날짜로 '일' 값을 문자열로 업데이트
 
-                  int dayNumber = int.parse(selectedDay); // '일' 값을 정수로 변환
-                  onDaySelected(dayNumber); // 변환된 값을 전달
+                  selectedDayIndex = int.parse(selectedDay); // '일' 값을 정수로 변환
+                  onDaySelected1(selectedDayIndex); // 변환된 값을 전달
                 });
-                print('Selected day: ${DateFormat('d').format(date)}'); // 며칠 클릭하면, 그 숫자 출력
+                print('Selected day: ${selectedDayIndex}'); // 며칠 클릭하면, 그 숫자 출력
               },
+              onDateSelectedFromCalendar: (DateTime selectedDate) {
+                /*setState(() {
+                  // DatePickerCustom에서 캘린더에서 선택된 날짜를 처리하는 로직
+                  this.selectedDate = selectedDate;
+                });
+                 */
+              },
+
             ),
             Text(
                 "전시 ∙ 행사 일정은 주최측 사정에 따라 변경될 수 있습니다.",
@@ -103,13 +157,36 @@ class _HomeExhibitionState extends State<HomeExhibition> {
           height: MediaQuery.of(context).size.height * 0.5,
           child: Center(
             child: MainCalendar(
-              onDaySelected: (selectedDate, focusedDate) {
+              onDaySelected: (date, focusedDate) {
+                setSelectedDate(date); // 상태 업데이트
+                widget.onDateSelectedFromCustom(date);// 선택된 날짜를 부모 위젯에 전달
                 setState(() {
-                  this.now = selectedDate; // Update selected date
+                  selectedDate = date;
+                  selectedDay = DateFormat('d').format(date); // 선택된 날짜로 '일' 값을 문자열로 업데이트
+
+                  selectedDayIndex = int.parse(selectedDay); // '일' 값을 정수로 변환
+                  onDaySelected1(selectedDayIndex); // 변환된 값을 전달
+
+                  Navigator.pop(context);
                 });
-                Navigator.pop(context);
+                print('Selected day: ${selectedDayIndex}'); // 며칠 클릭하면, 그 숫자 출력
               },
-              selectedDate: now,
+              selectedDate: selectedDate,
+              onDateSelectedFromCustom: (DateTime date) {
+
+                setSelectedDate(date);
+                widget.onDateSelectedFromCustom(date);
+                setState(() {
+                  // DatePickerCustom에서 캘린더에서 선택된 날짜를 처리하는 로직
+                  this.selectedDate = date;
+                  selectedDay = DateFormat('d').format(date); // 선택된 날짜로 '일' 값을 문자열로 업데이트
+                  int dayNumber = int.parse(selectedDay); // '일' 값을 정수로 변환
+                  this.selectedDayIndex = dayNumber;
+                  onDaySelected1(dayNumber); // 변환된 값을 전달
+
+                });
+              },
+              selectedIndex: selectedDayIndex,
             ),
           ),
         );
@@ -119,14 +196,34 @@ class _HomeExhibitionState extends State<HomeExhibition> {
 }
 
 // 달력 위젯
-class MainCalendar extends StatelessWidget {
-  final OnDaySelected onDaySelected;
+class MainCalendar extends StatefulWidget {
+  final Function(DateTime, DateTime) onDaySelected;
   final DateTime selectedDate;
-
+  final Function(DateTime) onDateSelectedFromCustom; // 메인캘린더에서 선택된 날짜를 custom에 전달하기 위한 변수
+  final int selectedIndex;
   MainCalendar({
     required this.onDaySelected,
     required this.selectedDate,
+    required this.onDateSelectedFromCustom,
+    required this.selectedIndex,
   });
+
+  @override
+  _MainCalendarState createState() => _MainCalendarState();
+}
+
+class _MainCalendarState extends State<MainCalendar> {
+  late DateTime focusedDay;
+  DateTime selectedDate = DateTime.now(); // 선택한 날짜 상태
+  int _selectedIndex=0;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    focusedDay = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,17 +232,22 @@ class MainCalendar extends StatelessWidget {
         height: MediaQuery.of(context).size.height * 0.5,
         child: Column(
           children: [
+            // 날짜를 표시하는 캘린더 위젯
             TableCalendar(
               locale: 'ko_kr',
-              // 한국어 설정
+              // 캘린더에서 날짜가 선택되었을 때
               onDaySelected: (date, focusedDate) {
-                onDaySelected(date, focusedDate);
+                setState(() {
+                  focusedDay = focusedDate; // 포커스된 날짜를 업데이트
+                });
+                widget.onDaySelected(date, focusedDate); // 선택된 날짜를 부모 위젯에 전달
               },
+
               selectedDayPredicate: (date) =>
-                  date.year == selectedDate.year &&
-                  date.month == selectedDate.month &&
-                  date.day == selectedDate.day,
-              focusedDay: DateTime.now(),
+              date.year == widget.selectedDate.year &&
+                  date.month == widget.selectedDate.month &&
+                  date.day == widget.selectedDate.day,
+              focusedDay: focusedDay, // 캘린더에 표시할 포커스된 날짜 설정
               firstDay: DateTime(1900, 1, 1),
               lastDay: DateTime(2200, 12, 31),
               headerStyle: const HeaderStyle(
@@ -196,15 +298,18 @@ class MainCalendar extends StatelessWidget {
 
 // week단위 캘린더 (수평 방향 스크롤 위젯)
 class DatePickerCustom extends StatefulWidget {
-  final Function(DateTime) onDaySelected; // 함수
+  final Function(DateTime) onDaySelected; // 날짜 선택 시 호출할 함수
   final int selectedDayIndex;
-  final DateTime selectedDate;
+  final DateTime selectedDate; // 선택한 날짜 상태
+  final Function(DateTime) onDateSelectedFromCalendar; // 캘린더에서 선택된 날짜를 메인캘린더로 전달하기 위한 함수
+
 
   const DatePickerCustom({
     Key? key,
     required this.onDaySelected,
     required this.selectedDayIndex,
     required this.selectedDate,
+    required this.onDateSelectedFromCalendar,
   }) : super(key: key);
 
   @override
@@ -214,15 +319,39 @@ class DatePickerCustom extends StatefulWidget {
 class _DatePickerCustomState extends State<DatePickerCustom> {
   int selectedIndex = DateTime.now().day - 1; // 오늘 날짜가 기본으로 선택됨
   DateTime now = DateTime.now();
-  late DateTime lastDayOfMonth = DateTime(now.year, now.month, 0); // month+1이면 다음 달 정보
-  DateTime selectedDate = DateTime.now(); // Add this line to store selected date
+  late DateTime lastDayOfMonth = DateTime(now.year, now.month, -1); // 일 기준에 맞추기 위해
+  late DateTime lastDayOfMonth2 = DateTime(now.year, now.month, 0); //요일 기준으로는 맞음. 하지만 '일' 기준으로는 다음 달 정보가 들어옴
+
+  DateTime selectedDate = DateTime.now(); //
   DateTime currentDate = DateTime.now(); // 현재 날짜 저장
+
+  // 여기서부터 _controller까지 선택된 날짜가 중앙에 자동으로 오게 설정하는 변수
+  late double screenWidth;
+  late double itemWidth;
+  late double scrollPosition;
+
+  late ScrollController _controller;
 
   @override
   void initState() {
     super.initState();
     //lastDayOfMonth = DateTime(now.year, now.month + 1, 1).subtract(Duration(days: 1)); // 마지막 날짜 가져오기 위해
+
+    _controller = ScrollController();
+
+    // 초기 오늘 날짜가 자동으로 중앙에 오도록
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      screenWidth = MediaQuery.of(context).size.width;
+      itemWidth = 58.0; // 각 항목의 너비 (날짜 항목의 너비)
+
+
+      scrollPosition = (widget.selectedDate.day - 1) * itemWidth - screenWidth / 2 + itemWidth / 2;
+      // 선택된 날짜의 인덱스에 따른 초기 스크롤 위치 계산
+      _controller.jumpTo(scrollPosition); // 스크롤 위치로 이동
+    });
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,14 +359,19 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
       preferredSize: Size.fromHeight(100.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal, // 가로 방향으로 스크롤
+        controller: _controller, // 추가된 ScrollController 사용
         physics: const ClampingScrollPhysics(),
         child: Row(
           children: List.generate(
             lastDayOfMonth.day, // 개수
             (index) {
-              final currentDate = lastDayOfMonth.add(Duration(days: index + 1));
-              final dayName =
-                  DateFormat('E', 'ko_KR').format(currentDate); // 예) 월, 화 등
+              final currentDate = lastDayOfMonth2.add(Duration(days: index + 1));
+              final dayName = DateFormat('E', 'ko_KR').format(currentDate); // 예) 월, 화 등
+
+              // 선택된 날짜에 대한 스타일을 변경하기 위한 부분 (메인 캘린더에서 선택했을 때도 연동됨)
+              final isSelected = index == widget.selectedDayIndex-1 || (index == DateTime.now().day - 1 && widget.selectedDayIndex == 0);
+                                          // 인덱스는 0부터 시작함         // 처음에는 무조건 오늘 날짜에 주황색 동그라미로 초기화하기 위해
+
               return Padding(
                 padding:
                     EdgeInsets.only(left: index == 0 ? 16.0 : 0.0, right: 16.0),
@@ -247,8 +381,18 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
 
                     ///////////// 추가!
                     widget.onDaySelected(
-                      lastDayOfMonth.add(Duration(days: index + 1)),
+                      lastDayOfMonth2.add(Duration(days: index + 1)), // 일 기준에 맞춘 변수 넣기. 요일 변수에 맞춘 lastDayOfMonth를 넣으면 인덱스가 1씩 밀림
                     );
+
+                    ///////////////고쳐
+                    // 선택된 날짜의 인덱스 -> 중앙 정렬하기 위해 업데이트
+                    double newScrollPosition = (lastDayOfMonth2.add(Duration(days: index + 1)).day - 1) * itemWidth - screenWidth / 2 + itemWidth / 2;
+                    _controller.animateTo(
+                      newScrollPosition,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
+
 
                   }),
                   child: Column(
@@ -263,9 +407,7 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
                           dayName.substring(0, 1),
                           style: TextStyle(
                             fontSize: 24.0,
-                            color: selectedIndex == index
-                                ? Colors.black
-                                : Colors.black54,
+                            color: isSelected ? Colors.black : Colors.black54,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -277,9 +419,7 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
                         width: 42.0,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: selectedIndex == index
-                              ? Colors.orange
-                              : Colors.transparent,
+                          color: isSelected ? Colors.orange : Colors.transparent,
                           borderRadius: BorderRadius.circular(44.0),
                         ),
                         child: Text(
@@ -324,7 +464,7 @@ class SelectedDay extends StatefulWidget {
 }
 
 class _SelectedDayState extends State<SelectedDay> {
-  late int _selectedDayIndex = 1; // 처음 날짜 1로 초기화. 0으로 하면 처음 1 인식 못함
+  late int _selectedDayIndex; 
 
   // 날짜 선택할 때마다 다른 정보 나올 수 있게 업데이트 //init 메서드 쓰면 안 됨. 업데이트 안 되기 때문
   @override
@@ -335,6 +475,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
   @override
   Widget build(BuildContext context) {
+    _selectedDayIndex = widget.selectedDayIndex; // 날짜 갱신
     switch (_selectedDayIndex) {
       case 1:
         // 일요일에 대한 정보

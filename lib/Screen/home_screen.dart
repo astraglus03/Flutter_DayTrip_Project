@@ -22,6 +22,15 @@ class HomeScreen extends StatefulWidget {
       print('Selected day: $day');
     }
 
+    void onDateSelectedFromCalendar(DateTime selectedDate) {
+      // Handle the selected date here
+      print('Selected date from calendar: $selectedDate');
+    }
+    void onDateSelectedFromCustom(DateTime selectedDate) {
+      // Handle the selected date here
+      print('Selected date from custom: $selectedDate');
+    }
+
 
     @override
     Widget build(BuildContext context) {
@@ -67,7 +76,18 @@ class HomeScreen extends StatefulWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomeExhibition()),
+                      MaterialPageRoute(builder: (context) =>
+                          HomeExhibition(
+                            onDateSelectedFromCalendar: (DateTime selectedDate) {
+                              // Handle the selected date here
+                              print('Selected date from calendar: $selectedDate');
+                            },
+                            onDateSelectedFromCustom: (DateTime selectedDate) {
+                              // Handle the selected date here
+                              print('Selected date from calendar: $selectedDate');
+                            },
+                          ),
+                      ),
                     );
                   },
                 ),
@@ -78,6 +98,7 @@ class HomeScreen extends StatefulWidget {
                     setState(() {
                       selectedDay = day; // 선택된 요일 업데이트
                     });
+                    onDaySelected(day); // 변환된 값을 전달
                     print('Selected day: $day');
                   },
                 ),
@@ -275,6 +296,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
   @override
   Widget build(BuildContext context) {
+    _selectedDay = widget.selectedDay; // build 메서드에서도 선택된 요일 값을 업데이트(이 코드 안 쓰면 갱신 안 됨)
     switch (_selectedDay) {
       case '일':
       // 일요일에 대한 정보
