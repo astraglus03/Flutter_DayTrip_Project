@@ -1,3 +1,4 @@
+import 'package:final_project/FourthComponent/save_class.dart';
 import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/home_screen.dart';
 import 'package:final_project/Screen/map_screen.dart';
@@ -7,6 +8,7 @@ import 'package:final_project/ThirdComponent/add_newspace.dart';
 import 'package:final_project/ThirdComponent/write_daylog.dart';
 import 'package:final_project/ThirdComponent/write_oneline.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -183,7 +185,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  ChangeNotifierProvider(
+        create: (_) => SaveClass(),
+      child:Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -213,6 +217,7 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
+    ),
     );
   }
 }
