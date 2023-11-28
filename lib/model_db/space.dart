@@ -1,28 +1,27 @@
+// 공간 추가 모델
+
 import 'dart:ui';
 
 class SpaceModel {
   final String spaceName;
   final String location;
   final String tag;
-  //final Image image;
   final String image;
-  //final String recom_tag;
+
 
   SpaceModel({
     required this.spaceName,
     required this.location,
     required this.tag,
     required this.image,
-    //required this.recom_tag,
   });
 
   SpaceModel.fromJson({ // ➊ JSON으로부터 모델을 만들어내는 생성자
     required Map<String, dynamic> json,
-  })  : spaceName = json['id'],
+  })  : spaceName = json['spaceName'],
         location = json['location'],
         tag = json['tag'],
         image = json['image'];
-        //recom_tag = json['recom_tag'];
 
   Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
     return {
@@ -30,7 +29,6 @@ class SpaceModel {
       'location': location,
       'tag': tag,
       'image': image,
-      //'recom_tag': recom_tag,
     };
   }
 
@@ -42,11 +40,10 @@ class SpaceModel {
     String? recom_tag,
   }) {
     return SpaceModel(
-      spaceName: id ?? this.spaceName,
+      spaceName: spaceName ?? this.spaceName,
       location: location ?? this.location,
       tag: tag ?? this.tag,
       image: image ?? this.image,
-      //recom_tag: recom_tag ?? this.recom_tag,
     );
   }
 
