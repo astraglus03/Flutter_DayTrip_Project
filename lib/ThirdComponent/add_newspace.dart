@@ -1,11 +1,10 @@
 import 'dart:io';
-
+import 'package:final_project/model_db/space.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../model_db/space.dart';
 
 class AddNewSpace extends StatefulWidget {
   const AddNewSpace({super.key});
@@ -46,6 +45,42 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     // 페이지가 dispose될 때 컨트롤러를 정리합니다.
     _textEditingController.dispose();
     super.dispose();
+  }
+
+
+  Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
+    try {
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
+
+      await ref.putFile(imageFile);
+      String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print('이미지 업로드 오류: $e');
+      return null;
+    }
+  }
+
+  Future<void> creatSpace() async {
+    final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
+
+    if (imageUrl != null) {
+      final space = SpaceModel(
+        spaceName: _textEditingController.text,
+        location: newSpaceLocation.toString(),
+        tag: hashTagButton.toString(),
+        image: imageUrl,
+      );
+
+      await FirebaseFirestore.instance.collection('space')
+          .doc(space.spaceName)
+          .set(space.toJson());
+    } else {
+      // 이미지 업로드 실패 처리
+    }
   }
 
   @override
@@ -89,6 +124,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                       },
                       onTap: _onMapTapped,
                       initialCameraPosition: CameraPosition(
+
                         target: LatLng(36.83407, 127.1793),
                         zoom: 15.0,
                       ),
@@ -235,20 +271,4 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       ),
     );
   }
-
-  Future<void> creatSpace() async {
-    final space = SpaceModel(
-        spaceName: _textEditingController.text,
-        location: spacexy.toString(),
-        tag: hashTagButton.toString(),
-        image: selectedGalleryImage.toString(),
-    );
-
-    await FirebaseFirestore.instance.collection(
-      'space'
-    )
-    .doc(space.spaceName)
-    .set(space.toJson());
-  }
-
 }

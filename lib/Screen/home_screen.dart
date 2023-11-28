@@ -1,9 +1,8 @@
-import 'package:final_project/Screen/home_exhibition.dart';
+import 'package:final_project/FirstComponent/home_exhibition.dart';
+import 'package:final_project/FirstComponent/home_popular.dart';
+import 'package:final_project/FirstComponent/home_recent.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:final_project/Screen/home_popular.dart';
-import 'home_recent.dart';
-import 'home_exhibition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
