@@ -18,7 +18,6 @@ class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);//현재위치 저장
   late LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
-  LatLng? example2 ;
   Set<Marker> _markers = {}; // 현재위치 마커
   Set<Marker> food_markers = {}; //음식점 마커
 
@@ -45,7 +44,6 @@ class _MapScreenState extends State<MapScreen> {
         setState(() {
           exampleLocation = LatLng(latitude, longitude); // exampleLocation 업데이트
           print('예비 장소: $exampleLocation');
-          example2 = exampleLocation;
         });
 
         return exampleLocation; // LatLng 반환
