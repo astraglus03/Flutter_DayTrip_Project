@@ -89,7 +89,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                       },
                       onTap: _onMapTapped,
                       initialCameraPosition: CameraPosition(
-                        target: LatLng(37.7749, -122.4194),
+                        target: LatLng(36.83407, 127.1793),
                         zoom: 15.0,
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:final_project/Screen/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,46 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);//현재위치 저장
+  late LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
+  LatLng? example2 ;
   Set<Marker> _markers = {}; // 현재위치 마커
   Set<Marker> food_markers = {}; //음식점 마커
-  LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
+
+
+  Future<LatLng?> _updateExampleLocation() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+          .collection('space')
+          .doc('starbucks')
+          .get();
+
+      final locationString = snapshot.data()!['location']; // 'location' 필드의 문자열 값 가져오기
+
+      // 위치 정보가 'LatLng(위도, 경도)' 형식의 문자열인 경우
+      if (locationString != null) {
+        // 'LatLng('와 ')'를 제거하여 순수한 숫자 문자열로 추출
+        final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
+
+        // 쉼표(,)를 기준으로 분할하여 위도와 경도 값 얻기
+        final coordinates = cleanString.split(',');
+        double latitude = double.parse(coordinates[0].trim());
+        double longitude = double.parse(coordinates[1].trim());
+
+        setState(() {
+          exampleLocation = LatLng(latitude, longitude); // exampleLocation 업데이트
+          print('예비 장소: $exampleLocation');
+          example2 = exampleLocation;
+        });
+
+        return exampleLocation; // LatLng 반환
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    return null; // 예외가 발생하거나 위치 정보가 없는 경우 null 반환
+  }
+
 
   final darkMapStyle = '''
 [
@@ -187,8 +225,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    _updateExampleLocation().then((value) {
+      _foodmarker();
+    });
     _getCurrentLocation();
-    _foodmarker();
+
   }
 
   Future<void> _getCurrentLocation() async {
@@ -369,16 +410,16 @@ class _MapScreenState extends State<MapScreen> {
     //  'asset/img/foodmarker.png', // Replace with your image file
     //);
     final Marker marker = Marker(
-      markerId: MarkerId(exampleLocation.toString()),
-      position: exampleLocation,
-     // icon: customMarker,
-      infoWindow: InfoWindow(
-        title: '식당 위치',
-        snippet: '여기에 있습니다.',
-      ),
-      onTap: (){
-        _showFoodDialog();
-      }
+        markerId: MarkerId(exampleLocation.toString()),
+        position: exampleLocation,
+        // icon: customMarker,
+        infoWindow: InfoWindow(
+          title: '식당 위치',
+          snippet: '여기에 있습니다.',
+        ),
+        onTap: (){
+          _showFoodDialog();
+        }
     );
 
     setState(() {
