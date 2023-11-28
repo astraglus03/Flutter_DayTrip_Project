@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/FifthComponent/daylog.dart';
 import 'package:final_project/FifthComponent/export_setting.dart';
 import 'package:final_project/FifthComponent/introduce_logout.dart';
@@ -32,6 +33,20 @@ class MyPageScreen extends StatelessWidget {
                     PostTitleBar(),
                     // My Page
                     DayLog(),
+
+                    FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      future: FirebaseFirestore.instance.collection('space').doc('qqqqqqqqqqqqqqqq').get(),
+                      builder: (context, snapshot) {
+                        final imageUrl = snapshot.data!['image'];
+                        final tag = snapshot.data!['tag'];
+                        final location = snapshot.data!['location'];
+                        // return Image.network(imageUrl);
+                        return Image.network(imageUrl, width: 300, height: 300,);
+                      },
+                    ),
+
+                    //여기부분에 데이터베이스에 저장된 것들 불러와줘.
+
                   ],
                 ),
               ),
@@ -41,6 +56,7 @@ class MyPageScreen extends StatelessWidget {
       ),
     );
   }
+
 }
 
 // // 스크롤되지않게 고정해놓는 상속 함수
