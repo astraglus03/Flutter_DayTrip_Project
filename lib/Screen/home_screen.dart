@@ -1,5 +1,9 @@
+import 'package:final_project/Screen/home_exhibition.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:final_project/Screen/home_popular.dart';
+import 'home_recent.dart';
+import 'home_exhibition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -18,27 +22,40 @@ class HomeScreen extends StatefulWidget {
       print('Selected day: $day');
     }
 
+    void onDateSelectedFromCalendar(DateTime selectedDate) {
+      // Handle the selected date here
+      print('Selected date from calendar: $selectedDate');
+    }
+    void onDateSelectedFromCustom(DateTime selectedDate) {
+      // Handle the selected date here
+      print('Selected date from custom: $selectedDate');
+    }
+
 
     @override
     Widget build(BuildContext context) {
       return Scaffold(
+        appBar: AppBar(
+          // 추가 부분
+          title: Text('추천',
+              style: TextStyle(color:Colors.white)),
+          backgroundColor: Colors.black,
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
-                Text(
-                  "추천",
-                  style: TextStyle(
-                    fontSize: 25,
-                  ),
-                ),
-                SizedBox(height: 20),
                 Title(
                   title: "최신 피드",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeRecent()),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 //ImageSlider(),
@@ -56,6 +73,16 @@ class HomeScreen extends StatefulWidget {
                 Title(
                   title: "다가오는 전시 ∙ 행사 일정",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          HomeExhibition(
+
+                          ),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 ExhibitionSchedule(
@@ -64,6 +91,7 @@ class HomeScreen extends StatefulWidget {
                     setState(() {
                       selectedDay = day; // 선택된 요일 업데이트
                     });
+                    onDaySelected(day); // 변환된 값을 전달
                     print('Selected day: $day');
                   },
                 ),
@@ -77,6 +105,12 @@ class HomeScreen extends StatefulWidget {
                 Title(
                   title: "인기 피드",
                   showAll: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePopular()),
+                    );
+                  },
                 ),
                 SizedBox(height: 10),
                 PopularPost(
@@ -99,8 +133,9 @@ class HomeScreen extends StatefulWidget {
 class Title extends StatelessWidget {
   final String title;
   final bool showAll; // 전체보기 클릭했는지 안 했는지
+  final VoidCallback onTap; // 콜백함수.
 
-  const Title({required this.title, required this.showAll});
+  const Title({required this.title, required this.showAll, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +150,7 @@ class Title extends StatelessWidget {
         ),
         if (showAll)
           GestureDetector(
-            onTap: () {},
+            onTap: onTap,
             child: Text(
               "전체보기>",
               style: TextStyle(
@@ -231,8 +266,8 @@ class DayButton extends StatelessWidget {
 }
 
 
-//
-class SelectedDay extends StatelessWidget {
+
+class SelectedDay extends StatefulWidget {
   final String selectedDay;
 
   const SelectedDay({
@@ -240,9 +275,22 @@ class SelectedDay extends StatelessWidget {
   });
 
   @override
+  _SelectedDayState createState() => _SelectedDayState();
+}
+
+class _SelectedDayState extends State<SelectedDay> {
+  late String _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = widget.selectedDay;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 선택된 요일에 따른 정보 표시
-    switch (selectedDay) {
+    _selectedDay = widget.selectedDay; // build 메서드에서도 선택된 요일 값을 업데이트(이 코드 안 쓰면 갱신 안 됨)
+    switch (_selectedDay) {
       case '일':
       // 일요일에 대한 정보
         return Row(
@@ -257,7 +305,7 @@ class SelectedDay extends StatelessWidget {
             Expanded(
               flex: 3, // Row의 3/4 영역 차지
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0), // 수평 방향(좌우로) 여백
+                padding: const EdgeInsets.symmetric(horizontal: 15.0), // 수평 방향(좌우로) 여백
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -315,7 +363,7 @@ class SelectedDay extends StatelessWidget {
             Expanded(
               flex: 3, // Row의 3/4 영역 차지
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0), // 수평 방향(좌우로) 여백
+                padding: const EdgeInsets.symmetric(horizontal: 15.0), // 수평 방향(좌우로) 여백
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
