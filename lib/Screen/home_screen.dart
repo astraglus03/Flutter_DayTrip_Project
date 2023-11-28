@@ -78,14 +78,7 @@ class HomeScreen extends StatefulWidget {
                       context,
                       MaterialPageRoute(builder: (context) =>
                           HomeExhibition(
-                            onDateSelectedFromCalendar: (DateTime selectedDate) {
-                              // Handle the selected date here
-                              print('Selected date from calendar: $selectedDate');
-                            },
-                            onDateSelectedFromCustom: (DateTime selectedDate) {
-                              // Handle the selected date here
-                              print('Selected date from calendar: $selectedDate');
-                            },
+
                           ),
                       ),
                     );
