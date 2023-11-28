@@ -18,6 +18,6 @@ void main() async {
     theme: ThemeData(),
     darkTheme: ThemeData.dark(),
     debugShowCheckedModeBanner: false,
-    home: MainScreen(),
+    home: AuthPage(),
   ));
 }

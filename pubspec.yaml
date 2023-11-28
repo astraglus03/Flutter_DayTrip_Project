@@ -51,6 +51,7 @@ dependencies:
   flutter_search_bar: ^3.0.0-dev.1
   image_picker: ^1.0.4
   provider: ^6.1.1
+  cloud_firestore: ^4.13.2
 
 dev_dependencies:
   flutter_test:
