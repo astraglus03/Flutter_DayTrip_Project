@@ -440,6 +440,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.1"
+  horizontal_calendar:
+    dependency: "direct main"
+    description:
+      name: horizontal_calendar
+      sha256: "1927cc6d305002ac606410372b4ce957b2c58b8c4054b4275fbc4f29a594ad83"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   html:
     dependency: transitive
     description:
@@ -624,6 +632,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  nepali_utils:
+    dependency: transitive
+    description:
+      name: nepali_utils
+      sha256: "2521f17341671a8daa5c19eaddcc52bde5462fe962fd4e5495ce68823c9a86e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.4"
   nested:
     dependency: transitive
     description:
