@@ -103,12 +103,12 @@ class ProfileTile extends StatelessWidget {
 }
 
 class CardImage extends StatelessWidget {
-  // final user = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
   CardImage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // print("user ${user.photoURL}");
+    print("user ${user.photoURL}");
     return ClipRRect(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(50),
@@ -123,7 +123,7 @@ class CardImage extends StatelessWidget {
 }
 
 class ProfileName extends StatelessWidget {
-  // final user = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
 
   ProfileName({super.key});
 
@@ -133,7 +133,7 @@ class ProfileName extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ${user.displayName}
-        Text("astraglus", style: TextStyle(
+        Text("${user.displayName}", style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 24,
         ),),

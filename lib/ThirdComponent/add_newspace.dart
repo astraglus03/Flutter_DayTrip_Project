@@ -18,12 +18,14 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   late GoogleMapController mapController;
   File? selectedGalleryImage;
   String? hashTagButton;
+  String? spacexy;
   LatLng? newSpaceLocation;
   TextEditingController _textEditingController = TextEditingController();
 
   void _onMapTapped(LatLng location) {
     setState(() {
       newSpaceLocation = location; // 터치한 위치의 좌표를 저장
+      spacexy = newSpaceLocation.toString();
     });
   }
 
@@ -44,6 +46,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     _textEditingController.dispose();
     super.dispose();
   }
+
 
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
@@ -121,7 +124,8 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                       },
                       onTap: _onMapTapped,
                       initialCameraPosition: CameraPosition(
-                        target: LatLng(37.7749, -122.4194),
+
+                        target: LatLng(36.83407, 127.1793),
                         zoom: 15.0,
                       ),
                     ),
@@ -147,6 +151,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                           Text("위도: ${newSpaceLocation?.latitude ?? ''}"),
                           SizedBox(height: 5,),
                           Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
+
                         ],
                       ),
                     ),
