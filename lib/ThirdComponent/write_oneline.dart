@@ -63,7 +63,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.65,
+          height: MediaQuery.of(context).size.height * 0.7,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
