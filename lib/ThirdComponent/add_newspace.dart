@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/model_db/space.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 
 class AddNewSpace extends StatefulWidget {
   const AddNewSpace({super.key});
@@ -22,7 +24,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   LatLng? newSpaceLocation;
   TextEditingController _textEditingController = TextEditingController();
 
-  void _onMapTapped(LatLng location) {
+  void _onMapTapped(LatLng location) async {
     setState(() {
       newSpaceLocation = location; // 터치한 위치의 좌표를 저장
       spacexy = newSpaceLocation.toString();
@@ -47,6 +49,21 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     super.dispose();
   }
 
+  Future<String> _getAddressFromLatLng(LatLng latLng) async {
+    final apiKey = 'AIzaSyD1ubnmfNlwjq9hDqMpfinM5P4Rr585FaU';
+    final endpoint = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${newSpaceLocation?.latitude},${newSpaceLocation?.longitude}&key=$apiKey &language=ko');
+
+    final response = await http.get(endpoint);
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      if (decoded['status'] == 'OK') {
+        return decoded['results'][0]['formatted_address'];
+      }
+    }
+    return 'Address not found';
+  }
+
 
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
@@ -64,20 +81,29 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     }
   }
 
-  Future<void> creatSpace() async {
+  Future<void> createSpace() async {
     final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
 
     if (imageUrl != null) {
+      final String address = await _getAddressFromLatLng(newSpaceLocation!);
       final space = SpaceModel(
         spaceName: _textEditingController.text,
         location: newSpaceLocation.toString(),
         tag: hashTagButton.toString(),
         image: imageUrl,
+        locationName: address,
+
       );
 
       await FirebaseFirestore.instance.collection('space')
           .doc(space.spaceName)
           .set(space.toJson());
+      // print('장소 이름: ${space.spaceName}');
+      // print('위치: ${space.location}');
+      // print('태그: ${space.tag}');
+      // print('이미지 URL: ${space.image}');
+      // print('주소: ${space.locationName}');
+
     } else {
       // 이미지 업로드 실패 처리
     }
@@ -206,8 +232,21 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     onTap: () {
                       String enteredText = _textEditingController.text;
                       print('입력된 텍스트: $enteredText');
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => UploadData()));
-                      creatSpace();
+                      Navigator.pop(context);
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context){
+                            Future.delayed(Duration(seconds: 1), () {
+                              Navigator.of(context).pop();
+                            });
+
+                            return AlertDialog(
+                              title: Text('장소가 추가되었습니다'),
+                              content: Text('한 줄 평 작성할때 확인 가능합니다.'),
+                            );
+                          }
+                      );
+                      createSpace();
                     },
                     child: Container(
                       height: 55,
