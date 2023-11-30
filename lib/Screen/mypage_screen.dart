@@ -34,19 +34,6 @@ class MyPageScreen extends StatelessWidget {
                     // My Page
                     DayLog(),
 
-                    FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                      future: FirebaseFirestore.instance.collection('space').doc('qqqqqqqqqqqqqqqq').get(),
-                      builder: (context, snapshot) {
-                        final imageUrl = snapshot.data!['image'];
-                        final tag = snapshot.data!['tag'];
-                        final location = snapshot.data!['location'];
-                        // return Image.network(imageUrl);
-                        return Image.network(imageUrl, width: 300, height: 300,);
-                      },
-                    ),
-
-                    //여기부분에 데이터베이스에 저장된 것들 불러와줘.
-
                   ],
                 ),
               ),

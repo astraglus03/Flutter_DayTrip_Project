@@ -7,9 +7,7 @@ var serviceAccount = require("./finalproject-3ddf7-firebase-adminsdk-a0ioq-e8b74
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
+
 exports.createCustomToken = functions.https.onRequest(async (request, response) => {
   const user = request.body;
 

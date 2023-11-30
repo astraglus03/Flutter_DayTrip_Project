@@ -115,8 +115,8 @@ class CardImage extends StatelessWidget {
           bottomRight: Radius.circular(50)
       ),
       child: Container(
-        // child: Image.network("${user.photoURL}", width: 80, height: 80, fit: BoxFit.cover,),
-        child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
+        child: Image.network("${user.photoURL}", width: 80, height: 80, fit: BoxFit.cover,),
+        // child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
       ),
     );
   }
