@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/FifthComponent/daylog.dart';
 import 'package:final_project/FifthComponent/export_setting.dart';
 import 'package:final_project/FifthComponent/introduce_logout.dart';
@@ -32,6 +33,7 @@ class MyPageScreen extends StatelessWidget {
                     PostTitleBar(),
                     // My Page
                     DayLog(),
+
                   ],
                 ),
               ),
@@ -41,6 +43,7 @@ class MyPageScreen extends StatelessWidget {
       ),
     );
   }
+
 }
 
 // // 스크롤되지않게 고정해놓는 상속 함수

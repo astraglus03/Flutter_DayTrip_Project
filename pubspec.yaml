@@ -49,9 +49,15 @@ dependencies:
   http: ^1.1.0
   google_sign_in: ^6.1.6
   flutter_search_bar: ^3.0.0-dev.1
-  image_picker: ^1.0.4
+  image_picker  : ^1.0.4
   provider: ^6.1.1
   cloud_firestore: ^4.13.2
+
+  uuid: ^4.2.1
+  dio: ^5.3.4
+  path: ^1.8.3
+  firebase_storage: ^11.5.2
+
 
 dev_dependencies:
   flutter_test:
@@ -75,11 +81,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+
+
   # To add assets to your application, add an assets section, like this:
   assets:
-     - asset/img/
-     - asset/map/
-     - asset/
+    - asset/img/
+    - asset/map/
+    - asset/
+
 
   #   - images/a_dot_ham.jpeg
 

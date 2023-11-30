@@ -1,9 +1,11 @@
+// 데이로그 작성 모델
+
 import 'dart:ui';
 
 class PostModel {
   final int pid;            // 게시물 id
   final String uid;         // 사용자id
-  final String postName;    // 게시물명
+  // final String postName;    // 게시물명
   final String postContent; // 게시물 내용
   final String image;       // 게시물 사진
   final String spaceName;   // 공간 이름
@@ -15,7 +17,7 @@ class PostModel {
   PostModel({
     required this.pid,
     required this.uid,
-    required this.postName,
+    // required this.postName,
     required this.postContent,
     required this.image,
     required this.spaceName,
@@ -29,7 +31,7 @@ class PostModel {
     required Map<String, dynamic> json,
   })  : pid = json['pid'],
         uid = json['uid'],
-        postName = json['postName'],
+        // postName = json['postName'],
         postContent = json['postContent'],
         image = json['image'],
         spaceName = json['spaceName'],
@@ -42,7 +44,7 @@ class PostModel {
     return {
       'pid': pid,
       'uid': uid,
-      'postName': postName,
+      // 'postName': postName,
       'postContent': postContent,
       'image': image,
       'spaceName' : spaceName,
@@ -66,16 +68,16 @@ class PostModel {
     int? good,
   }) {
     return PostModel(
-      pid: pid ?? this.pid,
-      uid: uid ?? this.uid,
-      postName: postName ?? this.postName,
-      postContent: postContent ?? this.postContent,
-      image: image ?? this.image,
-      spaceName: spaceName ?? this.spaceName,
-      date: date ?? this.date,
-      tag: tag ?? this.tag,
-      recomTag: recomTag ?? this.recomTag,
-      good: good ?? this.good
+        pid: pid ?? this.pid,
+        uid: uid ?? this.uid,
+        // postName: postName ?? this.postName,
+        postContent: postContent ?? this.postContent,
+        image: image ?? this.image,
+        spaceName: spaceName ?? this.spaceName,
+        date: date ?? this.date,
+        tag: tag ?? this.tag,
+        recomTag: recomTag ?? this.recomTag,
+        good: good ?? this.good
     );
   }
 

@@ -1,3 +1,5 @@
+// 한 줄 평 모델
+
 import 'dart:ui';
 
 class OneLineModel {
@@ -6,7 +8,7 @@ class OneLineModel {
   final DateTime date;      // 작성 날짜
   final String spaceName;   // 공간 이름
   final String tag;         // 태그
-  final String onelineContent; // 게시물 내용
+  final String oneLineContent;
 
   OneLineModel({
     required this.oid,
@@ -14,7 +16,7 @@ class OneLineModel {
     required this.date,
     required this.spaceName,
     required this.tag,
-    required this.onelineContent,
+    required this.oneLineContent,
   });
 
   OneLineModel.fromJson({ // ➊ JSON으로부터 모델을 만들어내는 생성자
@@ -24,7 +26,7 @@ class OneLineModel {
         date = DateTime.parse(json['date']),
         spaceName = json['spaceName'],
         tag = json['tag'],
-        onelineContent = json['onelineContent'];
+        oneLineContent = json['oneLineContent'];
 
   Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
     return {
@@ -34,7 +36,7 @@ class OneLineModel {
       '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}',
       'spaceName' : spaceName,
       'tag' : tag,
-      'onelineContent' : onelineContent,
+      'oneLineContent' : oneLineContent,
     };
   }
 
@@ -44,7 +46,7 @@ class OneLineModel {
     DateTime? date,
     String? spaceName,
     String? tag,
-    String? onelineContent,
+    String? oneLineContent,
   }) {
     return OneLineModel(
       oid: oid ?? this.oid,
@@ -52,7 +54,7 @@ class OneLineModel {
       date: date ?? this.date,
       spaceName: spaceName ?? this.spaceName,
       tag: tag ?? this.tag,
-      onelineContent: onelineContent ?? this.onelineContent,
+      oneLineContent: oneLineContent ?? this.oneLineContent,
     );
   }
 

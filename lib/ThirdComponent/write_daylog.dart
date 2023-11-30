@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/ThirdComponent/upload_data.dart';
+import 'package:final_project/model_db/postmodel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class SpaceInfo {
   final String imagePath;
@@ -30,12 +34,14 @@ class _WriteDayLogState extends State<WriteDayLog> {
 
   File? selectedGalleryImage;
   String? hashTagButton;
+  TextEditingController _textEditingController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
     // 위젯이 dispose 될 때 FocusNode를 해제합니다.
+    _textEditingController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -55,6 +61,53 @@ class _WriteDayLogState extends State<WriteDayLog> {
   bool check1 = false;
   bool check2 = false;
   String? selectedTitle;
+
+  Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
+    try {
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
+
+      await ref.putFile(imageFile);
+      String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print('이미지 업로드 오류: $e');
+      return null;
+    }
+  }
+
+  Future<void> createPost() async {
+    final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
+    final user = FirebaseAuth.instance.currentUser!;
+
+
+    if (imageUrl != null) {
+      final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
+      final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
+
+      final post = PostModel(
+        pid:1,            // 게시물 id
+        uid:user.uid,        // 사용자id
+        postContent:_textEditingController.text, // 게시물 내용
+        image: imageUrl,      // 게시물 사진
+        spaceName:selectedTitle!,   // 공간 이름
+        date:parsedDate,      // 작성 날짜
+        tag:hashTagButton.toString(),         // 태그
+        recomTag:hashTagButton.toString(),    // 추천 태그
+        good:1,           // 좋아요
+
+      );
+
+      await FirebaseFirestore.instance.collection('post')
+          .doc(post.spaceName)
+          .set(post.toJson());
+    } else {
+      // 이미지 업로드 실패 처리
+    }
+  }
+
 
   final List<SpaceInfo> spaceInfoList = [
     SpaceInfo(
@@ -266,23 +319,23 @@ class _WriteDayLogState extends State<WriteDayLog> {
                 ),
 
                 Container(
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildButton('카페'),
-                        SizedBox(width: 10),
-                        buildButton('음식점'),
-                        SizedBox(width: 10),
-                        buildButton('편의점'),
-                        SizedBox(width: 10),
-                        buildButton('학교건물'),
-                        SizedBox(width: 10),
-                        buildButton('주차장'),
-                        SizedBox(width: 10),
-                      ],
-                    ),
+                  height: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildButton('카페'),
+                      SizedBox(width: 10),
+                      buildButton('음식점'),
+                      SizedBox(width: 10),
+                      buildButton('편의점'),
+                      SizedBox(width: 10),
+                      buildButton('학교건물'),
+                      SizedBox(width: 10),
+                      buildButton('주차장'),
+                      SizedBox(width: 10),
+                    ],
                   ),
+                ),
 
                 Container(
                   height: 1, // 선의 높이
@@ -373,8 +426,12 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   onTap: selectedTitle !=null && hashTagButton !=null && selectedGalleryImage !=null  ? () {
                     print(selectedTitle);
                     print(hashTagButton);
+                    print(selectedGalleryImage);
+                    print(_textEditingController.text);
+
                     // 데이로그 업로드 하는 부분
                     // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
+                    createPost();
                     Navigator.push(context, MaterialPageRoute(builder: (context) => UploadData()));
                   } : null,
                   child: Container(

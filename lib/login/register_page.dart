@@ -1,9 +1,11 @@
+import 'package:final_project/login/kakao_login/kakao_login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/login/login_button.dart';
 import 'package:final_project/login/services/auth_service.dart';
 import 'package:final_project/login/square_tile.dart';
 import 'package:final_project/login/textfile.dart';
+import 'kakao_login/main_view_model.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -19,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final pwController = TextEditingController();
   final confirmPwController = TextEditingController();
+  final viewModel = MainViewModel(KakaoLogin());
 
   @override
   Widget build(BuildContext context) {
@@ -136,11 +139,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       width: 25,
                     ),
                     SquareTile(
-                      onTap: ()=>{
-
-                      },
-                      imagePath: 'asset/github.png',
-                    ),
+                        imagePath: 'asset/kakao.png',
+                        onTap: () async {
+                          await viewModel.login();
+                        } )
                   ],
                 ),
 

@@ -22,42 +22,42 @@ class IntroduceAndLogout extends StatelessWidget {
           Row(
             children: [
               // 내 계정 프로필
-                  Flexible(
-                    flex: 3,
-                    child: Container(
-                      color: Colors.transparent,
-                      // height: 20,
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '탭하고 소개 글을 입력해 보세요.',
-                          border: InputBorder.none,
-                        ),
-                      ),
+              Flexible(
+                flex: 3,
+                child: Container(
+                  color: Colors.transparent,
+                  // height: 20,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: '탭하고 소개 글을 입력해 보세요.',
+                      border: InputBorder.none,
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: Colors.black,
-                        ),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          signUserOut();
-                        },
-                        child: Text('로그아웃'),
-                        style: TextButton.styleFrom(
-                          primary: Colors.black,
-                          backgroundColor: Colors.transparent,
-                          splashFactory: InkSplash.splashFactory,
-                          minimumSize: Size(80, 20),
-                        ),
-                      ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      color: Colors.black,
                     ),
                   ),
+                  child: TextButton(
+                    onPressed: () {
+                      signUserOut();
+                    },
+                    child: Text('로그아웃'),
+                    style: TextButton.styleFrom(
+                      primary: Colors.black,
+                      backgroundColor: Colors.transparent,
+                      splashFactory: InkSplash.splashFactory,
+                      minimumSize: Size(80, 20),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -103,27 +103,27 @@ class ProfileTile extends StatelessWidget {
 }
 
 class CardImage extends StatelessWidget {
-   final user = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
   CardImage({super.key});
 
   @override
   Widget build(BuildContext context) {
-     print("user ${user.photoURL}");
+    print("user ${user.photoURL}");
     return ClipRRect(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(50),
           bottomRight: Radius.circular(50)
       ),
       child: Container(
-         child: Image.network("${user.photoURL}", width: 80, height: 80, fit: BoxFit.cover,),
-        //child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
+        child: Image.network("${user.photoURL}", width: 80, height: 80, fit: BoxFit.cover,),
+        // child: Image.asset('asset/apple.jpg', fit: BoxFit.cover, width: 80, height: 80,)
       ),
     );
   }
 }
 
 class ProfileName extends StatelessWidget {
-   final user = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
 
   ProfileName({super.key});
 

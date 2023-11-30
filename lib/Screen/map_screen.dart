@@ -17,15 +17,16 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);//현재위치 저장
+  late LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
   Set<Marker> _markers = {}; // 현재위치 마커
   Set<Marker> food_markers = {}; //음식점 마커
-  LatLng exampleLocation = LatLng(36.834, 127.179); //음식점 예시
 
-  Future<void> _updateExampleLocation() async {
+
+  Future<LatLng?> _updateExampleLocation() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
           .collection('space')
-          .doc('qqqqqqqqqqqqqqqq')
+          .doc('starbucks')
           .get();
 
       final locationString = snapshot.data()!['location']; // 'location' 필드의 문자열 값 가져오기
@@ -42,12 +43,16 @@ class _MapScreenState extends State<MapScreen> {
 
         setState(() {
           exampleLocation = LatLng(latitude, longitude); // exampleLocation 업데이트
-          print('예비 장소:${exampleLocation}');
+          print('예비 장소: $exampleLocation');
         });
+
+        return exampleLocation; // LatLng 반환
       }
     } catch (e) {
       print('Error: $e');
     }
+
+    return null; // 예외가 발생하거나 위치 정보가 없는 경우 null 반환
   }
 
 
@@ -218,9 +223,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    _updateExampleLocation().then((value) {
+      _foodmarker();
+    });
     _getCurrentLocation();
-    _foodmarker();
-    _updateExampleLocation();
+
   }
 
   Future<void> _getCurrentLocation() async {

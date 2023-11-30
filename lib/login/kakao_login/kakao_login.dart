@@ -25,7 +25,6 @@ class KakaoLogin implements SocialLogin {
       return false;
     }
   }
-
   @override
   Future<bool> logout() async {
     try {
