@@ -77,7 +77,7 @@ class PlaceBlogScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // 사용자 1 버튼
+                  // 사용자 1 버튼 wpqkf
                   ElevatedButton(
                     onPressed: () {
                       // 사용자 1 선택 시 처리
