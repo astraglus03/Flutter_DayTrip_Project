@@ -3,13 +3,11 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:final_project/login/kakao_login/social_login.dart';
 import 'package:final_project/login/services/auth_service.dart';
 
-
 class MainViewModel {
   final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
   final SocialLogin _socialLogin;
   bool isLogined = false; //처음에 로그인 안 되어 있음
   kakao.User? user; //카카오톡에서 사용자 정보를 저장하는 객체 User를 nullable 변수로 선언
-
   MainViewModel(this._socialLogin);
 
   Future login() async {
@@ -17,22 +15,12 @@ class MainViewModel {
     if(isLogined){
       user = await kakao.UserApi.instance.me(); //사용자 정보 받아오기
 
-      if(user != null){
-        print("로그인 성공 ${user!.kakaoAccount}");
-        print("사용자 정보: $user");
-      }
-      else{
-        print("사용자 정보가 null입니다.");
-      }
-
       final token = await _firebaseAuthDataSource.createCustomToken({
         'uid' : user!.id.toString(),
         'displayName': user!.kakaoAccount!.profile!.nickname,
         'photoURL': user!.kakaoAccount!.profile!.profileImageUrl!,
       });
-
       await FirebaseAuth.instance.signInWithCustomToken(token);
-
     }
     else
       print("로그인 실패");

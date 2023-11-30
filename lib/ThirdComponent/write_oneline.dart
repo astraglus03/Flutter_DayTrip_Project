@@ -1,41 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_project/ThirdComponent/choose_space.dart';
+import 'package:final_project/model_db/onelinemodel.dart';
+import 'package:final_project/model_db/space.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project/ThirdComponent/choose_space.dart';
 import 'package:final_project/ThirdComponent/main_calender.dart';
 import 'package:intl/intl.dart';
 
-import '../model_db/onelinemodel.dart';
-import 'package:uuid/uuid.dart';
-
 class WriteOneLine extends StatefulWidget {
+  final SpaceModel? selectedSpace;
 
-  const WriteOneLine({super.key});
+  WriteOneLine({
+    this.selectedSpace,
+  });
 
   @override
   State<WriteOneLine> createState() => _WriteOneLineState();
 }
 
 class _WriteOneLineState extends State<WriteOneLine> {
-  int? index=0;
-  String? selectedImage;
-  String? selectedTitle;
-  String? hashTagButton;
+  DateTime selectedDate = DateTime.now();
+  String? hashTagButton = '';
+  late String? selectedImage;
+  late String? selectedTitle;
+  late String? selectedLocation;
   TextEditingController _textEditingController = TextEditingController();
 
-  DateTime selectedDate = DateTime.utc(
-    DateTime.now().year,
-    DateTime.now().month,
-    DateTime.now().day,
-  );
-
-  // 해시태그 버튼
   void selectButton(String buttonText) {
     setState(() {
       if (hashTagButton == buttonText) {
-        hashTagButton = ''; // 이미 선택된 버튼을 다시 누르면 선택 해제
+        hashTagButton = '';
       } else {
-        hashTagButton = buttonText; // 새로운 버튼을 선택
+        hashTagButton = buttonText;
       }
     });
   }
@@ -43,19 +40,50 @@ class _WriteOneLineState extends State<WriteOneLine> {
   final FocusNode _focusNode = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.selectedSpace != null) {
+      selectedImage = widget.selectedSpace!.image;
+      selectedTitle = widget.selectedSpace!.spaceName;
+      selectedLocation = widget.selectedSpace!.locationName;
+    }
+    else{
+      selectedImage = '';
+      selectedTitle = '';
+      selectedLocation = '';
+    }
+  }
+
+  @override
   void dispose() {
-    // 위젯이 dispose 될 때 FocusNode를 해제합니다.
+    _textEditingController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
+  Future<void> createOneLine() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
+    final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
+
+      final oneLine = OneLineModel(
+      oid : 1,
+      uid : user.uid,
+      date : parsedDate,
+      spaceName : selectedTitle.toString(),
+      tag: hashTagButton.toString(),
+      oneLineContent: _textEditingController.text,
+      );
+
+      await FirebaseFirestore.instance.collection('oneLine')
+          .doc(oneLine.spaceName)
+          .set(oneLine.toJson());
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(selectedImage);
-    print(selectedTitle);
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: SingleChildScrollView(
@@ -63,7 +91,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.7,
+          height: MediaQuery.of(context).size.height * 0.73,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -72,10 +100,10 @@ class _WriteOneLineState extends State<WriteOneLine> {
                 SizedBox(
                   height: 80,
                   width: 80,
-                  child: selectedImage != null
+                  child: selectedImage != null && selectedImage!.isNotEmpty
                       ? ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: Image.asset(selectedImage!, fit: BoxFit.cover),
+                    child: Image.network(selectedImage!, fit: BoxFit.cover),
                   )
                       : Container(
                     decoration: BoxDecoration(
@@ -90,13 +118,17 @@ class _WriteOneLineState extends State<WriteOneLine> {
                   ),
                 ),
 
-                selectedTitle !=null ?
+
+                selectedTitle != null ?
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Center(
-                    child: Text( selectedTitle !=null ? '${selectedTitle}' : '' , style: TextStyle(
-                      fontSize: 24,
-                    ),),
+                    child: Text(
+                      '${selectedTitle}',
+                      style: TextStyle(
+                        fontSize: 24,
+                      ),
+                    ),
                   ),
                 ) :
                 Container(),
@@ -105,33 +137,26 @@ class _WriteOneLineState extends State<WriteOneLine> {
 
                 InkWell(
                   onTap: () async {
-                    // ChooseSpace 화면으로 이동하여 이미지 선택
-                    SpaceInfo? result = await Navigator.push(
+                    SpaceModel? result = await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => ChooseSpace()),
-
                     );
 
-                    // Check if result is not null and contains selected space info
                     if (result != null) {
                       setState(() {
-                        selectedImage = result.imagePath;
-                        // Use result.title as needed in your logic
-                        // For example, assign it to a variable or update the UI
-                        selectedTitle = result.title;
+                        selectedImage = result.image;
+                        selectedTitle = result.spaceName;
+                        selectedLocation = result.locationName;
                       });
+                      print('전달받은 이미지: ${result.image}');
                     }
-
-                    print('텍스트와 아이콘이 클릭되었습니다!');
-
-                    creatOneLine();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "공간을 선택해주세요",
+                        "공간을 선택하세요",
                         style: TextStyle(
                           color: Colors.grey[500],
                           fontSize: 24,
@@ -161,18 +186,21 @@ class _WriteOneLineState extends State<WriteOneLine> {
                           onPressed: () {
                             _selectDate(context);
                           },
-                          child: Text(DateFormat('yyyy년 MM월 dd일 방문').format(
-                              selectedDate), style: TextStyle(
-                            color: Colors.black,
-                          ),),
+                          child: Text(
+                            DateFormat('yyyy년 MM월 dd일').format(selectedDate),
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
                         IconButton(
-                            onPressed: () {
-                              _showCustomBottomSheet(context);
-                            },
-                            icon: Icon(
-                              Icons.calendar_today_outlined,
-                            )),
+                          onPressed: () {
+                            _showCustomBottomSheet(context);
+                          },
+                          icon: Icon(
+                            Icons.calendar_today_outlined,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -190,9 +218,10 @@ class _WriteOneLineState extends State<WriteOneLine> {
 
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20,),
-                    child: TextField(
+                    child: TextFormField(
+                      controller: _textEditingController,
                       decoration: InputDecoration(
-                        hintText: '한 줄 메모(140자까지 입력 가능)',
+                        hintText: '한 줄 메모 (최대 140줄)',
                         border: InputBorder.none,
                       ),
                     ),
@@ -215,14 +244,12 @@ class _WriteOneLineState extends State<WriteOneLine> {
                   ],
                 ),
 
-
                 SizedBox(height: 20,),
 
                 InkWell(
                   onTap: () {
-                    // 데이터베이스에 보내기 OR 정보 마이페이지로 넘겨주기.
-
                     Navigator.pop(context);
+                    createOneLine();
                     showDialog(
                         context: context,
                         builder: (BuildContext context){
@@ -231,8 +258,8 @@ class _WriteOneLineState extends State<WriteOneLine> {
                           });
 
                           return AlertDialog(
-                            title: Text('한 줄 메모 되었습니다!'),
-                            content: Text('마이페이지에서 확인 하십시오.'),
+                            title: Text('한 줄 메모가 저장되었습니다'),
+                            content: Text('마이페이지에서 확인하세요.'),
                           );
                         }
                     );
@@ -251,9 +278,9 @@ class _WriteOneLineState extends State<WriteOneLine> {
                           Icons.check,
                           color: Colors.black,
                         ),
-                        SizedBox(width: 8), // 아이콘과 텍스트 사이 간격 조절
+                        SizedBox(width: 8),
                         Text(
-                          '한 줄 평 남기기',
+                          '한 줄 메모 ',
                           style: TextStyle(color: Colors.black),
                         ),
                       ],
@@ -334,7 +361,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.blue) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.blue)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
           color: Colors.black,
@@ -347,21 +374,5 @@ class _WriteOneLineState extends State<WriteOneLine> {
         ),
       ),
     );
-  }
-
-  Future<void> creatOneLine() async {
-    final oneLine = OneLineModel(
-      oid: index!,
-      uid: Uuid().v4(),
-      date: selectedDate!,
-      spaceName: selectedTitle!,
-      tag : hashTagButton!,
-    );
-
-    await FirebaseFirestore.instance.collection(
-        'oneLine'
-    )
-        .doc(oneLine.spaceName)
-        .set(oneLine.toJson());
   }
 }

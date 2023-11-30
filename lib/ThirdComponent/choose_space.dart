@@ -1,16 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/model_db/space.dart';
 import 'package:flutter/material.dart';
-
-class SpaceInfo {
-  final String imagePath;
-  final String title;
-  final String location;
-
-  SpaceInfo({
-    required this.imagePath,
-    required this.title,
-    required this.location,
-  });
-}
 
 class ChooseSpace extends StatefulWidget {
   @override
@@ -18,85 +8,33 @@ class ChooseSpace extends StatefulWidget {
 }
 
 class _ChooseSpaceState extends State<ChooseSpace> {
-  final List<SpaceInfo> spaceInfoList = [
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-  ];
+  List<SpaceModel>? spaceModels;
 
-  String searchText = '';
+  @override
+  void initState() {
+    super.initState();
+    fetchSpaceModels(); // Firestore에서 SpaceModel 데이터 가져오기
+  }
+
+  Future<void> fetchSpaceModels() async {
+    // Firestore에서 SpaceModel 객체들을 가져오는 비동기 메소드 호출
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+    await FirebaseFirestore.instance.collection('space').get();
+
+    setState(() {
+      // Firestore에서 가져온 데이터를 SpaceModel 객체로 변환하여 리스트에 저장
+      spaceModels = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        return SpaceModel(
+          spaceName: data['spaceName'] ?? '',
+          location: data['location'] ?? '',
+          tag: data['tag'] ?? '',
+          image: data['image'] ?? '',
+          locationName: data['locationName'] ?? '',
+        );
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +47,7 @@ class _ChooseSpaceState extends State<ChooseSpace> {
         child: Column(
           children: [
             SizedBox(height: 10,),
-            // 서치바 있는 곳
+            // 검색창
             Container(
               height: 40,
               child: TextField(
@@ -136,18 +74,16 @@ class _ChooseSpaceState extends State<ChooseSpace> {
             SizedBox(height: 10,),
 
             Expanded(
-              child: ListView.builder(
-                itemCount: spaceInfoList.length,
+              child: spaceModels == null
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                itemCount: spaceModels!.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
                     onTap: () {
-                      // Pass both imagePath and title to WriteOneLine
-                      SpaceInfo selectedSpace = SpaceInfo(
-                        imagePath: spaceInfoList[index].imagePath,
-                        title: spaceInfoList[index].title,
-                        location: spaceInfoList[index].location,
-                      );
-                      Navigator.pop(context, selectedSpace);
+                      // 선택된 공간 정보 처리
+                      SpaceModel selectedSpace = spaceModels![index];
+                      Navigator.pop(context, selectedSpace); // 데이터 반환
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -155,8 +91,8 @@ class _ChooseSpaceState extends State<ChooseSpace> {
                         children: [
                           Expanded(
                             flex: 1,
-                            child: Image.asset(
-                              spaceInfoList[index].imagePath,
+                            child: Image.network(
+                              spaceModels![index].image,
                               width: 50,
                               height: 50,
                             ),
@@ -167,14 +103,14 @@ class _ChooseSpaceState extends State<ChooseSpace> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  spaceInfoList[index].title,
+                                  spaceModels![index].spaceName,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 SizedBox(height: 10,),
                                 Text(
-                                  spaceInfoList[index].location,
+                                  spaceModels![index].locationName,
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ],
