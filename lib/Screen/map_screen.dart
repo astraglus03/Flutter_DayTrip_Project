@@ -319,16 +319,18 @@ class _MapScreenState extends State<MapScreen> {
           content: Container(
             width: 300,
             height: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.network(image),
-                SizedBox(height: 10),
-                Text('위치: $locationString'),
-                Text('장소 이름: $locationName'),
-                Text('공간 이름: $spaceName'),
-                Text('태그: $tag'),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.network(image),
+                  SizedBox(height: 10),
+                  Text('위치: $locationString'),
+                  Text('장소 이름: $locationName'),
+                  Text('공간 이름: $spaceName'),
+                  Text('태그: $tag'),
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
@@ -354,6 +356,7 @@ class _MapScreenState extends State<MapScreen> {
       },
     );
   }
+
 
   final darkMapStyle = '''
 [
