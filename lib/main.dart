@@ -13,11 +13,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-
   runApp(MaterialApp(
     theme: ThemeData(),
     darkTheme: ThemeData.dark(),
     debugShowCheckedModeBanner: false,
-    home: MainScreen(),
+    home: AuthPage(),
   ));
 }

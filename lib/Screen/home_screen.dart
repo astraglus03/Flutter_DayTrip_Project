@@ -76,10 +76,7 @@ class HomeScreen extends StatefulWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>
-                          HomeExhibition(
-
-                          ),
+                      MaterialPageRoute(builder: (context) => HomeExhibition(),
                       ),
                     );
                   },
@@ -129,11 +126,11 @@ class HomeScreen extends StatefulWidget {
     }
   }
 
-// 최근 피드 / 전체 보기> 버튼
+// 최신 피드 / 전체 보기> 버튼
 class Title extends StatelessWidget {
   final String title;
   final bool showAll; // 전체보기 클릭했는지 안 했는지
-  final VoidCallback onTap; // 콜백함수.
+  final VoidCallback onTap;
 
   const Title({required this.title, required this.showAll, required this.onTap});
 

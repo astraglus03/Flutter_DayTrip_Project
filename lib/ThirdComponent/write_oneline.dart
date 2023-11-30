@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/ThirdComponent/choose_space.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/ThirdComponent/main_calender.dart';
 import 'package:intl/intl.dart';
 
-class WriteOneLine extends StatefulWidget {
+import '../model_db/oneline.dart';
+import 'package:uuid/uuid.dart';
 
+class WriteOneLine extends StatefulWidget {
 
   const WriteOneLine({super.key});
 
@@ -14,17 +17,17 @@ class WriteOneLine extends StatefulWidget {
 }
 
 class _WriteOneLineState extends State<WriteOneLine> {
-
+  int? index=0;
   String? selectedImage;
   String? selectedTitle;
+  String? hashTagButton;
+  TextEditingController _textEditingController = TextEditingController();
 
   DateTime selectedDate = DateTime.utc(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
   );
-
-  String? hashTagButton = '';
 
   // 해시태그 버튼
   void selectButton(String buttonText) {
@@ -42,6 +45,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
   @override
   void dispose() {
     // 위젯이 dispose 될 때 FocusNode를 해제합니다.
+    _textEditingController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -106,6 +110,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                       SpaceInfo? result = await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ChooseSpace()),
+
                       );
 
                       // Check if result is not null and contains selected space info
@@ -119,6 +124,8 @@ class _WriteOneLineState extends State<WriteOneLine> {
                       }
 
                       print('텍스트와 아이콘이 클릭되었습니다!');
+
+
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -185,6 +192,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20,),
                       child: TextField(
+                        controller: _textEditingController,
                         decoration: InputDecoration(
                           hintText: '한 줄 메모(140자까지 입력 가능)',
                           border: InputBorder.none,
@@ -215,6 +223,8 @@ class _WriteOneLineState extends State<WriteOneLine> {
                   InkWell(
                     onTap: () {
                       // 데이터베이스에 보내기 OR 정보 마이페이지로 넘겨주기.
+                      _textEditingController.text;
+                      creatOneLine();
 
                       Navigator.pop(context);
                       showDialog(
@@ -342,4 +352,21 @@ class _WriteOneLineState extends State<WriteOneLine> {
         ),
       );
     }
+
+  Future<void> creatOneLine() async {
+    final oneLine = OneLineModel(
+      oid: index!,
+      uid: Uuid().v4(), //Uuid().v4()
+      date: selectedDate!,
+      spaceName: selectedTitle!,
+      tag : hashTagButton!,
+      onelineContent: _textEditingController.text!,
+    );
+
+    await FirebaseFirestore.instance.collection(
+        'oneLine'
+    )
+        .doc(oneLine.spaceName)
+        .set(oneLine.toJson());
+  }
 }
