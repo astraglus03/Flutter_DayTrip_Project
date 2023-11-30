@@ -271,6 +271,7 @@ class _MapScreenState extends State<MapScreen> {
             child: CupertinoSearchTextField(
               backgroundColor: Colors.black,
               onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode()); //키보드 내리기
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SearchScreen()),
