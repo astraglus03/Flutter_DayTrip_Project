@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
-class PlaceBlogScreen extends StatelessWidget {
+class PlaceBlogScreen extends StatefulWidget {
+  @override
+  _PlaceBlogScreenState createState() => _PlaceBlogScreenState();
+}
+
+class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
+  int selectedUserIndex = -1; // 선택된 사용자를 추적하기 위한 변수
+  List<String> userPosts = [
+    '사용자 1의 글입니다.',
+    '사용자 2의 글입니다.',
+    '사용자 3의 글입니다.',
+    '사용자 4의 글입니다.',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('장소 블로그 화면'),
-      // ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -77,56 +86,94 @@ class PlaceBlogScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // 사용자 1 버튼 wpqkf
-                  ElevatedButton(
-                    onPressed: () {
+                  // 사용자 1 버튼
+                  InkWell(
+                    onTap: () {
                       // 사용자 1 선택 시 처리
+                      setState(() {
+                        selectedUserIndex = 0;
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // 배경을 투명으로 설정
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/img/friend2.jpg'),
-                      radius: 30.0, // 버튼 크기 조절
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selectedUserIndex == 0 ? Colors.white : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('asset/img/friend2.jpg'),
+                        radius: 20.0,
+                      ),
                     ),
                   ),
 
                   // 사용자 2 버튼
-                  ElevatedButton(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
                       // 사용자 2 선택 시 처리
+                      setState(() {
+                        selectedUserIndex = 1;
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // 배경을 투명으로 설정
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/img/friend1.jpg'),
-                      radius: 30.0, // 버튼 크기 조절
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selectedUserIndex == 1 ? Colors.white : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('asset/img/friend1.jpg'),
+                        radius: 20.0,
+                      ),
                     ),
                   ),
+
                   // 추가 사용자 버튼...
-                  ElevatedButton(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
                       // 사용자 3 선택 시 처리
+                      setState(() {
+                        selectedUserIndex = 2;
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // 배경을 투명으로 설정
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/img/friend3.jpg'),
-                      radius: 30.0, // 버튼 크기 조절
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selectedUserIndex == 2 ? Colors.white : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('asset/img/friend3.jpg'),
+                        radius: 20.0,
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+
+                  InkWell(
+                    onTap: () {
                       // 사용자 4 선택 시 처리
+                      setState(() {
+                        selectedUserIndex = 3;
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // 배경을 투명으로 설정
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage('asset/img/friend1.jpg'),
-                      radius: 30.0, // 버튼 크기 조절
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selectedUserIndex == 3 ? Colors.white : Colors.transparent,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('asset/img/friend1.jpg'),
+                        radius: 20.0,
+                      ),
                     ),
                   ),
                 ],
@@ -142,7 +189,12 @@ class PlaceBlogScreen extends StatelessWidget {
                       '선택된 사용자 글',
                       style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                     ),
-                    // 사용자가 쓴 글들을 여기에 표시
+                    selectedUserIndex != -1
+                        ? Text(
+                      userPosts[selectedUserIndex],
+                      style: TextStyle(fontSize: 18.0),
+                    )
+                        : SizedBox.shrink(),
                   ],
                 ),
               ),
