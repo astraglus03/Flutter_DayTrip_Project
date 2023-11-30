@@ -14,8 +14,6 @@ class SaveClass with ChangeNotifier {
 
     int existingIndex = _savedItems.indexWhere((element) => element['index'] == index);
 
-
-
     if (existingIndex != -1) {
       _savedItems.removeAt(existingIndex);
     } else {

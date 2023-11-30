@@ -66,18 +66,18 @@ class _WriteOneLineState extends State<WriteOneLine> {
     final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
     final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
 
-      final oneLine = OneLineModel(
+    final oneLine = OneLineModel(
       oid : 1,
       uid : user.uid,
       date : parsedDate,
       spaceName : selectedTitle.toString(),
       tag: hashTagButton.toString(),
       oneLineContent: _textEditingController.text,
-      );
+    );
 
-      await FirebaseFirestore.instance.collection('oneLine')
-          .doc(oneLine.spaceName)
-          .set(oneLine.toJson());
+    await FirebaseFirestore.instance.collection('oneLine')
+        .doc(oneLine.spaceName)
+        .set(oneLine.toJson());
   }
 
   @override
