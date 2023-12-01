@@ -5,25 +5,38 @@ class SaveClass with ChangeNotifier {
 
   List<Map<String, dynamic>> get savedItems => _savedItems;
 
-  void toggleLike(int index, bool isLiked, String imagePath) {
+  void toggleLike(bool isLiked, String pid, String imagePath, String spaceName) {
     final Map<String, dynamic> item = {
-      'index': index,
+      'pid': pid,
       'isLiked': isLiked,
-      'imagePath': imagePath, // imagePath 추가
+      'imagePath': imagePath,
+      'spaceName': spaceName,
     };
 
-    int existingIndex = _savedItems.indexWhere((element) => element['index'] == index);
+    int existingIndex =
+    _savedItems.indexWhere((element) => element['pid'] == pid);
 
     if (existingIndex != -1) {
-      _savedItems.removeAt(existingIndex);
+      if (!isLiked) {
+        _savedItems.removeAt(existingIndex);
+      } else {
+        _savedItems[existingIndex] = item;
+      }
     } else {
-      _savedItems.add(item);
+      if (isLiked) {
+        _savedItems.add(item);
+      }
     }
 
     notifyListeners();
   }
-  void removeFromSavedList(int index) {
-    _savedItems.removeAt(index);
-    notifyListeners(); // 상태 변경 알림
+
+  void removeFromSavedList(String pid) {
+    int existingIndex =
+    _savedItems.indexWhere((element) => element['pid'] == pid);
+    if (existingIndex != -1) {
+      _savedItems.removeAt(existingIndex);
+      notifyListeners(); // 상태 변경 알림
+    }
   }
 }

@@ -8,7 +8,8 @@ class OneLineModel {
   final DateTime date;      // 작성 날짜
   final String spaceName;   // 공간 이름
   final String tag;         // 태그
-  final String oneLineContent;
+  final String oneLineContent; // 한줄 평
+  final String locationName; // 지역 이름 ex) 충청남도 천안시 동남구 신부동 321-5
 
   OneLineModel({
     required this.oid,
@@ -17,6 +18,7 @@ class OneLineModel {
     required this.spaceName,
     required this.tag,
     required this.oneLineContent,
+    required this.locationName,
   });
 
   OneLineModel.fromJson({ // ➊ JSON으로부터 모델을 만들어내는 생성자
@@ -26,7 +28,8 @@ class OneLineModel {
         date = DateTime.parse(json['date']),
         spaceName = json['spaceName'],
         tag = json['tag'],
-        oneLineContent = json['oneLineContent'];
+        oneLineContent = json['oneLineContent'],
+        locationName = json['locationName'];
 
   Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
     return {
@@ -37,6 +40,7 @@ class OneLineModel {
       'spaceName' : spaceName,
       'tag' : tag,
       'oneLineContent' : oneLineContent,
+      'locationName' : locationName,
     };
   }
 
@@ -47,6 +51,7 @@ class OneLineModel {
     String? spaceName,
     String? tag,
     String? oneLineContent,
+    String? locationName,
   }) {
     return OneLineModel(
       oid: oid ?? this.oid,
@@ -55,6 +60,7 @@ class OneLineModel {
       spaceName: spaceName ?? this.spaceName,
       tag: tag ?? this.tag,
       oneLineContent: oneLineContent ?? this.oneLineContent,
+      locationName: locationName ?? this.locationName,
     );
   }
 

@@ -42,7 +42,7 @@ class BookMarkScreen extends StatelessWidget {
               ),
 
               // 게시물 보기
-              PostList(),
+              AllPostList(),
 
               SizedBox(height: 80,),
 

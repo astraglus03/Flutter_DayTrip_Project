@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:uuid/uuid.dart';
 
 class SpaceInfo {
   final String imagePath;
@@ -31,12 +32,21 @@ class WriteDayLog extends StatefulWidget {
 
 class _WriteDayLogState extends State<WriteDayLog> {
 
-
+  List<SpaceInfo> spaceInfoList = [];
   File? selectedGalleryImage;
   String? hashTagButton;
   TextEditingController _textEditingController = TextEditingController();
+  bool check1 = false;
+  bool check2 = false;
+  String? selectedTitle;
 
   final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSpaceModels(); // Firestore에서 SpaceModel 데이터 가져오기
+  }
 
   @override
   void dispose() {
@@ -57,11 +67,6 @@ class _WriteDayLogState extends State<WriteDayLog> {
     });
   }
 
-
-  bool check1 = false;
-  bool check2 = false;
-  String? selectedTitle;
-
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
@@ -81,6 +86,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
   Future<void> createPost() async {
     final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
     final user = FirebaseAuth.instance.currentUser!;
+    final uuid = Uuid();
 
 
     if (imageUrl != null) {
@@ -88,7 +94,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
 
       final post = PostModel(
-        pid:1,            // 게시물 id
+        pid:uuid.v4(),            // 게시물 id
         uid:user.uid,        // 사용자id
         postContent:_textEditingController.text, // 게시물 내용
         image: imageUrl,      // 게시물 사진
@@ -108,84 +114,23 @@ class _WriteDayLogState extends State<WriteDayLog> {
     }
   }
 
+  Future<void> fetchSpaceModels() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+    await FirebaseFirestore.instance.collection('space').get();
 
-  final List<SpaceInfo> spaceInfoList = [
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-  ];
+    List<SpaceInfo> updatedSpaceInfoList = querySnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data();
+      return SpaceInfo(
+        imagePath: data['image'] ?? '', // 이미지 URL은 여기에 대입해야합니다.
+        title: data['spaceName'] ?? '', // 공간 이름은 여기에 대입해야합니다.
+        location: data['locationName'] ?? '', // 위치는 여기에 대입해야합니다.
+      );
+    }).toList();
+
+    setState(() {
+      spaceInfoList = updatedSpaceInfoList;
+    });
+  }
 
   DateTime selectedDate = DateTime.utc(
     DateTime.now().year,
@@ -232,6 +177,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   height: 100,
 
                   child: TextFormField(
+                    controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: '여러분이 해당 장소에서 함께한 내용을 작성해 주세요!!',
                       border: InputBorder.none,
@@ -519,7 +465,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                     children: [
                       Expanded(
                         flex: 1,
-                        child: Image.asset(
+                        child: Image.network(
                           spaceInfoList[index].imagePath,
                           width: 50,
                           height: 50,
