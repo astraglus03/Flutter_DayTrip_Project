@@ -40,20 +40,30 @@ class _WriteDayLogState extends State<WriteDayLog> {
   bool check2 = false;
   String? selectedTitle;
 
-  final FocusNode _focusNode = FocusNode();
+  late FocusNode _textFocusNode;
 
   @override
   void initState() {
     super.initState();
-    fetchSpaceModels(); // Firestore에서 SpaceModel 데이터 가져오기
+    _textFocusNode = FocusNode(); // FocusNode 초기화
+    fetchSpaceModels();
   }
 
   @override
   void dispose() {
-    // 위젯이 dispose 될 때 FocusNode를 해제합니다.
     _textEditingController.dispose();
-    _focusNode.dispose();
+    _textFocusNode.dispose(); // FocusNode 해제
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _textFocusNode.addListener(() {
+      if (!_textFocusNode.hasFocus) {
+        FocusScope.of(context).requestFocus(FocusNode());
+      }
+    });
   }
 
   // 해시태그 버튼
@@ -177,6 +187,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   height: 100,
 
                   child: TextFormField(
+                    focusNode: _textFocusNode,
                     controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: '여러분이 해당 장소에서 함께한 내용을 작성해 주세요!!',
