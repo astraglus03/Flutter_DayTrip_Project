@@ -332,10 +332,14 @@ class MyWrittenPost extends StatelessWidget {
                           ),
                           SizedBox(height: 5,),
 
-                          Text(
-                            '${postInfo.locationName}',
-                            style: TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis, // 오버플로우 발생 시 '...'으로 표시
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
+                            child: Text(
+                              '${postInfo.locationName}',
+                              style: TextStyle(color: Colors.white),
+                              maxLines: 2, // 최대 두 줄까지 표시
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
