@@ -21,33 +21,38 @@ class _HomeRecommendState extends State<HomeRecommend> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 10),
-          Text('추천 장소를 태그를 클릭하여 확인하세요.'),
-          SizedBox(height: 20),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.0), // Column 전체에 대한 패딩
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 10),
+            Text('추천 장소를 태그를 클릭하여 확인하세요.'),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildSearchButton('공부'),
-                SizedBox(width: 10), // 간격 추가
+                SizedBox(width: 10),
                 _buildSearchButton('팀플'),
-                SizedBox(width: 10), // 간격 추가
+                SizedBox(width: 10),
                 _buildSearchButton('운동'),
-              ]),
-          SizedBox(height: 20),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildSearchButton('산책'),
-                SizedBox(width: 10), // 간격 추가
+                SizedBox(width: 10),
                 _buildSearchButton('휴식'),
-              ]),
-          SizedBox(height: 20),
-          Result(updatePlaces: updatePlaces, currentPlaces: currentPlaces, tag: selectedTag,),
-          SizedBox(height: 20),
-        ],
+              ],
+            ),
+            SizedBox(height: 20),
+            Result(updatePlaces: updatePlaces, currentPlaces: currentPlaces, tag: selectedTag),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

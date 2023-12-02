@@ -197,9 +197,10 @@ class _PostTabState extends State<PostTab> {
                               });
                             },
                             child: Icon(
-                              Icons.favorite,
-                              color: isLiked ? Colors.red : Colors.grey,
-                              size: 24,
+                              isLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.red,
                             ),
                           ),
                         ),
