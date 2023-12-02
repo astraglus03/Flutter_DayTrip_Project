@@ -6,6 +6,9 @@ import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class HomeMain extends StatefulWidget {
   const HomeMain({Key? key});
 
@@ -16,6 +19,9 @@ class HomeMain extends StatefulWidget {
 class _HomeMainState extends State<HomeMain> {
   String selectedDay = ''; // 선택된 요일 추적을 위한 변수
   int selectedDayIndex = -1; // 선택된 요일을 추적하기 위한 변수
+
+  List<String> recentImagePaths = [];
+  List<RecentPostInfo> recentPostInfoList = [];
 
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
@@ -42,12 +48,7 @@ class _HomeMainState extends State<HomeMain> {
             //ImageSlider(),
             //SizedBox(height: 20),
             RecentPost(
-              imagePaths: [
-                'asset/img/school1.jpg',
-                'asset/img/school2.jpg',
-                'asset/img/school3.jpg',
-                // Add more image paths as needed
-              ],
+              imagePaths: recentImagePaths, // Use the fetched image paths here
               isLiked: isLiked,
               onLikeButtonPressed: (int index) {
                 setState(() {
@@ -128,6 +129,61 @@ class _HomeMainState extends State<HomeMain> {
     // Handle the selected date here
     print('Selected date from custom: $selectedDate');
   }
+
+  @override // SaveClass 인스턴스 초기화
+  void initState() {
+    super.initState();
+    fetchRecentPostModel();
+  }
+
+  Future<void> fetchRecentPostModel() async {
+    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+    List<String> updatedRecentImagePaths = []; // 새로운 이미지 경로 리스트
+    List<RecentPostInfo> updatedRecentPostInfoList = [];
+
+    final querySnapshot = await usersCollectionRef.get();
+    for (final userDoc in querySnapshot.docs) {
+      final postCollectionRef = userDoc.reference.collection('post');
+
+      final postQuerySnapshot = await postCollectionRef.get();
+      for (final postDoc in postQuerySnapshot.docs) {
+        final data = postDoc.data();
+        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+        String image = data.containsKey('image') ? data['image'] : '';
+        String pid = data.containsKey('pid') ? data['pid'] : '';
+
+        // 이미지 경로를 가져와서 리스트에 추가
+        updatedRecentImagePaths.add(image);
+
+        updatedRecentPostInfoList.add(RecentPostInfo(
+          spaceName: spaceName,
+          image: image,
+          pid: pid,
+
+        ));
+      }
+    }
+
+    // 모든 데이터를 한 번에 setState로 업데이트
+    setState(() {
+      recentPostInfoList.addAll(updatedRecentPostInfoList);
+      recentImagePaths = updatedRecentImagePaths;
+    });
+  }
+
+}
+
+class RecentPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+
+  RecentPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+  });
 }
 
 // 최신 피드 / 전체 보기> 버튼
@@ -214,7 +270,7 @@ class _RecentPostState extends State<RecentPost> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
+                        image: NetworkImage(imagePath),
                       ),
                     ),
                   ),
