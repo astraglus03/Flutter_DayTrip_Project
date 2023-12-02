@@ -19,35 +19,6 @@ class _MapScreenState extends State<MapScreen> {
   late LatLng exampleLocation = LatLng(36.834, 127.179);
   Set<Marker> _markers = {};
 
-  Future<LatLng?> _updateExampleLocation() async {
-    try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-          .collection('space')
-          .doc('starbucks')
-          .get();
-
-      final locationString = snapshot.data()!['location'];
-
-      if (locationString != null) {
-        final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
-        final coordinates = cleanString.split(',');
-        double latitude = double.parse(coordinates[0].trim());
-        double longitude = double.parse(coordinates[1].trim());
-
-        setState(() {
-          exampleLocation = LatLng(latitude, longitude);
-          print('예비 장소: $exampleLocation');
-        });
-
-        return exampleLocation;
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-
-    return null;
-  }
-
   Future<void> _updateAllLocations() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
@@ -357,8 +328,8 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
-  final darkMapStyle = '''
+}
+const darkMapStyle = '''
 [
   {
     "elementType": "geometry",
@@ -521,4 +492,3 @@ class _MapScreenState extends State<MapScreen> {
   }
 ]
 ''';
-}

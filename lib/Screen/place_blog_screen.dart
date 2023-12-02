@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:final_project/Screen/map_screen.dart';
 
 class PlaceBlogScreen extends StatefulWidget {
   @override
@@ -196,6 +198,23 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     )
                         : SizedBox.shrink(),
                   ],
+                ),
+              ),
+              // 지도를 표시할 Container
+              // 지도를 표시하는 Container
+              Container(
+                height: 200,
+                child: GoogleMap(
+                  // 초기 위치 설정 (예: 서울)
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(37.5665, 126.9780),
+                    zoom: 15.0,
+                  ),
+                  // 지도 스타일 적용
+                  onMapCreated: (GoogleMapController controller) {
+                    controller.setMapStyle(darkMapStyle);
+                  },
+                  // 추가 설정 및 마커 등을 여기에 추가 가능
                 ),
               ),
             ],
