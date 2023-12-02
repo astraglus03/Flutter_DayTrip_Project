@@ -28,6 +28,8 @@ class _MapScreenState extends State<MapScreen> {
 
   // "space" 컬렉션의 데이터를 저장할 변수
   List<Map<String, dynamic>> spaceDataList = [];
+  List<Map<String, dynamic>> spacedetailDataList = [];
+  List<Map<String, dynamic>> spacephotoList = [];
 
   Future<void> _updateAllLocations() async {
     try {
@@ -51,9 +53,15 @@ class _MapScreenState extends State<MapScreen> {
           final locationString = document.data()!['location'];
           final name = document.data()!['name'];
           final spaceName = document.data()!['spaceName'];
+          String locationName = document.data()!['locationName'];
+          String image = document.data()!['image'];
 
           spaceDataList.add({'name': spaceName});
+          spacedetailDataList.add({'locationName': locationName});
+          spacephotoList.add({'image': image});
           print(spaceDataList);
+          print(spacedetailDataList);
+          print(spacephotoList);
 
 
           if (locationString != null) {
@@ -189,17 +197,36 @@ class _MapScreenState extends State<MapScreen> {
                   itemBuilder: (context, index) {
                     final spaceData = spaceDataList[index];
                     final spaceName = spaceData['name'];
+                    final locationName = spacedetailDataList[index]['locationName'];
+                    final image = spacephotoList[index]['image'];
 
-                    return ListTile(
-                      title: Text(spaceName),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaceBlogScreen(),
+                    return Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('$spaceName - $locationName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8.0),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0), // You can adjust the border radius as needed
+                            child: Image.network(image, height: 150.0, width: double.infinity, fit: BoxFit.cover),
                           ),
-                        );
-                      },
+                          SizedBox(height: 8.0),
+                          Text('다른 텍스트 정보...'),
+                          SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlaceBlogScreen(),
+                                ),
+                              );
+                            },
+                            child: Text('자세히 보기'),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
