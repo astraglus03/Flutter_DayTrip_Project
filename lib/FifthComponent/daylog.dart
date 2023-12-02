@@ -53,11 +53,11 @@ class _DayLogState extends State<DayLog> {
   }
 
   Future<void> fetchoneLineModel() async {
-    String currentUserUID = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final user = FirebaseAuth.instance.currentUser;
+    final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-    FirebaseFirestore.instance
+         allUsersCollectionRef
         .collection('oneLine')
-        .where('uid', isEqualTo: currentUserUID)
         .snapshots()
         .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
       List<OneLineInfo> updatedOneLineInfoList = querySnapshot.docs.map((doc) {
@@ -83,11 +83,11 @@ class _DayLogState extends State<DayLog> {
 
 
   Future<void> fetchPostModel() async {
-    String currentUserUID = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final user = FirebaseAuth.instance.currentUser;
+    final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-    FirebaseFirestore.instance
+         allUsersCollectionRef
         .collection('post')
-        .where('uid', isEqualTo: currentUserUID)
         .snapshots()
         .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
       List<MyPostInfo> updatedMyPostInfoList = querySnapshot.docs.map((doc) {
@@ -326,24 +326,21 @@ class MyWrittenPost extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '| ${postInfo.tag}', style: TextStyle(color: Colors.white),
+                                ' |  ${postInfo.tag}', style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
+                          SizedBox(height: 5,),
 
                           Text(
-                            '${postInfo.locationName}', style: TextStyle(color: Colors.white),
+                            '${postInfo.locationName}',
+                            style: TextStyle(color: Colors.white),
+                            overflow: TextOverflow.ellipsis, // 오버플로우 발생 시 '...'으로 표시
                           ),
                         ],
                       ),
                     ],
                   ),
-                  // IconButton(
-                  //   onPressed: (){},
-                  //   icon: Icon(
-                  //     Icons.more_horiz,
-                  //   ),
-                  // ),
                 ],
               ),
             ),

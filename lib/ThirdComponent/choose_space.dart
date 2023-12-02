@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/model_db/space.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChooseSpace extends StatefulWidget {
@@ -17,24 +18,38 @@ class _ChooseSpaceState extends State<ChooseSpace> {
   }
 
   Future<void> fetchSpaceModels() async {
-    // Firestore에서 SpaceModel 객체들을 가져오는 비동기 메소드 호출
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('space').get();
+    final userRef = FirebaseFirestore.instance.collection('users');
 
-    setState(() {
-      // Firestore에서 가져온 데이터를 SpaceModel 객체로 변환하여 리스트에 저장
-      spaceModels = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data();
-        return SpaceModel(
+    // 'users' 컬렉션의 모든 문서 가져오기
+    QuerySnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
+
+    List<SpaceModel> fetchedSpaceModels = []; // SpaceModel 객체를 담을 리스트
+
+    // 각 사용자 문서에서 'space' 컬렉션의 문서 가져오기
+    for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
+      // 현재 사용자 문서에서 'space' 컬렉션 가져오기
+      QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
+      await userDoc.reference.collection('space').get();
+
+      // 각 'space' 컬렉션의 문서를 SpaceModel 객체로 변환하여 리스트에 추가
+      spaceSnapshot.docs.forEach((spaceDoc) {
+        Map<String, dynamic> data = spaceDoc.data();
+        SpaceModel spaceModel = SpaceModel(
           spaceName: data['spaceName'] ?? '',
           location: data['location'] ?? '',
           tag: data['tag'] ?? '',
           image: data['image'] ?? '',
           locationName: data['locationName'] ?? '',
         );
-      }).toList();
+        fetchedSpaceModels.add(spaceModel);
+      });
+    }
+
+    setState(() {
+      spaceModels = fetchedSpaceModels; // 가져온 SpaceModel 객체 리스트를 상태에 설정
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -37,29 +37,34 @@ class _AllPostListState extends State<AllPostList> {
   }
 
   Future<void> fetchAllPostModel() async {
+    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
 
-    FirebaseFirestore.instance
-        .collection('post')
-        .snapshots()
-        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-      List<AllPostInfo> updatedAllPostInfoList = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data();
-        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
-        String image = data.containsKey('image') ? data['image']: '';
-        String pid = data.containsKey('pid') ? data['pid'] : '';
+    usersCollectionRef.get().then((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      querySnapshot.docs.forEach((userDoc) {
+        final postCollectionRef = userDoc.reference.collection('post');
 
-        return AllPostInfo(
-          spaceName: spaceName,
-          image: image,
-          pid: pid,
-        );
-      }).toList();
+        postCollectionRef.get().then((QuerySnapshot<Map<String, dynamic>> postQuerySnapshot) {
+          List<AllPostInfo> updatedAllPostInfoList = postQuerySnapshot.docs.map((postDoc) {
+            Map<String, dynamic> data = postDoc.data();
+            String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+            String image = data.containsKey('image') ? data['image'] : '';
+            String pid = data.containsKey('pid') ? data['pid'] : '';
 
-      setState(() {
-        allPostInfoList = updatedAllPostInfoList;
+            return AllPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+            );
+          }).toList();
+
+          setState(() {
+            allPostInfoList.addAll(updatedAllPostInfoList);
+          });
+        });
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

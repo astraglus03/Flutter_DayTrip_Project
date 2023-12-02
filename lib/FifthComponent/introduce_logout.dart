@@ -109,6 +109,7 @@ class CardImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("user ${user.photoURL}");
+    print("유저 정보: ${user.metadata.lastSignInTime}");
     return ClipRRect(
       borderRadius: BorderRadius.only(
           topRight: Radius.circular(50),

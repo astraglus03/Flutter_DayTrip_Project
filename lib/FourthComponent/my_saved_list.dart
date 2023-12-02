@@ -89,7 +89,7 @@ class _MySavedListState extends State<MySavedList> {
                       SizedBox(
                         height: 20,
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.center,
                           child: Text(
                             spaceName,
                             style: TextStyle(

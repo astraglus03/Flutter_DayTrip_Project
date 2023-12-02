@@ -32,7 +32,7 @@ class WriteDayLog extends StatefulWidget {
 
 class _WriteDayLogState extends State<WriteDayLog> {
 
-  List<SpaceInfo> spaceInfoList = [];
+  List<SpaceInfo>? spaceInfoList;
   File? selectedGalleryImage;
   String? hashTagButton;
   TextEditingController _textEditingController = TextEditingController();
@@ -113,10 +113,12 @@ class _WriteDayLogState extends State<WriteDayLog> {
         tag:hashTagButton.toString(),         // 태그
         recomTag:hashTagButton.toString(),    // 추천 태그
         good:1,           // 좋아요
-
       );
 
-      await FirebaseFirestore.instance.collection('post')
+      final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      await userCollectionRef
+          .collection('post')
           .doc(post.spaceName)
           .set(post.toJson());
     } else {
@@ -125,20 +127,32 @@ class _WriteDayLogState extends State<WriteDayLog> {
   }
 
   Future<void> fetchSpaceModels() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('space').get();
+    final userRef = FirebaseFirestore.instance.collection('users');
 
-    List<SpaceInfo> updatedSpaceInfoList = querySnapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      return SpaceInfo(
-        imagePath: data['image'] ?? '', // 이미지 URL은 여기에 대입해야합니다.
-        title: data['spaceName'] ?? '', // 공간 이름은 여기에 대입해야합니다.
-        location: data['locationName'] ?? '', // 위치는 여기에 대입해야합니다.
-      );
-    }).toList();
+    // 'users' 컬렉션의 모든 문서 가져오기
+    QuerySnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
+
+    List<SpaceInfo> fetchedSpaceModels = []; // SpaceModel 객체를 담을 리스트
+
+    for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
+      // 현재 사용자 문서에서 'space' 컬렉션 가져오기
+      QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
+      await userDoc.reference.collection('space').get();
+
+      // 각 'space' 컬렉션의 문서를 SpaceModel 객체로 변환하여 리스트에 추가
+      spaceSnapshot.docs.forEach((spaceDoc) {
+        Map<String, dynamic> data = spaceDoc.data();
+        SpaceInfo spaceModel = SpaceInfo(
+          imagePath: data['image'] ?? '',
+          location: data['locationName'] ?? '',
+          title: data['spaceName'] ?? '',
+        );
+        fetchedSpaceModels.add(spaceModel);
+      });
+    }
 
     setState(() {
-      spaceInfoList = updatedSpaceInfoList;
+      spaceInfoList = fetchedSpaceModels; // 가져온 SpaceModel 객체 리스트를 상태에 설정
     });
   }
 
@@ -389,7 +403,19 @@ class _WriteDayLogState extends State<WriteDayLog> {
                     // 데이로그 업로드 하는 부분
                     // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
                     createPost();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UploadData()));
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                      Future.delayed(Duration(seconds: 2), () {
+                        Navigator.of(context).pop();
+                      });
+
+                      return AlertDialog(
+                        title: Text('데이로그 업로드가 완료되었습니다.'),
+                        content: Text('다른사람의 게시물과 내가 작성한 게시물은 네번째 페이지에서 확인하세요! 내 게시물은 다섯번째 페이지에 있습니다.'),
+                      );
+                    }
+                    );
                   } : null,
                   child: Container(
                     height: 55,
@@ -455,18 +481,16 @@ class _WriteDayLogState extends State<WriteDayLog> {
         return Container(
           padding: EdgeInsets.all(16),
           child: ListView.builder(
-            itemCount: spaceInfoList.length,
+            itemCount: spaceInfoList?.length ?? 0, // null 체크 후 항목 개수 확인
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
                 onTap: () {
-                  setState(() {
-                    selectedTitle = spaceInfoList[index].title;
-                  });
-
-                  Navigator.pop(
-                    context,
-                    spaceInfoList[index].title,
-                  );
+                  if (spaceInfoList != null && spaceInfoList!.isNotEmpty) {
+                    setState(() {
+                      selectedTitle = spaceInfoList![index].title;
+                    });
+                    Navigator.pop(context, spaceInfoList![index].title);
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -477,7 +501,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                       Expanded(
                         flex: 1,
                         child: Image.network(
-                          spaceInfoList[index].imagePath,
+                          spaceInfoList?[index].imagePath ?? '', // null 체크 후 이미지 경로 확인
                           width: 50,
                           height: 50,
                         ),
@@ -485,18 +509,17 @@ class _WriteDayLogState extends State<WriteDayLog> {
                       Expanded(
                         flex: 3,
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              spaceInfoList[index].title,
+                              spaceInfoList?[index].title ?? '', // null 체크 후 타이틀 확인
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              spaceInfoList[index].location,
+                              spaceInfoList?[index].location ?? '', // null 체크 후 위치 확인
                               style: TextStyle(fontSize: 12),
                             ),
                           ],

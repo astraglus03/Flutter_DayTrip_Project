@@ -62,9 +62,11 @@ class _WriteOneLineState extends State<WriteOneLine> {
   }
 
   Future<void> createOneLine() async {
-    final CollectionReference oneLineCollection = FirebaseFirestore.instance.collection('oneLine');
+    final user = FirebaseAuth.instance.currentUser!;
+    final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final CollectionReference oneLineCollection = userCollectionRef.collection('oneLine');
 
-    final DocumentReference spaceRef = FirebaseFirestore.instance.collection('space').doc(selectedTitle);
+    final DocumentReference spaceRef = userCollectionRef.collection('space').doc(selectedTitle);
 
     try {
       final DocumentSnapshot snapshot = await spaceRef.get();
@@ -77,7 +79,6 @@ class _WriteOneLineState extends State<WriteOneLine> {
       // 만약 currentOid가 null이면 1로 초기화
       currentOid ??= 1;
 
-      final user = FirebaseAuth.instance.currentUser!;
       final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
 
@@ -102,6 +103,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       print('Error fetching document: $e');
     }
   }
+
 
 
 
