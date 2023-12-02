@@ -186,7 +186,7 @@ class _RecentPostState extends State<RecentPost> {
   Widget build(BuildContext context) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 200,
+        height: 300,
         enableInfiniteScroll: true,
         enlargeCenterPage: true,
       ),
@@ -491,7 +491,7 @@ class _PopularPostState extends State<PopularPost> {
   Widget build(BuildContext context) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 200,
+        height: 300,
         enableInfiniteScroll: true,
         enlargeCenterPage: true,
       ),
