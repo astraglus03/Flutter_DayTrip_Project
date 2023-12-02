@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:final_project/Screen/map_screen.dart';
+
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -10,6 +11,14 @@ class _SearchScreenState extends State<SearchScreen> {
   // 전체 항목과 검색 결과를 저장할 리스트
   List<Map<String, dynamic>> items = space;
   List<String> filteredItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // initState에서 filteredItems를 items로 초기화
+    filteredItems = items.map((item) => item['name'].toString()).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
