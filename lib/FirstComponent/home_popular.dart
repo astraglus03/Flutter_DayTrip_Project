@@ -1,3 +1,4 @@
+import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomePopular extends StatefulWidget {
@@ -28,9 +29,11 @@ class PostTab extends StatefulWidget {
 
 class _PostTabState extends State<PostTab> {
   int _currentIndex = 0;
+  List<Set<int>> likedItemsList = List.generate(6, (_) => {});
 
   final List<List<Map<String, dynamic>>> tabInfo = [
-    [//탭1
+    [
+      //탭1
       {
         'title': '강변서재',
         'location': '서울, 영등포구',
@@ -42,7 +45,6 @@ class _PostTabState extends State<PostTab> {
         'location': '광주',
         'category': '카페',
         'imagePath': 'asset/img/school2.jpg',
-
       },
       {
         'title': '3',
@@ -55,7 +57,6 @@ class _PostTabState extends State<PostTab> {
         'location': '광주',
         'category': '카페',
         'imagePath': 'asset/img/school2.jpg',
-
       },
       {
         'title': '강변서재',
@@ -68,43 +69,49 @@ class _PostTabState extends State<PostTab> {
         'location': '광주',
         'category': '카페',
         'imagePath': 'asset/img/school2.jpg',
-
       },
-
     ],
     [
-    {
-      'title': '2',
-      'location': '서울, 영등포구',
-      'category': '카페',
-      'imagePath': 'asset/img/school2.jpg',
-
-    },
+      // 탭2
+      {
+        'title': '2',
+        'location': '서울, 영등포구',
+        'category': '카페',
+        'imagePath': 'asset/img/school2.jpg',
+      },
     ],
-  [{
-      'title': '3',
-      'location': '서울, 영등포구',
-      'category': '카페',
-      'imagePath': 'asset/img/school3.jpg',
-    },
-  ], [{
-      'title': '4',
-      'location': '서울, 영등포구',
-      'category': '카페',
-      'imagePath': 'asset/img/friend1.jpg',
-    }], [{
-      'title': '5',
-      'location': '서울, 영등포구',
-      'category': '카페',
-      'imagePath': 'asset/img/friend2.jpg',
-    }],
-    [{
-      'title': '6',
-      'location': '서울, 영등포구',
-      'category': '카페',
-      'imagePath': 'asset/img/friend3.jpg',
-    }],
-
+    [
+      {
+        'title': '3',
+        'location': '서울, 영등포구',
+        'category': '카페',
+        'imagePath': 'asset/img/school3.jpg',
+      },
+    ],
+    [
+      {
+        'title': '4',
+        'location': '서울, 영등포구',
+        'category': '카페',
+        'imagePath': 'asset/img/friend1.jpg',
+      }
+    ],
+    [
+      {
+        'title': '5',
+        'location': '서울, 영등포구',
+        'category': '카페',
+        'imagePath': 'asset/img/friend2.jpg',
+      }
+    ],
+    [
+      {
+        'title': '6',
+        'location': '서울, 영등포구',
+        'category': '카페',
+        'imagePath': 'asset/img/friend3.jpg',
+      }
+    ],
   ];
 
   @override
@@ -114,7 +121,7 @@ class _PostTabState extends State<PostTab> {
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('인기 피드', style: TextStyle(color:Colors.black)),
+          title: Text('최신 피드', style: TextStyle(color: Colors.white)),
           //backgroundColor: Colors.black,
           bottom: TabBar(
             tabs: [
@@ -130,46 +137,81 @@ class _PostTabState extends State<PostTab> {
                 _currentIndex = index;
               });
             },
-
-          ),
-        ), body: TabBarView(
-        children: List.generate(
-          tabInfo.length, // 탭 6개
-              (tabIndex) => GridView.builder( //GridView.builder는 동적으로 무한히 가져옴. GridView.Count는 정적으로 가져옴
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: MediaQuery.of(context).size.width / 2, // 한 줄에 2개의 이미지가 꽉 차게
-              mainAxisExtent: 320, // 컬럼 높이
-              childAspectRatio: 0.5, // 아이템 비율 조절 // 오버플로우 방지 // 1보다 작으면 높이 비율이 더 큼. 높이2:너비1
-              mainAxisSpacing: 0.0, // 세로 간격 조절
-            ),
-            itemCount: tabInfo[tabIndex].length, // 탭 6개
-            itemBuilder: (BuildContext context, int index) { // 탭1, 탭2.. index별로 가져오기
-              var info = tabInfo[tabIndex][index];
-              return Column(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width/2, // 사진 2장. 2장의 너비가 화면 꽉 차게
-                    height: MediaQuery.of(context).size.height/3,
-                    margin: EdgeInsets.symmetric(horizontal: 0.5), // 이미지 간 간격
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(info['imagePath']),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(info['title']),
-                  Text(info['location']),
-                ],
-              );
-
-            },
           ),
         ),
-      )
-      )
+        body: TabBarView(
+          children: List.generate(
+            tabInfo.length,
+                (tabIndex) => GridView.builder(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
+                mainAxisExtent: 320,
+                childAspectRatio: 0.5,
+                mainAxisSpacing: 0.0,
+              ),
+              itemCount: tabInfo[tabIndex].length,
+              itemBuilder: (BuildContext context, int index) {
+                var info = tabInfo[tabIndex][index];
+                bool isLiked = likedItemsList[tabIndex].contains(index);
 
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlaceBlogScreen(),
+                      ),
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: MediaQuery.of(context).size.height / 3,
+                            margin: EdgeInsets.symmetric(horizontal: 0.5),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(info['imagePath']),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(info['title']),
+                          Text(info['location']),
+                        ],
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isLiked) {
+                                likedItemsList[tabIndex].remove(index);
+                              } else {
+                                likedItemsList[tabIndex].add(index);
+                              }
+                            });
+                          },
+                          child: Icon(
+                            isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
