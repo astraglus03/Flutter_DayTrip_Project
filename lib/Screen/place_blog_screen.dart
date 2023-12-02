@@ -191,6 +191,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                       '선택된 사용자 글',
                       style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                     ),
+                    SizedBox(height: 16.0), // 간격 추가
                     selectedUserIndex != -1
                         ? Text(
                       userPosts[selectedUserIndex],
@@ -215,6 +216,49 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     controller.setMapStyle(darkMapStyle);
                   },
                   // 추가 설정 및 마커 등을 여기에 추가 가능
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 장소 정보
+                    Text(
+                      '장소 정보',
+                      style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.place, size: 24.0, color: Colors.blue), // 장소 아이콘
+                        SizedBox(width: 8.0),
+                        Text(
+                          '장소 이름: 장소 이름이 들어갈 부분',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on, size: 24.0, color: Colors.red), // 주소 아이콘
+                        SizedBox(width: 8.0),
+                        Text(
+                          '주소: 천안, 안서동',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.tag, size: 24.0, color: Colors.green), // 태그 아이콘
+                        SizedBox(width: 8.0),
+                        Text(
+                          '태그: 공부',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
