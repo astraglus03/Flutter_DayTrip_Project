@@ -21,43 +21,58 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _updateAllLocations() async {
     try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-          .collection('space')
+      QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
           .get();
 
-      snapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
-        final locationString = document.data()!['location'];
-        final name = document.data()!['name'];
+      for (QueryDocumentSnapshot<Map<String, dynamic>> userDocument in usersSnapshot.docs) {
+        // 각 사용자 문서의 ID
+        String userId = userDocument.id;
 
-        if (locationString != null) {
-          final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
-          final coordinates = cleanString.split(',');
-          double latitude = double.parse(coordinates[0].trim());
-          double longitude = double.parse(coordinates[1].trim());
+        // "space" 컬렉션에 대한 쿼리 수행
+        QuerySnapshot<Map<String, dynamic>> spaceSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('space')
+            .get();
 
-          final LatLng placeLocation = LatLng(latitude, longitude);
+        // "space" 컬렉션의 각 문서에 대한 작업 수행
+        spaceSnapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
+          final locationString = document.data()!['location'];
+          final name = document.data()!['name'];
 
-          final Marker marker = Marker(
-            markerId: MarkerId(placeLocation.toString()),
-            position: placeLocation,
-            infoWindow: InfoWindow(
-              title: name,
-              snippet: '여기에 있습니다.',
-            ),
-            onTap: () {
-              _fetchFoodMarkerData(placeLocation);
-            },
-          );
+          if (locationString != null) {
+            final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
+            final coordinates = cleanString.split(',');
+            double latitude = double.parse(coordinates[0].trim());
+            double longitude = double.parse(coordinates[1].trim());
 
-          setState(() {
-            _markers.add(marker);
-          });
-        }
-      });
+            final LatLng placeLocation = LatLng(latitude, longitude);
+
+            final Marker marker = Marker(
+              markerId: MarkerId(placeLocation.toString()),
+              position: placeLocation,
+              infoWindow: InfoWindow(
+                title: name,
+                snippet: '여기에 있습니다.',
+              ),
+              onTap: () {
+                _fetchFoodMarkerData(placeLocation);
+              },
+            );
+
+            setState(() {
+              _markers.add(marker);
+            });
+          }
+        });
+      }
     } catch (e) {
-      print('Error: $e');
+      print('에러: $e');
     }
   }
+
+
 
   @override
   void initState() {
