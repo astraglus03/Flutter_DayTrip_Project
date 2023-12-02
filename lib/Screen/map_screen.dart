@@ -274,26 +274,38 @@ class _MapScreenState extends State<MapScreen> {
   void _fetchFoodMarkerData(LatLng location) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
-          .collection('space')
-          .where('location', isEqualTo: 'LatLng(${location.latitude}, ${location.longitude})')
+          .collection('users')
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        DocumentSnapshot<Map<String, dynamic>> document = snapshot.docs.first;
-        String image = document.data()!['image'];
-        String locationString = document.data()!['location'];
-        String locationName = document.data()!['locationName'];
-        String spaceName = document.data()!['spaceName'];
-        String tag = document.data()!['tag'];
+      for (QueryDocumentSnapshot<Map<String, dynamic>> userDocument in snapshot.docs) {
+        QuerySnapshot<Map<String, dynamic>> spaceSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userDocument.id)
+            .collection('space')
+            .where('location', isEqualTo: 'LatLng(${location.latitude}, ${location.longitude})')
+            .get();
 
-        _showFoodDialog(image, locationString, locationName, spaceName, tag);
-      } else {
-        print('No data found for the selected marker.');
+        if (spaceSnapshot.docs.isNotEmpty) {
+          DocumentSnapshot<Map<String, dynamic>> document = spaceSnapshot.docs.first;
+
+          // Adjust the field names based on your new database structure
+          String image = document.data()!['image'];
+          String locationString = document.data()!['location'];
+          String locationName = document.data()!['locationName'];
+          String spaceName = document.data()!['spaceName'];
+          String tag = document.data()!['tag'];
+
+          _showFoodDialog(image, locationString, locationName, spaceName, tag);
+          return; // Stop iterating once data is found
+        }
       }
+
+      print('선택한 마커에 대한 데이터를 찾을 수 없습니다.');
     } catch (e) {
-      print('Error fetching data: $e');
+      print('데이터를 가져오는 중 오류 발생: $e');
     }
   }
+
 
 
   void _showFoodDialog(String image, String locationString, String locationName, String spaceName, String tag) {
