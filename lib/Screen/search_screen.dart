@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart'; // CupertinoSearchTextField 사용을 위해 추가
+import 'package:flutter/cupertino.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
+  @override
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  // 전체 항목과 검색 결과를 저장할 리스트
+  List<String> items = List.generate(20, (index) => '아이템 $index');
+  List<String> filteredItems = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,85 +24,43 @@ class SearchScreen extends StatelessWidget {
             },
           ),
         ],
-        // 뒤로가기 버튼 비활성화
         leading: Container(),
-        // AppBar에 CupertinoSearchTextField 직접 추가
         flexibleSpace: Container(
           padding: EdgeInsets.fromLTRB(16.0, 35.0, 40.0, 0.0),
           child: CupertinoSearchTextField(
-            backgroundColor: Colors.black, // 원하는 배경색으로 설정
-            onTap: () {
-
-            },
+            backgroundColor: Colors.black,
+            onTap: () {},
             onChanged: (String value) {
-              //
+              // 검색어가 변경될 때마다 검색 결과 갱신
+              setState(() {
+                filteredItems = items
+                    .where((item) =>
+                    item.toLowerCase().contains(value.toLowerCase()))
+                    .toList();
+              });
             },
             onSubmitted: (String value) {
-              //
+              // 검색어 제출 시 수행할 동작 추가
+              // 여기에 필요한 동작을 추가하세요.
             },
           ),
         ),
       ),
       body: Column(
         children: [
-          Container(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                CircularIconButton(icon: Icons.school, label: '학교'),
-                CircularIconButton(icon: Icons.food_bank, label: '음식'),
-                CircularIconButton(icon: Icons.cake, label: '케이크'),
-                // 추가적인 아이콘들을 여기에 추가
-              ],
-            ),
-          ),
+          // 검색 결과를 표시할 리스트
           Expanded(
             child: ListView.builder(
-              itemCount: 20,
+              itemCount: filteredItems.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text('Item $index'),
+                  title: Text(filteredItems[index]),
                 );
               },
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class CircularIconButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const CircularIconButton({Key? key, required this.icon, required this.label}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue,
-          ),
-          child: IconButton(
-            icon: Icon(icon),
-            color: Colors.white,
-            onPressed: () {
-              // 원형 버튼을 눌렀을 때 수행할 동작 추가
-            },
-          ),
-        ),
-        SizedBox(height: 4.0),
-        Text(
-          label,
-          style: TextStyle(color: Colors.black),
-        ),
-      ],
     );
   }
 }
