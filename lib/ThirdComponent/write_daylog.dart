@@ -319,23 +319,23 @@ class _WriteDayLogState extends State<WriteDayLog> {
                 ),
 
                 Container(
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildButton('카페'),
-                        SizedBox(width: 10),
-                        buildButton('음식점'),
-                        SizedBox(width: 10),
-                        buildButton('편의점'),
-                        SizedBox(width: 10),
-                        buildButton('학교건물'),
-                        SizedBox(width: 10),
-                        buildButton('주차장'),
-                        SizedBox(width: 10),
-                      ],
-                    ),
+                  height: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildButton('카페'),
+                      SizedBox(width: 10),
+                      buildButton('음식점'),
+                      SizedBox(width: 10),
+                      buildButton('편의점'),
+                      SizedBox(width: 10),
+                      buildButton('학교건물'),
+                      SizedBox(width: 10),
+                      buildButton('주차장'),
+                      SizedBox(width: 10),
+                    ],
                   ),
+                ),
 
                 Container(
                   height: 1, // 선의 높이

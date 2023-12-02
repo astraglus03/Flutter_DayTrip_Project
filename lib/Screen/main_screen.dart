@@ -1,3 +1,5 @@
+import 'package:final_project/FirstComponent/home_recom_detail.dart';
+import 'package:final_project/FirstComponent/home_recommend.dart';
 import 'package:final_project/FourthComponent/save_class.dart';
 import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/home_screen.dart';

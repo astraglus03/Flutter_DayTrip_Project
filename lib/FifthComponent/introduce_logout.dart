@@ -22,42 +22,42 @@ class IntroduceAndLogout extends StatelessWidget {
           Row(
             children: [
               // 내 계정 프로필
-                  Flexible(
-                    flex: 3,
-                    child: Container(
-                      color: Colors.transparent,
-                      // height: 20,
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: '탭하고 소개 글을 입력해 보세요.',
-                          border: InputBorder.none,
-                        ),
-                      ),
+              Flexible(
+                flex: 3,
+                child: Container(
+                  color: Colors.transparent,
+                  // height: 20,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: '탭하고 소개 글을 입력해 보세요.',
+                      border: InputBorder.none,
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: Colors.black,
-                        ),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          signUserOut();
-                        },
-                        child: Text('로그아웃'),
-                        style: TextButton.styleFrom(
-                          primary: Colors.black,
-                          backgroundColor: Colors.transparent,
-                          splashFactory: InkSplash.splashFactory,
-                          minimumSize: Size(80, 20),
-                        ),
-                      ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      color: Colors.black,
                     ),
                   ),
+                  child: TextButton(
+                    onPressed: () {
+                      signUserOut();
+                    },
+                    child: Text('로그아웃'),
+                    style: TextButton.styleFrom(
+                      primary: Colors.black,
+                      backgroundColor: Colors.transparent,
+                      splashFactory: InkSplash.splashFactory,
+                      minimumSize: Size(80, 20),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ],

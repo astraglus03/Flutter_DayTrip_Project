@@ -31,10 +31,10 @@ class _PostListState extends State<PostList> {
     'asset/apple.jpg',
   ];
 
-  @override
+  @override // SaveClass 인스턴스 초기화
   void initState() {
     super.initState();
-    mySavedList = Provider.of<SaveClass>(context, listen: false); // SaveClass 인스턴스 초기화
+    mySavedList = Provider.of<SaveClass>(context, listen: false);
   }
 
   @override
@@ -71,7 +71,6 @@ class _PostListState extends State<PostList> {
                       .last
                       .split('.')
                       .first;
-
                   return Stack(
                     children: [
                       SizedBox(

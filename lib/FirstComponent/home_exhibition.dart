@@ -4,8 +4,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; // DateFormat을 사용하기 위해 import
 import 'package:intl/date_symbol_data_local.dart'; // 이거 써야 한국어 적용됨.
 
-import 'package:horizontal_calendar/horizontal_calendar.dart';
-
 class HomeExhibition extends StatefulWidget {
 
   const HomeExhibition({Key? key}) : super(key: key);
@@ -23,37 +21,6 @@ class _HomeExhibitionState extends State<HomeExhibition> {
   String selectedDay = ''; // 선택된 요일 추적을 위한 변수
   int selectedDayIndex = 0; // 선택된 '일' 추적하기 위한 변수(25일, 13일 등)
   DateTime now = DateTime.now();
-
-  // 수평 슬라이드 캘린더 선택 함수
-  void onDaySelected1(int day) {
-    setState(() {
-      this.selectedDayIndex = day; // 선택된 요일 업데이트
-    });
-    //print('Selected day: $day');
-
-  }
-
-  // 메인 캘린더 함수
-  void onDaySelected2(DateTime selectedDate, DateTime focusedDate) {
-    setState(() {
-      this.selectedDate = selectedDate; // 선택한 날짜 업데이트
-
-      selectedDay = DateFormat('d').format(selectedDate); // 선택된 날짜로 '일' 값을 문자열로 업데이트
-      int dayNumber = int.parse(selectedDay); // '일' 값을 정수로 변환
-      this.selectedDayIndex = dayNumber; // 선택한 날짜를 상태로 업데이트
-      onDaySelected1(dayNumber); // 변경된 '일' 값을 전달해주기 위해 함수 호출
-    });
-    Navigator.pop(context); // Modal을 닫습니다.
-
-
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // 로케일 데이터 초기화
-    initializeDateFormatting();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +77,37 @@ class _HomeExhibitionState extends State<HomeExhibition> {
           ],
         )
     );
+  }
+
+  // 수평 슬라이드 캘린더 선택 함수
+  void onDaySelected1(int day) {
+    setState(() {
+      this.selectedDayIndex = day; // 선택된 요일 업데이트
+    });
+    //print('Selected day: $day');
+
+  }
+
+  // 메인 캘린더 함수
+  void onDaySelected2(DateTime selectedDate, DateTime focusedDate) {
+    setState(() {
+      this.selectedDate = selectedDate; // 선택한 날짜 업데이트
+
+      selectedDay = DateFormat('d').format(selectedDate); // 선택된 날짜로 '일' 값을 문자열로 업데이트
+      int dayNumber = int.parse(selectedDay); // '일' 값을 정수로 변환
+      this.selectedDayIndex = dayNumber; // 선택한 날짜를 상태로 업데이트
+      onDaySelected1(dayNumber); // 변경된 '일' 값을 전달해주기 위해 함수 호출
+    });
+    Navigator.pop(context); // Modal을 닫습니다.
+
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 로케일 데이터 초기화
+    initializeDateFormatting();
   }
 
   // 달력 띄우기
@@ -265,7 +263,7 @@ class DatePickerCustom extends StatefulWidget {
 class _DatePickerCustomState extends State<DatePickerCustom> {
   int selectedIndex = DateTime.now().day - 1; // 오늘 날짜가 기본으로 선택됨
   DateTime now = DateTime.now();
-  late DateTime lastDayOfMonth = DateTime(now.year, now.month, -1); // 일 기준에 맞추기 위해
+  late DateTime lastDayOfMonth = DateTime(now.year, now.month+1, 0); // 일 기준에 맞추기 위해
   late DateTime lastDayOfMonth2 = DateTime(now.year, now.month, 0); //요일 기준으로는 맞음. 하지만 '일' 기준으로는 다음 달 정보가 들어옴
 
   DateTime selectedDate = DateTime.now(); //
@@ -481,12 +479,12 @@ class _SelectedDayState extends State<SelectedDay> {
                         SizedBox(height: 8),
                         Text(
                           '한국의 기하학적 추상미술',
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10, color: Colors.black),
                         ),
                         SizedBox(height: 5),
                         Text(
                           '경기도',
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10, color: Colors.black),
                         ),
                         SizedBox(height: 5),
                         Padding(
@@ -503,7 +501,7 @@ class _SelectedDayState extends State<SelectedDay> {
                               SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
                               Text(
                                 '2023년 11월 16일 ~ 2024년 5월 19일',
-                                style: TextStyle(fontSize: 10),
+                                style: TextStyle(fontSize: 10, color: Colors.black),
                               ),
                             ],
                           ),
@@ -542,12 +540,12 @@ class _SelectedDayState extends State<SelectedDay> {
                         SizedBox(height: 8),
                         Text(
                           '신세계백화점 본점 크리스마스 마켓',
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10, color: Colors.black),
                         ),
                         SizedBox(height: 5),
                         Text(
                           '서울',
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10, color: Colors.black),
                         ),
                         SizedBox(height: 5),
                         Padding(
@@ -564,7 +562,7 @@ class _SelectedDayState extends State<SelectedDay> {
                               SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
                               Text(
                                 '2023년 11월 9일 ~ 2023년 12월 27일',
-                                style: TextStyle(fontSize: 10),
+                                style: TextStyle(fontSize: 10, color: Colors.black),
                               ),
                             ],
                           ),
@@ -605,12 +603,12 @@ class _SelectedDayState extends State<SelectedDay> {
                     SizedBox(height: 8),
                     Text(
                       '신세계백화점 본점 크리스마스 마켓',
-                      style: TextStyle(fontSize: 10),
+                      style: TextStyle(fontSize: 10, color: Colors.black),
                     ),
                     SizedBox(height: 5),
                     Text(
                       '서울',
-                      style: TextStyle(fontSize: 10),
+                      style: TextStyle(fontSize: 10, color: Colors.black),
                     ),
                     SizedBox(height: 5),
                     Padding(
@@ -627,7 +625,7 @@ class _SelectedDayState extends State<SelectedDay> {
                           SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
                           Text(
                             '2023년 11월 9일 ~ 2023년 12월 27일',
-                            style: TextStyle(fontSize: 10),
+                            style: TextStyle(fontSize: 10, color: Colors.black),
                           ),
                         ],
                       ),
