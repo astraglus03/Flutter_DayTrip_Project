@@ -26,6 +26,8 @@ class _MapScreenState extends State<MapScreen> {
   bool isWalkingSelected = false;
   bool isRestSelected = false;
 
+  // "space" 컬렉션의 데이터를 저장할 변수
+  List<Map<String, dynamic>> spaceDataList = [];
 
   Future<void> _updateAllLocations() async {
     try {
@@ -48,6 +50,11 @@ class _MapScreenState extends State<MapScreen> {
         spaceSnapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
           final locationString = document.data()!['location'];
           final name = document.data()!['name'];
+          final spaceName = document.data()!['spaceName'];
+
+          spaceDataList.add({'name': spaceName});
+          print(spaceDataList);
+
 
           if (locationString != null) {
             final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
@@ -178,10 +185,13 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 child: ListView.builder(
                   controller: scrollController,
-                  itemCount: 20,
+                  itemCount: spaceDataList.length,
                   itemBuilder: (context, index) {
+                    final spaceData = spaceDataList[index];
+                    final spaceName = spaceData['name'];
+
                     return ListTile(
-                      title: Text('Item $index'),
+                      title: Text(spaceName),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -196,6 +206,7 @@ class _MapScreenState extends State<MapScreen> {
               );
             },
           ),
+
 
           Positioned(
             bottom: 16.0,
