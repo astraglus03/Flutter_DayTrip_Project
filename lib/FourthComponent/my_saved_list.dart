@@ -71,6 +71,7 @@ class _MySavedListState extends State<MySavedList> {
             final item = mySavedList.savedItems[index];
             final String imagePath = item['imagePath'];
             final bool isLiked = item['isLiked'];
+            final String spaceName = item['spaceName'];
 
             return Stack(
               children: [
@@ -80,7 +81,7 @@ class _MySavedListState extends State<MySavedList> {
                   child: Column(
                     children: [
                       Expanded(
-                        child: Image.asset(
+                        child: Image.network(
                           imagePath,
                           fit: BoxFit.cover,
                         ),
@@ -88,9 +89,9 @@ class _MySavedListState extends State<MySavedList> {
                       SizedBox(
                         height: 20,
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.center,
                           child: Text(
-                            imagePath.split('/').last.split('.').first,
+                            spaceName,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -110,7 +111,8 @@ class _MySavedListState extends State<MySavedList> {
                         : Icon(Icons.favorite_border, color: Colors.red),
                     onPressed: () {
                       setState(() {
-                        mySavedList.removeFromSavedList(index);
+                        String recognizePid = item['pid'];
+                        mySavedList.removeFromSavedList(recognizePid);
                       });
                     },
                   ),

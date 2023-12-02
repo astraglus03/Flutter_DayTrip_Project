@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/model_db/space.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -92,10 +93,11 @@ class _AddNewSpaceState extends State<AddNewSpace> {
         tag: hashTagButton.toString(),
         image: imageUrl,
         locationName: address,
-
       );
+      final user = FirebaseAuth.instance.currentUser!;
+      final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-      await FirebaseFirestore.instance.collection('space')
+      await userCollectionRef.collection('space')
           .doc(space.spaceName)
           .set(space.toJson());
       // print('장소 이름: ${space.spaceName}');

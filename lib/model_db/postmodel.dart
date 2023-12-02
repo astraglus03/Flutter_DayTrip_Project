@@ -2,10 +2,11 @@
 
 import 'dart:ui';
 
+import 'package:intl/intl.dart';
+
 class PostModel {
-  final int pid;            // 게시물 id
+  final String pid;            // 게시물 id
   final String uid;         // 사용자id
-  // final String postName;    // 게시물명
   final String postContent; // 게시물 내용
   final String image;       // 게시물 사진
   final String spaceName;   // 공간 이름
@@ -17,7 +18,6 @@ class PostModel {
   PostModel({
     required this.pid,
     required this.uid,
-    // required this.postName,
     required this.postContent,
     required this.image,
     required this.spaceName,
@@ -31,11 +31,10 @@ class PostModel {
     required Map<String, dynamic> json,
   })  : pid = json['pid'],
         uid = json['uid'],
-        // postName = json['postName'],
         postContent = json['postContent'],
         image = json['image'],
         spaceName = json['spaceName'],
-        date = DateTime.parse(json['date']),
+        date = DateFormat('yyyy년 MM월 dd일').parse(json['date']),
         tag = json['tag'],
         recomTag = json['recomTag'],
         good = json['good']; //bool은 다르게 처리 //good = json['good'] as bool;
@@ -44,12 +43,10 @@ class PostModel {
     return {
       'pid': pid,
       'uid': uid,
-      // 'postName': postName,
       'postContent': postContent,
       'image': image,
       'spaceName' : spaceName,
-      'date':
-      '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}',
+      'date': DateFormat('yyyy년 MM월 dd일').format(date),
       'tag' : tag,
       'recomTag' : recomTag,
       'good' : good,
@@ -57,8 +54,9 @@ class PostModel {
   }
 
   PostModel copyWith({  // ➌ 현재 모델을 특정 속성만 변환해서 새로 생성
+    String? pid,
     String? uid,
-    String? postName,
+    // String? postName,
     String? postContent,
     String? image,
     String? spaceName,

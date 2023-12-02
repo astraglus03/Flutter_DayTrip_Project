@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:uuid/uuid.dart';
 
 class SpaceInfo {
   final String imagePath;
@@ -31,19 +32,38 @@ class WriteDayLog extends StatefulWidget {
 
 class _WriteDayLogState extends State<WriteDayLog> {
 
-
+  List<SpaceInfo>? spaceInfoList;
   File? selectedGalleryImage;
   String? hashTagButton;
   TextEditingController _textEditingController = TextEditingController();
+  bool check1 = false;
+  bool check2 = false;
+  String? selectedTitle;
 
-  final FocusNode _focusNode = FocusNode();
+  late FocusNode _textFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _textFocusNode = FocusNode(); // FocusNode 초기화
+    fetchSpaceModels();
+  }
 
   @override
   void dispose() {
-    // 위젯이 dispose 될 때 FocusNode를 해제합니다.
     _textEditingController.dispose();
-    _focusNode.dispose();
+    _textFocusNode.dispose(); // FocusNode 해제
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _textFocusNode.addListener(() {
+      if (!_textFocusNode.hasFocus) {
+        FocusScope.of(context).requestFocus(FocusNode());
+      }
+    });
   }
 
   // 해시태그 버튼
@@ -56,11 +76,6 @@ class _WriteDayLogState extends State<WriteDayLog> {
       }
     });
   }
-
-
-  bool check1 = false;
-  bool check2 = false;
-  String? selectedTitle;
 
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
@@ -81,6 +96,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
   Future<void> createPost() async {
     final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
     final user = FirebaseAuth.instance.currentUser!;
+    final uuid = Uuid();
 
 
     if (imageUrl != null) {
@@ -88,7 +104,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
 
       final post = PostModel(
-        pid:1,            // 게시물 id
+        pid:uuid.v4(),            // 게시물 id
         uid:user.uid,        // 사용자id
         postContent:_textEditingController.text, // 게시물 내용
         image: imageUrl,      // 게시물 사진
@@ -97,10 +113,12 @@ class _WriteDayLogState extends State<WriteDayLog> {
         tag:hashTagButton.toString(),         // 태그
         recomTag:hashTagButton.toString(),    // 추천 태그
         good:1,           // 좋아요
-
       );
 
-      await FirebaseFirestore.instance.collection('post')
+      final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      await userCollectionRef
+          .collection('post')
           .doc(post.spaceName)
           .set(post.toJson());
     } else {
@@ -108,84 +126,35 @@ class _WriteDayLogState extends State<WriteDayLog> {
     }
   }
 
+  Future<void> fetchSpaceModels() async {
+    final userRef = FirebaseFirestore.instance.collection('users');
 
-  final List<SpaceInfo> spaceInfoList = [
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/google.png',
-      title: '신세계 백화점',
-      location: '충청남도 천안시 동남구 신부동',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/kakao.png',
-      title: '동춘옥',
-      location: '충청남도 천안시 동남구 멍청이',
-    ),
-    SpaceInfo(
-      imagePath: 'asset/github.png',
-      title: '이슬목장',
-      location: '충청남도 천안시 동남구 이슬목장',
-    ),
-  ];
+    // 'users' 컬렉션의 모든 문서 가져오기
+    QuerySnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
+
+    List<SpaceInfo> fetchedSpaceModels = []; // SpaceModel 객체를 담을 리스트
+
+    for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
+      // 현재 사용자 문서에서 'space' 컬렉션 가져오기
+      QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
+      await userDoc.reference.collection('space').get();
+
+      // 각 'space' 컬렉션의 문서를 SpaceModel 객체로 변환하여 리스트에 추가
+      spaceSnapshot.docs.forEach((spaceDoc) {
+        Map<String, dynamic> data = spaceDoc.data();
+        SpaceInfo spaceModel = SpaceInfo(
+          imagePath: data['image'] ?? '',
+          location: data['locationName'] ?? '',
+          title: data['spaceName'] ?? '',
+        );
+        fetchedSpaceModels.add(spaceModel);
+      });
+    }
+
+    setState(() {
+      spaceInfoList = fetchedSpaceModels; // 가져온 SpaceModel 객체 리스트를 상태에 설정
+    });
+  }
 
   DateTime selectedDate = DateTime.utc(
     DateTime.now().year,
@@ -232,6 +201,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   height: 100,
 
                   child: TextFormField(
+                    focusNode: _textFocusNode,
+                    controller: _textEditingController,
                     decoration: InputDecoration(
                       hintText: '여러분이 해당 장소에서 함께한 내용을 작성해 주세요!!',
                       border: InputBorder.none,
@@ -432,7 +403,19 @@ class _WriteDayLogState extends State<WriteDayLog> {
                     // 데이로그 업로드 하는 부분
                     // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
                     createPost();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => UploadData()));
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                      Future.delayed(Duration(seconds: 2), () {
+                        Navigator.of(context).pop();
+                      });
+
+                      return AlertDialog(
+                        title: Text('데이로그 업로드가 완료되었습니다.'),
+                        content: Text('다른사람의 게시물과 내가 작성한 게시물은 네번째 페이지에서 확인하세요! 내 게시물은 다섯번째 페이지에 있습니다.'),
+                      );
+                    }
+                    );
                   } : null,
                   child: Container(
                     height: 55,
@@ -498,18 +481,16 @@ class _WriteDayLogState extends State<WriteDayLog> {
         return Container(
           padding: EdgeInsets.all(16),
           child: ListView.builder(
-            itemCount: spaceInfoList.length,
+            itemCount: spaceInfoList?.length ?? 0, // null 체크 후 항목 개수 확인
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
                 onTap: () {
-                  setState(() {
-                    selectedTitle = spaceInfoList[index].title;
-                  });
-
-                  Navigator.pop(
-                    context,
-                    spaceInfoList[index].title,
-                  );
+                  if (spaceInfoList != null && spaceInfoList!.isNotEmpty) {
+                    setState(() {
+                      selectedTitle = spaceInfoList![index].title;
+                    });
+                    Navigator.pop(context, spaceInfoList![index].title);
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -519,8 +500,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
                     children: [
                       Expanded(
                         flex: 1,
-                        child: Image.asset(
-                          spaceInfoList[index].imagePath,
+                        child: Image.network(
+                          spaceInfoList?[index].imagePath ?? '', // null 체크 후 이미지 경로 확인
                           width: 50,
                           height: 50,
                         ),
@@ -528,18 +509,17 @@ class _WriteDayLogState extends State<WriteDayLog> {
                       Expanded(
                         flex: 3,
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              spaceInfoList[index].title,
+                              spaceInfoList?[index].title ?? '', // null 체크 후 타이틀 확인
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              spaceInfoList[index].location,
+                              spaceInfoList?[index].location ?? '', // null 체크 후 위치 확인
                               style: TextStyle(fontSize: 12),
                             ),
                           ],

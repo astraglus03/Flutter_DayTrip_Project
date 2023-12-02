@@ -3,6 +3,7 @@ import 'package:final_project/FifthComponent/daylog.dart';
 import 'package:final_project/FifthComponent/export_setting.dart';
 import 'package:final_project/FifthComponent/introduce_logout.dart';
 import 'package:final_project/FifthComponent/post_titlebar.dart';
+import 'package:final_project/model_db/onelinemodel.dart';
 import 'package:flutter/material.dart';
 
 class MyPageScreen extends StatelessWidget {
@@ -13,10 +14,6 @@ class MyPageScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          // SliverPersistentHeader(
-          //   pinned: true,
-          //   delegate: _MyPersistentHeader(),
-          // ),
 
           SliverFillRemaining(
             child: SafeArea(
@@ -43,23 +40,4 @@ class MyPageScreen extends StatelessWidget {
       ),
     );
   }
-
 }
-
-// // 스크롤되지않게 고정해놓는 상속 함수
-// class _MyPersistentHeader extends SliverPersistentHeaderDelegate {
-//   @override
-//   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-//     return Container(
-//       color: Colors.white, // Customize header color if needed
-//       child: ExportSettings(), // Your ExportSettings widget
-//     );
-//   }
-//
-//   @override
-//   double get maxExtent => 50.0; // Set the maximum height of the header
-//   @override
-//   double get minExtent => 50.0; // Set the minimum height of the header
-//   @override
-//   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
-// }

@@ -1,128 +1,201 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+class OneLineInfo {
+  final String spaceName;
+  final String date;
+  final String locationName;
+  final String tag;
+
+  OneLineInfo({
+    required this.spaceName,
+    required this.date,
+    required this.locationName,
+    required this.tag,
+  });
+}
+
+class MyPostInfo{
+  final String spaceName;
+  final String image;
+
+  MyPostInfo({
+    required this.spaceName,
+    required this.image,
+  });
+}
 
 class DayLog extends StatefulWidget {
-
-  const DayLog({super.key});
+  const DayLog({Key? key}) : super(key: key);
 
   @override
   State<DayLog> createState() => _DayLogState();
 }
 
 class _DayLogState extends State<DayLog> {
-  bool SelectedMyPost = false;
-  bool SelectedTimeLine = true;
+  bool selectedMyPost = false;
+  bool selectedTimeLine = true;
 
-  List<Map<String, dynamic>> postsInfo = [
-    {
-      'title': '강변서재',
-      'location': '서울, 영등포구',
-      'category': '카페',
-    },
+  List<OneLineInfo> oneLineInfoList = [];
+  List<MyPostInfo>  MyPostInfoList =[];
 
-    {
-      'title': '다른 게시물',
-      'location': '위치',
-      'category': '카테고리',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    await fetchoneLineModel();
+    await fetchPostModel();
+  }
+
+  Future<void> fetchoneLineModel() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
+
+         allUsersCollectionRef
+        .collection('oneLine')
+        .snapshots()
+        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      List<OneLineInfo> updatedOneLineInfoList = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+        String date = data.containsKey('date') ? data['date'] : '';
+        String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+        String tag = data.containsKey('tag') ? data['tag'] : '';
+
+        return OneLineInfo(
+          spaceName: spaceName,
+          date: date,
+          locationName: locationName,
+          tag: tag,
+        );
+      }).toList();
+
+      setState(() {
+        oneLineInfoList = updatedOneLineInfoList;
+      });
+    });
+  }
+
+
+  Future<void> fetchPostModel() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
+
+         allUsersCollectionRef
+        .collection('post')
+        .snapshots()
+        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      List<MyPostInfo> updatedMyPostInfoList = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+        String image = data.containsKey('image') ? data['image']: '';
+
+        // String date = data.containsKey('date') ? data['date'] : '';
+        // String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+        // String tag = data.containsKey('tag') ? data['tag'] : '';
+
+        return MyPostInfo(
+          spaceName: spaceName,
+          image: image,
+        );
+      }).toList();
+
+      setState(() {
+        MyPostInfoList = updatedMyPostInfoList;
+      });
+    });
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 20,),
-
+        SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.only(left: 15, right: 15),
           child: Row(
             children: [
               GestureDetector(
-                onTap: (){
-                  // 이벤트 처리할 곳
+                onTap: () {
                   setState(() {
-                    SelectedMyPost = true;
-                    SelectedTimeLine = false;
+                    selectedMyPost = true;
+                    selectedTimeLine = false;
                   });
                 },
                 child: Row(
                   children: [
                     Icon(
                       Icons.grid_view_outlined,
-                      color: SelectedMyPost ? Colors.black : Colors.grey,
+                      color: selectedMyPost ? Colors.black : Colors.grey,
                     ),
-                    Text("내가 올린 게시물",style: TextStyle(
-                      color: SelectedMyPost ? Colors.black : Colors.grey,
-                    ),),
+                    Text(
+                      "내가 올린 게시물",
+                      style: TextStyle(
+                        color: selectedMyPost ? Colors.black : Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
               ),
-
               Text("  |  "),
-
               GestureDetector(
-                onTap: (){
-                  // 이벤트 처리할 곳
+                onTap: () {
                   setState(() {
-                    SelectedMyPost = false;
-                    SelectedTimeLine = true;
+                    selectedMyPost = false;
+                    selectedTimeLine = true;
                   });
                 },
                 child: Row(
-                  children:[
+                  children: [
                     Icon(
                       Icons.calendar_today,
-                      color: SelectedTimeLine ? Colors.black : Colors.grey,
+                      color: selectedTimeLine ? Colors.black : Colors.grey,
                     ),
-                    Text("한줄평 타임라인", style: TextStyle(
-                      color: SelectedTimeLine ? Colors.black : Colors.grey,
-                    ),),
-                  ]
+                    Text(
+                      "한줄평 타임라인",
+                      style: TextStyle(
+                        color: selectedTimeLine ? Colors.black : Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+        SizedBox(height: 10,),
 
-        //
-        if(SelectedMyPost)
-          MyPostList(),
+        if (selectedMyPost)
+           MyPostList(postList: MyPostInfoList),
 
-        if(SelectedTimeLine)
+        if (selectedTimeLine)
           Column(
-            children: postsInfo.map((post) {
-              return MyWrittenPost(postInfo: post);
+            children: oneLineInfoList.map((info) {
+              return Column(
+                children: [
+                  MyWrittenPost(postInfo: info),
+                  SizedBox(height: 10,),
+                ],
+              );
             }).toList(),
           ),
-
-        // here i want to locate
       ],
     );
   }
 }
 
-class MyPostList extends StatefulWidget {
+class MyPostList extends StatelessWidget {
+  final List<MyPostInfo> postList;
 
-  MyPostList({super.key});
-
-  @override
-  State<MyPostList> createState() => _MyPostListState();
-}
-
-class _MyPostListState extends State<MyPostList> {
-  bool isLiked = false;
-  final List<String> assetImages = [
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/google.png',
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-  ];
+  const MyPostList({
+    required this.postList,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -131,62 +204,71 @@ class _MyPostListState extends State<MyPostList> {
         SizedBox(
           height: 10,
         ),
-
-        Wrap(
+        postList.isEmpty
+            ? SizedBox(
+          width: double.infinity,
+          height: 100,
+          child: Center(
+            child: Text(
+              '현재 내가 저장한 게시글이 없습니다',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        )
+            : Wrap(
           spacing: 6.0,
           runSpacing: 8.0,
-          children: assetImages.isEmpty
-              ? [
-            SizedBox(
-              width: double.infinity,
-              height: 100,
-              child: Center(
-                child: Text(
-                  '현재 내가 저장한 게시글이 없습니다',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+          children: postList.map((postInfo) {
+            return PostItem(postInfo: postInfo);
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
+
+class PostItem extends StatelessWidget {
+  final MyPostInfo postInfo;
+
+  const PostItem({
+    required this.postInfo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Stack(
+      children: [
+        SizedBox(
+          width: 133,
+          height: 200,
+          child: Column(
+            children: [
+              Expanded(
+                child: Image.network(
+                  postInfo.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    postInfo.spaceName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ]
-              : assetImages.map((path) {
-            String imageName = path.split('/').last.split('.').first;
-
-            return Stack(
-              children: [
-                SizedBox(
-                  width: 133,
-                  height: 200,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.asset(
-                          path,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            imageName,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }).toList(),
+            ],
+          ),
         ),
       ],
     );
@@ -195,67 +277,80 @@ class _MyPostListState extends State<MyPostList> {
 
 
 class MyWrittenPost extends StatelessWidget {
+  final OneLineInfo postInfo;
 
   const MyWrittenPost({
     required this.postInfo,
-});
-
-  final Map<String, dynamic> postInfo;
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 15, left: 20, right: 10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text("2023년 11월 20일 (월)"),
-          ),
+    final formattedDate = DateFormat('yyyy년 MM월 dd일').format(DateTime.parse(postInfo.date));
 
-          SizedBox(height: 10,),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          postInfo['title'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          "${postInfo['location']} | ${postInfo['category']}",
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: (){},
-                  icon: Icon(
-                    Icons.more_horiz,
-                  ),
-                ),
-              ],
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular((16)),
+        border: Border.all(color: Colors.grey),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 15, left: 20, right: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(formattedDate),
             ),
-          ),
+            SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                '${postInfo.spaceName}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                ' |  ${postInfo.tag}', style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
 
-          SizedBox(height: 5,),
-        ],
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
+                            child: Text(
+                              '${postInfo.locationName}',
+                              style: TextStyle(color: Colors.white),
+                              maxLines: 2, // 최대 두 줄까지 표시
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 5,),
+          ],
+        ),
       ),
     );
   }

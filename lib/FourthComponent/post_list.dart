@@ -1,41 +1,70 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/FourthComponent/save_class.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PostList extends StatefulWidget {
-  PostList({Key? key}) : super(key: key);
 
-  @override
-  State<PostList> createState() => _PostListState();
+class AllPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+
+  AllPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+  });
 }
 
-class _PostListState extends State<PostList> {
-  late SaveClass mySavedList;
-  // late List<bool> likedList;
 
-  final List<String> assetImages = [
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-  ];
+class AllPostList extends StatefulWidget {
+  AllPostList({Key? key}) : super(key: key);
+
+  @override
+  State<AllPostList> createState() => _AllPostListState();
+}
+
+class _AllPostListState extends State<AllPostList> {
+  late SaveClass mySavedList;
+  List<AllPostInfo> allPostInfoList = [];
 
   @override // SaveClass 인스턴스 초기화
   void initState() {
     super.initState();
     mySavedList = Provider.of<SaveClass>(context, listen: false);
+    fetchAllPostModel();
   }
+
+  Future<void> fetchAllPostModel() async {
+    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+    usersCollectionRef.get().then((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      querySnapshot.docs.forEach((userDoc) {
+        final postCollectionRef = userDoc.reference.collection('post');
+
+        postCollectionRef.get().then((QuerySnapshot<Map<String, dynamic>> postQuerySnapshot) {
+          List<AllPostInfo> updatedAllPostInfoList = postQuerySnapshot.docs.map((postDoc) {
+            Map<String, dynamic> data = postDoc.data();
+            String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+            String image = data.containsKey('image') ? data['image'] : '';
+            String pid = data.containsKey('pid') ? data['pid'] : '';
+
+            return AllPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+            );
+          }).toList();
+
+          setState(() {
+            allPostInfoList.addAll(updatedAllPostInfoList);
+          });
+        });
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +93,8 @@ class _PostListState extends State<PostList> {
               Wrap(
                 spacing: 6.0,
                 runSpacing: 8.0,
-                children: List.generate(assetImages.length, (index) {
-                  String path = assetImages[index];
-                  String imageName = path
-                      .split('/')
-                      .last
-                      .split('.')
-                      .first;
+                children: allPostInfoList.asMap().entries.map((entry) {
+                  AllPostInfo postInfo = entry.value;
                   return Stack(
                     children: [
                       SizedBox(
@@ -79,17 +103,17 @@ class _PostListState extends State<PostList> {
                         child: Column(
                           children: [
                             Expanded(
-                              child: Image.asset(
-                                path,
+                              child: Image.network(
+                                postInfo.image,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             SizedBox(
                               height: 20,
                               child: Align(
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.center,
                                 child: Text(
-                                  imageName,
+                                  postInfo.spaceName,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -105,15 +129,21 @@ class _PostListState extends State<PostList> {
                         right: -5,
                         child: IconButton(
                           icon: saveClass.savedItems.any((item) =>
-                          item['index'] == index && item['isLiked'])
+                          item['spaceName'] == postInfo.spaceName &&
+                              item['isLiked'])
                               ? Icon(Icons.favorite, color: Colors.red)
                               : Icon(Icons.favorite_border, color: Colors.red),
                           onPressed: () {
                             setState(() {
                               bool isLiked = saveClass.savedItems.any((item) =>
-                              item['index'] == index && item['isLiked']);
+                              item['spaceName'] == postInfo.spaceName &&
+                                  item['isLiked']);
                               mySavedList.toggleLike(
-                                  index, !isLiked, assetImages[index]);
+                                !isLiked,
+                                postInfo.pid,
+                                postInfo.image,
+                                postInfo.spaceName,
+                              );
                             });
                           },
                         ),
@@ -124,7 +154,7 @@ class _PostListState extends State<PostList> {
               ),
             ],
           );
-        }
+        },
     );
   }
 }
