@@ -20,6 +20,11 @@ class _MapScreenState extends State<MapScreen> {
   late LatLng currentLocation = LatLng(36.83407, 127.1793);
   late LatLng exampleLocation = LatLng(36.834, 127.179);
   Set<Marker> _markers = {};
+  bool isStudySelected = false;
+  bool isTeamProjectSelected = false;
+  bool isExerciseSelected = false;
+  bool isWalkingSelected = false;
+  bool isRestSelected = false;
 
 
   Future<void> _updateAllLocations() async {
@@ -144,13 +149,14 @@ class _MapScreenState extends State<MapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildSearchButton('공부'),
-                _buildSearchButton('팀플'),
-                _buildSearchButton('운동'),
-                _buildSearchButton('산책'),
-                _buildSearchButton('휴식'),
+                _buildSearchButton('공부', isStudySelected),
+                _buildSearchButton('팀플', isTeamProjectSelected),
+                _buildSearchButton('운동', isExerciseSelected),
+                _buildSearchButton('산책', isWalkingSelected),
+                _buildSearchButton('휴식', isRestSelected),
               ],
             ),
+
           ),
 
           DraggableScrollableSheet(
@@ -214,10 +220,10 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSearchButton(String label) {
+  Widget _buildSearchButton(String label, bool isSelected) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isSelected ? Colors.white : Colors.black,
         borderRadius: BorderRadius.circular(30.0),
         border: Border.all(color: Colors.white, width: 1.0),
       ),
@@ -225,18 +231,46 @@ class _MapScreenState extends State<MapScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
-          onTap: () {},
+          onTap: () {
+            // 여기에 버튼이 눌렸을 때 수행할 로직을 추가합니다.
+            // 예를 들어, 선택된 상태를 설정하고 해당하는 작업을 트리거할 수 있습니다.
+            // 이 예제에서는 선택된 레이블을 출력합니다.
+            print('선택된 항목: $label');
+
+            // 같은 버튼을 두 번 눌렀을 때 체크가 해제되도록 토글합니다.
+            setState(() {
+              switch (label) {
+                case '공부':
+                  isStudySelected = !isStudySelected;
+                  break;
+                case '팀플':
+                  isTeamProjectSelected = !isTeamProjectSelected;
+                  break;
+                case '운동':
+                  isExerciseSelected = !isExerciseSelected;
+                  break;
+                case '산책':
+                  isWalkingSelected = !isWalkingSelected;
+                  break;
+                case '휴식':
+                  isRestSelected = !isRestSelected;
+                  break;
+              }
+            });
+          },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               label,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: isSelected ? Colors.black : Colors.white),
             ),
           ),
         ),
       ),
     );
   }
+
+
 
   void _addMarker() {
     final Marker marker = Marker(
