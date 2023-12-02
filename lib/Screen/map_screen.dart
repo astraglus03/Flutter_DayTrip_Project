@@ -14,6 +14,7 @@ class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
 }
+List<Map<String, dynamic>> space = [];
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
@@ -62,6 +63,8 @@ class _MapScreenState extends State<MapScreen> {
           print(spaceDataList);
           print(spacedetailDataList);
           print(spacephotoList);
+          space = spaceDataList;
+          print(space);
 
 
           if (locationString != null) {
@@ -209,8 +212,13 @@ class _MapScreenState extends State<MapScreen> {
                           Text('$locationName'),
                           SizedBox(height: 8.0),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0), // You can adjust the border radius as needed
-                            child: Image.network(image, height: 150.0, width: double.infinity, fit: BoxFit.cover),
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              image,
+                              height: 150.0, // Adjust the height as needed
+                              width: double.infinity,
+                              fit: BoxFit.cover, // This controls how the image is fitted
+                            ),
                           ),
                           SizedBox(height: 8.0),
                           ElevatedButton(
@@ -232,6 +240,7 @@ class _MapScreenState extends State<MapScreen> {
               );
             },
           ),
+
 
 
           Positioned(
