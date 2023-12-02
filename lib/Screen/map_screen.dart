@@ -205,14 +205,13 @@ class _MapScreenState extends State<MapScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('$spaceName - $locationName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                          Text('$spaceName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                          Text('$locationName'),
                           SizedBox(height: 8.0),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0), // You can adjust the border radius as needed
                             child: Image.network(image, height: 150.0, width: double.infinity, fit: BoxFit.cover),
                           ),
-                          SizedBox(height: 8.0),
-                          Text('다른 텍스트 정보...'),
                           SizedBox(height: 8.0),
                           ElevatedButton(
                             onPressed: () {
@@ -384,27 +383,23 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-
-
   void _showFoodDialog(String image, String locationString, String locationName, String spaceName, String tag) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('음식점 정보'),
+          title: Text('$spaceName'),
           content: Container(
-            width: 300,
-            height: 400,
+            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.network(image),
+                  SizedBox(height: 10,width:MediaQuery.of(context).size.width * 0.8),
+                  _buildRowWithIcon(Icons.location_on, locationName),
+                  _buildRowWithIcon(Icons.tag, '태그: $tag'),
                   SizedBox(height: 10),
-                  Text('위치: $locationString'),
-                  Text('장소 이름: $locationName'),
-                  Text('공간 이름: $spaceName'),
-                  Text('태그: $tag'),
+                  Image.network(image),
                 ],
               ),
             ),
@@ -432,6 +427,19 @@ class _MapScreenState extends State<MapScreen> {
       },
     );
   }
+
+
+
+  Widget _buildRowWithIcon(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon),
+        SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절을 위한 SizedBox
+        Text(text),
+      ],
+    );
+  }
+
 
 }
 const darkMapStyle = '''
