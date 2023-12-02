@@ -1,8 +1,5 @@
-import 'package:final_project/FirstComponent/home_exhibition.dart';
-import 'package:final_project/FirstComponent/home_popular.dart';
-import 'package:final_project/FirstComponent/home_recent.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'home_recom_detail.dart';
 
 class HomeRecommend extends StatefulWidget {
   const HomeRecommend({Key? key});
@@ -19,37 +16,39 @@ class _HomeRecommendState extends State<HomeRecommend> {
   };
 
   List<String>? currentPlaces;
+  String? selectedTag;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 10),
-        Text('추천 장소를 태그를 클릭하여 확인하세요.'),
-        SizedBox(height: 20),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
-            children: [
-              _buildSearchButton('운동'),
-              SizedBox(width: 10), // 간격 추가
-              _buildSearchButton('팀플'),
-              SizedBox(width: 10), // 간격 추가
-              _buildSearchButton('산책'),
-            ]),
-        SizedBox(height: 20),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
-            children: [
-              _buildSearchButton('공부'),
-              SizedBox(width: 10), // 간격 추가
-              _buildSearchButton('독서'),
-            ]),
-        SizedBox(height: 20),
-        Result(updatePlaces: updatePlaces, currentPlaces: currentPlaces),
-        SizedBox(height: 20),
-      ],
-    ),
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 10),
+          Text('추천 장소를 태그를 클릭하여 확인하세요.'),
+          SizedBox(height: 20),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+              children: [
+                _buildSearchButton('공부'),
+                SizedBox(width: 10), // 간격 추가
+                _buildSearchButton('팀플'),
+                SizedBox(width: 10), // 간격 추가
+                _buildSearchButton('운동'),
+              ]),
+          SizedBox(height: 20),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+              children: [
+                _buildSearchButton('산책'),
+                SizedBox(width: 10), // 간격 추가
+                _buildSearchButton('휴식'),
+              ]),
+          SizedBox(height: 20),
+          Result(updatePlaces: updatePlaces, currentPlaces: currentPlaces, tag: selectedTag,),
+          SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
@@ -65,6 +64,7 @@ class _HomeRecommendState extends State<HomeRecommend> {
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
           onTap: () {
+            selectedTag = label; // 선택된 태그 업데이트
             updatePlaces(label);
           },
           child: Container(
@@ -93,9 +93,14 @@ class _HomeRecommendState extends State<HomeRecommend> {
 class Result extends StatelessWidget {
   final Function(String) updatePlaces;
   final List<String>? currentPlaces;
+  final String? tag;
 
-  const Result({Key? key, required this.updatePlaces, this.currentPlaces})
-      : super(key: key);
+  Result({
+    Key? key,
+    required this.updatePlaces,
+    required this.currentPlaces,
+    this.tag,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +124,15 @@ class Result extends StatelessWidget {
                   child: ListTile(
                     title: Text(currentPlaces![index]),
                     onTap: () {
-                      // Add actions when a place is tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeRecomDetail(
+                            placeName: currentPlaces![index],
+                            tag: tag,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 );

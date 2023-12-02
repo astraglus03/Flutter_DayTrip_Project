@@ -226,15 +226,14 @@ class _RecentPostState extends State<RecentPost> {
                         widget.isLiked[index]
                             ? Icons.favorite
                             : Icons.favorite_border,
-                        color: widget.isLiked[index] ? Colors.red : null,
+                        color: widget.isLiked[index] ? Colors.red : null, // Change icon color
                       ),
                       onPressed: () {
-                        // 좋아요 버튼 눌렀을 때의 콜백 실행
-                        widget.onLikeButtonPressed(index);
                         setState(() {
-                          // Update the isLiked state for this index
+                          // Toggle the liked status
                           widget.isLiked[index] = !widget.isLiked[index];
                         });
+                        // TODO: Add further action upon pressing the like button
                       },
                     ),
                   ),
@@ -531,7 +530,7 @@ class _PopularPostState extends State<PopularPost> {
                     child: IconButton(
                       icon: Icon(
                         isLikedList[index] ? Icons.favorite : Icons.favorite_border,
-                        color: isLikedList[index] ? Colors.red : null,
+                        color: isLikedList[index] ? Colors.red : null, // Change icon color
                       ),
                       onPressed: () {
                         setState(() {

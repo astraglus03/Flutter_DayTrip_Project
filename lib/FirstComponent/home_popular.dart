@@ -29,6 +29,7 @@ class PostTab extends StatefulWidget {
 
 class _PostTabState extends State<PostTab> {
   int _currentIndex = 0;
+  List<Set<int>> likedItemsList = List.generate(6, (_) => {});
 
   final List<List<Map<String, dynamic>>> tabInfo = [
     [
@@ -151,31 +152,57 @@ class _PostTabState extends State<PostTab> {
               itemCount: tabInfo[tabIndex].length,
               itemBuilder: (BuildContext context, int index) {
                 var info = tabInfo[tabIndex][index];
+                bool isLiked = likedItemsList[tabIndex].contains(index);
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PlaceBlogScreen(), // Replace with your desired screen
+                        builder: (context) => PlaceBlogScreen(),
                       ),
                     );
                   },
-                  child: Column(
+                  child: Stack(
                     children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: MediaQuery.of(context).size.height / 3,
-                        margin: EdgeInsets.symmetric(horizontal: 0.5),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(info['imagePath']),
-                            fit: BoxFit.cover,
+                      Column(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: MediaQuery.of(context).size.height / 3,
+                            margin: EdgeInsets.symmetric(horizontal: 0.5),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(info['imagePath']),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(info['title']),
+                          Text(info['location']),
+                        ],
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isLiked) {
+                                likedItemsList[tabIndex].remove(index);
+                              } else {
+                                likedItemsList[tabIndex].add(index);
+                              }
+                            });
+                          },
+                          child: Icon(
+                            Icons.favorite,
+                            color: isLiked ? Colors.red : Colors.grey,
+                            size: 24,
                           ),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(info['title']),
-                      Text(info['location']),
                     ],
                   ),
                 );
