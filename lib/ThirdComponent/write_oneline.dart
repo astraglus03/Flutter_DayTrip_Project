@@ -354,7 +354,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       builder: (BuildContext context) {
         return Container(
           height: 200.0,
-          color: Colors.white,
+          color: Colors.black,
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.date,
             initialDateTime: selectedDate,

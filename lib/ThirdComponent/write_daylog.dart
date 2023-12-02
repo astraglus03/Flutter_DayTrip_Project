@@ -294,15 +294,15 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      buildButton('카페'),
+                      buildButton('공부'),
                       SizedBox(width: 10),
-                      buildButton('음식점'),
+                      buildButton('팀플'),
                       SizedBox(width: 10),
-                      buildButton('편의점'),
+                      buildButton('운동'),
                       SizedBox(width: 10),
-                      buildButton('학교건물'),
+                      buildButton('산책'),
                       SizedBox(width: 10),
-                      buildButton('주차장'),
+                      buildButton('휴식'),
                       SizedBox(width: 10),
                     ],
                   ),
@@ -447,7 +447,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
       builder: (BuildContext context) {
         return Container(
           height: 200.0,
-          color: Colors.white,
+          color: Colors.black,
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.date,
             initialDateTime: selectedDate,
