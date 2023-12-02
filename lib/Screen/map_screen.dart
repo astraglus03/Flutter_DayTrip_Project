@@ -141,10 +141,11 @@ class _MapScreenState extends State<MapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildSearchButton('버튼1'),
-                _buildSearchButton('버튼2'),
-                _buildSearchButton('버튼3'),
-                _buildSearchButton('버튼4'),
+                _buildSearchButton('공부'),
+                _buildSearchButton('팀플'),
+                _buildSearchButton('운동'),
+                _buildSearchButton('산책'),
+                _buildSearchButton('휴식'),
               ],
             ),
           ),
