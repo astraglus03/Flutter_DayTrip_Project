@@ -339,7 +339,7 @@ class _SelectedDayState extends State<SelectedDay> {
         widget.selectedDay; // build 메서드에서도 선택된 요일 값을 업데이트(이 코드 안 쓰면 갱신 안 됨)
     switch (_selectedDay) {
       case '일':
-        // 일요일에 대한 정보
+      // 일요일에 대한 정보
         return Row(
           children: [
             Expanded(
@@ -400,7 +400,7 @@ class _SelectedDayState extends State<SelectedDay> {
           ],
         );
       case '월':
-        // 월요일에 대한 정보
+      // 월요일에 대한 정보
         return Row(
           children: [
             Expanded(
@@ -460,7 +460,7 @@ class _SelectedDayState extends State<SelectedDay> {
             ),
           ],
         );
-      // 기본적으로 해당 요일에 정보가 없으면 빈 공간 반환
+    // 기본적으로 해당 요일에 정보가 없으면 빈 공간 반환
       default:
         return SizedBox(); // 선택된 요일이 없으면 빈 공간 반환
     }

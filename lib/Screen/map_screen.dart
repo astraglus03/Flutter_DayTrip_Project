@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _MapScreenState extends State<MapScreen> {
   late LatLng currentLocation = LatLng(36.83407, 127.1793);
   late LatLng exampleLocation = LatLng(36.834, 127.179);
   Set<Marker> _markers = {};
+
 
   Future<void> _updateAllLocations() async {
     try {
@@ -141,10 +144,11 @@ class _MapScreenState extends State<MapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildSearchButton('버튼1'),
-                _buildSearchButton('버튼2'),
-                _buildSearchButton('버튼3'),
-                _buildSearchButton('버튼4'),
+                _buildSearchButton('공부'),
+                _buildSearchButton('팀플'),
+                _buildSearchButton('운동'),
+                _buildSearchButton('산책'),
+                _buildSearchButton('휴식'),
               ],
             ),
           ),
@@ -242,6 +246,7 @@ class _MapScreenState extends State<MapScreen> {
         title: '현재 위치',
         snippet: '여기에 있습니다.',
       ),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow), // 마커 색상 변경
     );
 
     setState(() {
@@ -252,6 +257,7 @@ class _MapScreenState extends State<MapScreen> {
       CameraUpdate.newLatLng(currentLocation),
     );
   }
+
 
   void _foodmarker() async {
     final Marker marker = Marker(

@@ -19,6 +19,7 @@ class MainCalender extends StatelessWidget {
         child: Column(
           children: [
             TableCalendar(
+              locale: 'ko_KR',
               onDaySelected: onDaySelected,
               selectedDayPredicate: (date) =>
               date.year == selectedDate.year &&
