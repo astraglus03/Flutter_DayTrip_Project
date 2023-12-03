@@ -17,7 +17,6 @@ class AllPostInfo{
   });
 }
 
-
 class AllPostList extends StatefulWidget {
   AllPostList({Key? key}) : super(key: key);
 

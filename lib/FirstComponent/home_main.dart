@@ -6,6 +6,11 @@ import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
+
 class HomeMain extends StatefulWidget {
   const HomeMain({Key? key});
 
@@ -16,6 +21,9 @@ class HomeMain extends StatefulWidget {
 class _HomeMainState extends State<HomeMain> {
   String selectedDay = ''; // 선택된 요일 추적을 위한 변수
   int selectedDayIndex = -1; // 선택된 요일을 추적하기 위한 변수
+
+  List<String> recentImagePaths = [];
+  List<RecentPostInfo> recentPostInfoList = [];
 
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
@@ -42,12 +50,7 @@ class _HomeMainState extends State<HomeMain> {
             //ImageSlider(),
             //SizedBox(height: 20),
             RecentPost(
-              imagePaths: [
-                'asset/img/school1.jpg',
-                'asset/img/school2.jpg',
-                'asset/img/school3.jpg',
-                // Add more image paths as needed
-              ],
+              imagePaths: recentImagePaths, // Use the fetched image paths here
               isLiked: isLiked,
               onLikeButtonPressed: (int index) {
                 setState(() {
@@ -128,6 +131,80 @@ class _HomeMainState extends State<HomeMain> {
     // Handle the selected date here
     print('Selected date from custom: $selectedDate');
   }
+
+  @override // SaveClass 인스턴스 초기화
+  void initState() {
+    super.initState();
+    fetchRecentPostModel();
+  }
+
+  Future<void> fetchRecentPostModel() async {
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      List<String> updatedRecentImagePaths = [];
+      List<RecentPostInfo> updatedRecentPostInfoList = [];
+
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('post');
+
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          String pid = data.containsKey('pid') ? data['pid'] : '';
+          String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+
+          if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
+            updatedRecentImagePaths.add(image);
+
+            updatedRecentPostInfoList.add(RecentPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+              writtenTime: writtenTime,
+            ));
+          }
+        }
+      }
+
+      setState(() {
+        recentPostInfoList = updatedRecentPostInfoList;
+        recentImagePaths = updatedRecentImagePaths;
+      });
+    } catch (e) {
+      // Handle exceptions
+      print('Error fetching data: $e');
+      // You might want to show an error message to the user here
+    }
+  }
+
+
+  bool _isToday(String writtenTime) {
+    final now = DateTime.now();
+    final parsedTime = DateFormat('yyyy/MM/dd - HH:mm:ss').parse(writtenTime);
+
+    // Compare the year, month, and day of both dates
+    return now.year == parsedTime.year &&
+        now.month == parsedTime.month &&
+        now.day == parsedTime.day;
+  }
+}
+
+class RecentPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+  final String writtenTime;
+
+  RecentPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+    required this.writtenTime,
+  });
 }
 
 // 최신 피드 / 전체 보기> 버튼
@@ -214,7 +291,7 @@ class _RecentPostState extends State<RecentPost> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
+                        image: NetworkImage(imagePath),
                       ),
                     ),
                   ),
