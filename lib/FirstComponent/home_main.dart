@@ -2,6 +2,7 @@ import 'package:final_project/FirstComponent/home_exhibition.dart';
 import 'package:final_project/FirstComponent/home_popular.dart';
 import 'package:final_project/FirstComponent/home_recent.dart';
 import 'package:final_project/Screen/place_blog_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,6 +24,48 @@ class _HomeMainState extends State<HomeMain> {
 
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
+
+  Future<void> toggleLike(String pid, bool isLiked) async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      int index = recentPostInfoList.indexWhere((post) => post.pid == pid);
+      if (index != -1) {
+        try {
+          final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+          final querySnapshot = await usersCollectionRef.get();
+
+          for (final userDoc in querySnapshot.docs) {
+            final postCollectionRef = userDoc.reference.collection('post');
+            final postDoc = await postCollectionRef.doc(pid).get();
+
+            if (postDoc.exists) {
+              DocumentReference postDocRef = postDoc.reference;
+
+              if (isLiked) {
+                // Add user's uid to likes array if not already liked
+                await postDocRef.update({
+                  'likes': FieldValue.arrayUnion([uid]),
+                });
+                print("Liked post successfully");
+              } else {
+                // Remove user's uid from likes array if already liked
+                await postDocRef.update({
+                  'likes': FieldValue.arrayRemove([uid]),
+                });
+                print("Unliked post successfully");
+              }
+            }
+          }
+        } catch (error) {
+          print('Error toggling like: $error');
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +90,8 @@ class _HomeMainState extends State<HomeMain> {
             //SizedBox(height: 20),
             RecentPost(
               imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
-              isLiked: isLiked,
-              onLikeButtonPressed: (int index) {
-                setState(() {
-                  isLiked[index] = !isLiked[index]; // 좋아요 상태 토글
-                });
-              },
+              postInfoList: recentPostInfoList, // Pass the list of RecentPostInfo objects
+              onLikeButtonPressed: toggleLike, // Pass the toggleLike function
             ),
 
             SizedBox(height: 20),
@@ -194,12 +233,14 @@ class RecentPostInfo{
   final String image;
   final String pid;
   final String writtenTime;
+  bool isLiked;
 
   RecentPostInfo({
     required this.spaceName,
     required this.image,
     required this.pid,
     required this.writtenTime,
+    this.isLiked = false,
   });
 }
 
@@ -238,15 +279,14 @@ class Title extends StatelessWidget {
   }
 }
 
-// 최신 피드 : 캐로셸 Carousel (이미지 슬라이드)
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
-  final List<bool> isLiked; // 각 이미지의 좋아요 상태를 저장하는 리스트
-  final Function(int) onLikeButtonPressed; // 좋아요 버튼 눌렀을 때의 콜백 함수
+  final List<RecentPostInfo> postInfoList; // List of RecentPostInfo objects
+  final Function(String, bool) onLikeButtonPressed; // Function to handle like button press
 
   const RecentPost({
     required this.imagePaths,
-    required this.isLiked,
+    required this.postInfoList,
     required this.onLikeButtonPressed,
   });
 
@@ -296,15 +336,21 @@ class _RecentPostState extends State<RecentPost> {
                     right: 10,
                     child: IconButton(
                       icon: Icon(
-                        widget.isLiked[index]
+                        widget.postInfoList[index].isLiked
                             ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: widget.isLiked[index] ? Colors.red : Colors.red, // Change icon color
+                            : Icons.favorite_border, color: Colors.red,// Keep default icon color if not liked
                       ),
                       onPressed: () {
+                        // Toggle like status when the button is pressed
+                        bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
+                        String pid = widget.postInfoList[index].pid;
+
+                        // Call the function to handle like button press
+                        widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
+
                         setState(() {
-                          // Toggle the liked status
-                          widget.isLiked[index] = !widget.isLiked[index];
+                          // Update the like status in the UI
+                          widget.postInfoList[index].isLiked = !isCurrentlyLiked;
                         });
                       },
                     ),
