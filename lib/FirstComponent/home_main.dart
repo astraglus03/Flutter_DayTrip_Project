@@ -1,14 +1,10 @@
 import 'package:final_project/FirstComponent/home_exhibition.dart';
 import 'package:final_project/FirstComponent/home_popular.dart';
 import 'package:final_project/FirstComponent/home_recent.dart';
-import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 class HomeMain extends StatefulWidget {
@@ -50,7 +46,7 @@ class _HomeMainState extends State<HomeMain> {
             //ImageSlider(),
             //SizedBox(height: 20),
             RecentPost(
-              imagePaths: recentImagePaths, // Use the fetched image paths here
+              imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
               isLiked: isLiked,
               onLikeButtonPressed: (int index) {
                 setState(() {

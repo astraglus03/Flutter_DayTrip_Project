@@ -1,6 +1,8 @@
+import 'package:final_project/FourthComponent/provider.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AllPostInfo {
   final String spaceName;
@@ -35,11 +37,13 @@ class AllPostList extends StatefulWidget {
 
 class _AllPostListState extends State<AllPostList> {
   late List<AllPostInfo> allPostInfoList;
+  late LikeState likeState;
 
   @override
   void initState() {
     super.initState();
     allPostInfoList = [];
+    likeState = Provider.of<LikeState>(context, listen: false);
     fetchAllPostModel();
   }
 
@@ -67,6 +71,7 @@ class _AllPostListState extends State<AllPostList> {
               await postDocRef.update({
                 'likes': FieldValue.arrayUnion([uid]),
               });
+              likeState.toggleLike(pid); // 좋아요 상태 변경
               setState(() {
                 allPostInfoList[index].isLiked = true;
               });
@@ -75,15 +80,13 @@ class _AllPostListState extends State<AllPostList> {
               await postDocRef.update({
                 'likes': FieldValue.arrayRemove([uid]),
               });
+              likeState.toggleLike(pid); // 좋아요 상태 변경
               setState(() {
                 allPostInfoList[index].isLiked = false;
               });
               print("Unliked post successfully");
             }
           }
-          setState(() {
-            allPostInfoList[index].isLiked = !isLiked;
-          });
         } catch (error) {
           print('Error toggling like: $error');
         }
@@ -112,6 +115,8 @@ class _AllPostListState extends State<AllPostList> {
             String date = data.containsKey('date') ? data['date'] : '';
             String postContent = data.containsKey('postContent') ? data['postContent'] : '';
 
+            bool isLiked = likeState.likedPostIds.contains(pid);
+
             return AllPostInfo(
               spaceName: spaceName,
               image: image,
@@ -121,7 +126,7 @@ class _AllPostListState extends State<AllPostList> {
               recomTag: recomTag,
               date: date,
               postContent: postContent,
-              isLiked: false,
+              isLiked: isLiked,
             );
           }).toList();
 
