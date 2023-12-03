@@ -13,7 +13,7 @@ class PostModel {
   final DateTime date;      // 작성 날짜
   final String tag;         // 태그
   final String recomTag;    // 추천 태그
-  final int good;           // 좋아요
+  // final int good;           // 좋아요
   final String locationName; // 공간 주소
   final String writtenTime; // 작성 시간
 
@@ -26,7 +26,8 @@ class PostModel {
     required this.date,
     required this.tag,
     required this.recomTag,
-    required this.good,
+
+    // required this.good,
     required this.locationName,
     required this.writtenTime,
   });
@@ -40,10 +41,11 @@ class PostModel {
         spaceName = json['spaceName'],
         date = DateFormat('yyyy년 MM월 dd일').parse(json['date']),
         tag = json['tag'],
+        // good = json['good']; //bool은 다르게 처리 //good = json['good'] as bool;
         recomTag = json['recomTag'],
-        good = json['good'], //bool은 다르게 처리 //good = json['good'] as bool;
         locationName = json['locationName'],
         writtenTime = json['writtenTime'];
+
 
   Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
     return {
@@ -55,7 +57,7 @@ class PostModel {
       'date': DateFormat('yyyy년 MM월 dd일').format(date),
       'tag' : tag,
       'recomTag' : recomTag,
-      'good' : good,
+      // 'good' : good,
       'locationName' : locationName,
       'writtenTime' : DateFormat('yyyy/MM/dd - HH:mm:ss').format(DateTime.now()), //format변경,
     };
@@ -71,9 +73,11 @@ class PostModel {
     DateTime? date,
     String? tag,
     String? recomTag,
-    int? good,
+    // int? good,
+    bool? like,
     String? locationName,
     String? writtenTime, // 작성 시간
+
   }) {
     return PostModel(
         pid: pid ?? this.pid,
@@ -85,7 +89,7 @@ class PostModel {
         date: date ?? this.date,
         tag: tag ?? this.tag,
         recomTag: recomTag ?? this.recomTag,
-        good: good ?? this.good,
+        // good: good ?? this.good,
         locationName: locationName ?? this.locationName,
         writtenTime: writtenTime ?? this.writtenTime,
     );

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/ThirdComponent/choose_space.dart';
 import 'package:final_project/ThirdComponent/main_calender.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class WriteOneLine extends StatefulWidget {
@@ -52,6 +53,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       selectedTitle = '';
       selectedLocation = '';
     }
+    initializeDateFormatting();
   }
 
   @override

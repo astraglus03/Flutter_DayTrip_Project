@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_project/ThirdComponent/upload_data.dart';
 import 'package:final_project/model_db/postmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -117,7 +116,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
         date:parsedDate,      // 작성 날짜
         tag:spaceTag.toString(),         // 태그
         recomTag:hashTagButton.toString(),    // 추천 태그
-        good:1,           // 좋아요
+        // good:1,           // 좋아요
         locationName: spaceLocation.toString(), // 공간 주소
         writtenTime: writtenTime, // 작성 시간
       );
@@ -126,7 +125,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
 
       await userCollectionRef
           .collection('post')
-          .doc(post.spaceName)
+          .doc(post.pid)
           .set(post.toJson());
     } else {
       // 이미지 업로드 실패 처리
@@ -410,6 +409,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
 
                     // 데이로그 업로드 하는 부분
                     // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
+                    Navigator.pop(context);
                     createPost();
                     showDialog(
                         context: context,
