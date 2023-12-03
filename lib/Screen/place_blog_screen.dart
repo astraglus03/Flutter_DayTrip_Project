@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:final_project/Screen/map_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PlaceBlogScreen extends StatefulWidget {
   final String image;
@@ -29,6 +30,55 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
     '사용자 3의 글입니다.',
     '사용자 4의 글입니다.',
   ];
+
+  List<String> userImages = []; // 사용자 이미지 URL 목록
+
+  Future<void> loadUserImages() async {
+    userImages = await getUserImages(widget.spaceName);
+    setState(() {}); // 이 부분을 추가하여 화면을 갱신합니다.
+
+    print(userImages);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserImages();
+  }
+
+  Future<List<String>> getUserImages(String spaceName) async {
+    List<String> userImages = [];
+    List<String> userIDs = [];
+
+    // 'users' 컬렉션에 대한 참조
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    // 'users' 컬렉션의 모든 문서를 가져오기
+    QuerySnapshot userQuerySnapshot = await users.get();
+
+    // 'users' 컬렉션의 문서를 반복
+    for (QueryDocumentSnapshot userDoc in userQuerySnapshot.docs) {
+      // 'post' 컬렉션의 모든 문서를 가져오기
+      QuerySnapshot postQuerySnapshot =
+      await users.doc(userDoc.id).collection('post').get();
+
+      // 'post' 컬렉션의 문서를 반복하고 'spaceName' 필드를 확인하여 필터링
+      postQuerySnapshot.docs.forEach((postDoc) {
+        if (postDoc['spaceName'] == spaceName) {
+          // 'image'가 이미지 URL이 저장된 필드로 가정
+          String image = userDoc['image'] ?? ''; // 'image' 필드가 없으면 빈 문자열로 대체
+          userImages.add(image);
+          userIDs.add(userDoc.id); // 해당 문서의 ID를 저장
+        }
+      });
+    }
+
+    print('User IDs: $userIDs');
+    print('User Images: $userImages');
+
+    return userImages;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -106,98 +156,29 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
               // 사용자 버튼들
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  // 사용자 1 버튼
-                  InkWell(
+                children: List.generate(userImages.length, (index) {
+                  return InkWell(
                     onTap: () {
-                      // 사용자 1 선택 시 처리
+                      // 사용자 선택 시 처리
                       setState(() {
-                        selectedUserIndex = 0;
+                        selectedUserIndex = index;
                       });
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: selectedUserIndex == 0 ? Colors.white : Colors.transparent,
+                          color: selectedUserIndex == index ? Colors.white : Colors.transparent,
                           width: 2.0,
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundImage: AssetImage('asset/img/friend2.jpg'),
+                        backgroundImage: NetworkImage(userImages[index]),
                         radius: 20.0,
                       ),
                     ),
-                  ),
-
-                  // 사용자 2 버튼
-                  InkWell(
-                    onTap: () {
-                      // 사용자 2 선택 시 처리
-                      setState(() {
-                        selectedUserIndex = 1;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: selectedUserIndex == 1 ? Colors.white : Colors.transparent,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage('asset/img/friend1.jpg'),
-                        radius: 20.0,
-                      ),
-                    ),
-                  ),
-
-                  // 추가 사용자 버튼...
-                  InkWell(
-                    onTap: () {
-                      // 사용자 3 선택 시 처리
-                      setState(() {
-                        selectedUserIndex = 2;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: selectedUserIndex == 2 ? Colors.white : Colors.transparent,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage('asset/img/friend3.jpg'),
-                        radius: 20.0,
-                      ),
-                    ),
-                  ),
-
-                  InkWell(
-                    onTap: () {
-                      // 사용자 4 선택 시 처리
-                      setState(() {
-                        selectedUserIndex = 3;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: selectedUserIndex == 3 ? Colors.white : Colors.transparent,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage('asset/img/friend1.jpg'),
-                        radius: 20.0,
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                }),
               ),
 
               // 선택된 사용자가 쓴 글 표시
