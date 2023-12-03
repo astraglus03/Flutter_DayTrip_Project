@@ -22,7 +22,7 @@ class BookMarkScreen extends StatelessWidget {
               SizedBox(height: 20,),
 
               // 내가 저장한 게시물 게시물 보기.
-              MySavedList(),
+              SavedPostList(),
 
 
               SizedBox(
