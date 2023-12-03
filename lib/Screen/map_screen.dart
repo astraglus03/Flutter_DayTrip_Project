@@ -437,17 +437,22 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
-
   Widget _buildRowWithIcon(IconData icon, String text) {
     return Row(
       children: [
         Icon(icon),
-        SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절을 위한 SizedBox
-        Text(text),
+        SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            text,
+            overflow: TextOverflow.ellipsis,  // 오버플로우 처리
+            maxLines: 2,  // 텍스트 한 줄로 제한
+          ),
+        ),
       ],
     );
   }
+
 
 
 }
