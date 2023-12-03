@@ -3,6 +3,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:final_project/Screen/map_screen.dart';
 
 class PlaceBlogScreen extends StatefulWidget {
+  final String image;
+  final String location;
+  final String locationName;
+  final String spaceName;
+  final String tag;
+
+  PlaceBlogScreen({
+    required this.image,
+    required this.location,
+    required this.locationName,
+    required this.spaceName,
+    required this.tag
+  });
+
   @override
   _PlaceBlogScreenState createState() => _PlaceBlogScreenState();
 }
@@ -18,6 +32,11 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('spaceName: ${widget.spaceName}');
+    print('location: ${widget.location}');
+    print('locationName: ${widget.locationName}');
+    print('tag: ${widget.tag}');
+    print('image: ${widget.image}');
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -27,7 +46,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
               Stack(
                 children: [
                   Container(
-                    child: Image.asset('asset/img/school1.jpg', fit: BoxFit.cover,),
+                    child: Image.network(widget.image, fit: BoxFit.cover,),
                   ),
                   Positioned(
                     bottom: 6.0,
@@ -35,7 +54,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Text(
-                        '장소 이름이 들어갈 부분.\n\n 천안, 안서동 . 공부',
+                        '${widget.spaceName}\n\n${widget.tag}',
                         style: TextStyle(fontSize: 18.0),
                       ),
                     ),
@@ -233,7 +252,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         Icon(Icons.place, size: 24.0, color: Colors.blue), // 장소 아이콘
                         SizedBox(width: 8.0),
                         Text(
-                          '장소 이름: 장소 이름이 들어갈 부분',
+                          '장소 이름: ${widget.spaceName}',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],
@@ -243,7 +262,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         Icon(Icons.location_on, size: 24.0, color: Colors.red), // 주소 아이콘
                         SizedBox(width: 8.0),
                         Text(
-                          '주소: 천안, 안서동',
+                          '주소: ${widget.locationName}',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],
@@ -253,7 +272,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         Icon(Icons.tag, size: 24.0, color: Colors.green), // 태그 아이콘
                         SizedBox(width: 8.0),
                         Text(
-                          '태그: 공부',
+                          '태그: ${widget.tag}',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],

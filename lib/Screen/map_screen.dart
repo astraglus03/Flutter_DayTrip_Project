@@ -32,6 +32,14 @@ class _MapScreenState extends State<MapScreen> {
   List<Map<String, dynamic>> spacedetailDataList = [];
   List<Map<String, dynamic>> spacephotoList = [];
 
+  //spaceDB 필드값 저장
+  late String DBimage = '';
+  late String DBlocation = '';
+  late String DBlocationName = '';
+  late String DBspaceName = '';
+  late String DBtag = '';
+
+
   Future<void> _updateAllLocations() async {
     try {
       QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance
@@ -226,7 +234,13 @@ class _MapScreenState extends State<MapScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PlaceBlogScreen(),
+                                  builder: (context) => PlaceBlogScreen(
+                                    image: DBimage,
+                                    location: DBlocation,
+                                    locationName: DBlocationName,
+                                    spaceName: DBspaceName,
+                                    tag: DBtag,
+                                  ),
                                 ),
                               );
                             },
@@ -381,6 +395,13 @@ class _MapScreenState extends State<MapScreen> {
           String spaceName = document.data()!['spaceName'];
           String tag = document.data()!['tag'];
 
+          //DB 불러온 값 변수에 저장
+          DBimage = image;
+          DBlocation = locationString;
+          DBlocationName = locationName;
+          DBspaceName = spaceName;
+          DBtag = tag;
+
           _showFoodDialog(image, locationString, locationName, spaceName, tag);
           return; // Stop iterating once data is found
         }
@@ -420,7 +441,13 @@ class _MapScreenState extends State<MapScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlaceBlogScreen(),
+                    builder: (context) => PlaceBlogScreen(
+                      image: DBimage,
+                      location: DBlocation,
+                      locationName: DBlocationName,
+                      spaceName: DBspaceName,
+                      tag: DBtag,
+                    ),
                   ),
                 );
               },

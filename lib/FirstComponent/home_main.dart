@@ -197,14 +197,14 @@ class _RecentPostState extends State<RecentPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {
+              onTap: () {/*
                 // Navigate to PlaceBlogScreen when the image is tapped
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlaceBlogScreen(),
                   ),
-                );
+                );*/
               },
               child: Stack(
                 children: [
@@ -502,14 +502,14 @@ class _PopularPostState extends State<PopularPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {
+              onTap: () {/*
                 // Navigate to PlaceBlogScreen when the image is tapped
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlaceBlogScreen(),
                   ),
-                );
+                );*/
               },
               child: Stack(
                 children: [
