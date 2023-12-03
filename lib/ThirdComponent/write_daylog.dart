@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_project/ThirdComponent/upload_data.dart';
 import 'package:final_project/model_db/postmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,11 +13,13 @@ class SpaceInfo {
   final String imagePath;
   final String title;
   final String location;
+  final String tag;
 
   SpaceInfo({
     required this.imagePath,
     required this.title,
     required this.location,
+    required this.tag,
   });
 }
 
@@ -39,6 +40,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
   bool check1 = false;
   bool check2 = false;
   String? selectedTitle;
+  String? spaceTag;
+  String? spaceLocation;
 
   late FocusNode _textFocusNode;
 
@@ -102,6 +105,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
     if (imageUrl != null) {
       final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
+      final String writtenTime = DateFormat('yyyy/MM/dd - HH:mm:ss').format(DateTime.now());
 
       final post = PostModel(
         pid:uuid.v4(),            // 게시물 id
@@ -110,8 +114,11 @@ class _WriteDayLogState extends State<WriteDayLog> {
         image: imageUrl,      // 게시물 사진
         spaceName:selectedTitle!,   // 공간 이름
         date:parsedDate,      // 작성 날짜
-        tag:hashTagButton.toString(),         // 태그
+        tag:spaceTag.toString(),         // 태그
         recomTag:hashTagButton.toString(),    // 추천 태그
+        // good:1,           // 좋아요
+        locationName: spaceLocation.toString(), // 공간 주소
+        writtenTime: writtenTime, // 작성 시간
       );
 
       final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -145,6 +152,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
           imagePath: data['image'] ?? '',
           location: data['locationName'] ?? '',
           title: data['spaceName'] ?? '',
+          tag: data['tag'] ??  '',
         );
         fetchedSpaceModels.add(spaceModel);
       });
@@ -488,6 +496,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
                   if (spaceInfoList != null && spaceInfoList!.isNotEmpty) {
                     setState(() {
                       selectedTitle = spaceInfoList![index].title;
+                      spaceTag = spaceInfoList![index].tag;
+                      spaceLocation = spaceInfoList![index].location;
                     });
                     Navigator.pop(context, spaceInfoList![index].title);
                   }
