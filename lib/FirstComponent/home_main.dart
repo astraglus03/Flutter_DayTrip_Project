@@ -8,6 +8,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({Key? key});
@@ -137,52 +139,71 @@ class _HomeMainState extends State<HomeMain> {
   }
 
   Future<void> fetchRecentPostModel() async {
-    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
 
-    List<String> updatedRecentImagePaths = []; // 새로운 이미지 경로 리스트
-    List<RecentPostInfo> updatedRecentPostInfoList = [];
+      List<String> updatedRecentImagePaths = [];
+      List<RecentPostInfo> updatedRecentPostInfoList = [];
 
-    final querySnapshot = await usersCollectionRef.get();
-    for (final userDoc in querySnapshot.docs) {
-      final postCollectionRef = userDoc.reference.collection('post');
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('post');
 
-      final postQuerySnapshot = await postCollectionRef.get();
-      for (final postDoc in postQuerySnapshot.docs) {
-        final data = postDoc.data();
-        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
-        String image = data.containsKey('image') ? data['image'] : '';
-        String pid = data.containsKey('pid') ? data['pid'] : '';
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          String pid = data.containsKey('pid') ? data['pid'] : '';
+          String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
 
-        // 이미지 경로를 가져와서 리스트에 추가
-        updatedRecentImagePaths.add(image);
+          if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
+            updatedRecentImagePaths.add(image);
 
-        updatedRecentPostInfoList.add(RecentPostInfo(
-          spaceName: spaceName,
-          image: image,
-          pid: pid,
-
-        ));
+            updatedRecentPostInfoList.add(RecentPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+              writtenTime: writtenTime,
+            ));
+          }
+        }
       }
-    }
 
-    // 모든 데이터를 한 번에 setState로 업데이트
-    setState(() {
-      recentPostInfoList.addAll(updatedRecentPostInfoList);
-      recentImagePaths = updatedRecentImagePaths;
-    });
+      setState(() {
+        recentPostInfoList = updatedRecentPostInfoList;
+        recentImagePaths = updatedRecentImagePaths;
+      });
+    } catch (e) {
+      // Handle exceptions
+      print('Error fetching data: $e');
+      // You might want to show an error message to the user here
+    }
   }
 
+
+  bool _isToday(String writtenTime) {
+    final now = DateTime.now();
+    final parsedTime = DateFormat('yyyy/MM/dd - HH:mm:ss').parse(writtenTime);
+
+    // Compare the year, month, and day of both dates
+    return now.year == parsedTime.year &&
+        now.month == parsedTime.month &&
+        now.day == parsedTime.day;
+  }
 }
 
 class RecentPostInfo{
   final String spaceName;
   final String image;
   final String pid;
+  final String writtenTime;
 
   RecentPostInfo({
     required this.spaceName,
     required this.image,
     required this.pid,
+    required this.writtenTime,
   });
 }
 
