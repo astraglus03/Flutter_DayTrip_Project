@@ -221,22 +221,39 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                 ),
               ),
               // 지도를 표시할 Container
-              // 지도를 표시하는 Container
               Container(
                 height: 200,
                 child: GoogleMap(
-                  // 초기 위치 설정 (예: 서울)
+                  // 초기 카메라 위치 설정
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(37.5665, 126.9780),
+                    target: LatLng(
+                      double.parse(widget.location.split('(')[1].split(',')[0].trim()), // 위도 추출
+                      double.parse(widget.location.split(',')[1].split(')')[0].trim()), // 경도 추출
+                    ),
                     zoom: 15.0,
                   ),
                   // 지도 스타일 적용
                   onMapCreated: (GoogleMapController controller) {
                     controller.setMapStyle(darkMapStyle);
                   },
-                  // 추가 설정 및 마커 등을 여기에 추가 가능
+                  // 마커 추가
+                  markers: {
+                    Marker(
+                      markerId: MarkerId('locationMarker'),
+                      position: LatLng(
+                        double.parse(widget.location.split('(')[1].split(',')[0].trim()), // 위도 추출
+                        double.parse(widget.location.split(',')[1].split(')')[0].trim()), // 경도 추출
+                      ),
+                      infoWindow: InfoWindow(
+                        title: '${widget.spaceName}',
+                        snippet: '${widget.tag}',
+                      ),
+                    ),
+                  },
                 ),
               ),
+
+
               Container(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
