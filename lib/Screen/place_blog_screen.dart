@@ -21,7 +21,9 @@ class PlaceBlogScreen extends StatefulWidget {
   @override
   _PlaceBlogScreenState createState() => _PlaceBlogScreenState();
 }
-
+List<String> userImages = [];
+List<String> userIDs = [];
+List<String> userName = [];
 class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
   int selectedUserIndex = -1; // 선택된 사용자를 추적하기 위한 변수
   List<String> userPosts = [
@@ -47,8 +49,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
   }
 
   Future<List<String>> getUserImages(String spaceName) async {
-    List<String> userImages = [];
-    List<String> userIDs = [];
+
 
     // 'users' 컬렉션에 대한 참조
     CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -67,7 +68,10 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
         if (postDoc['spaceName'] == spaceName) {
           // 'image'가 이미지 URL이 저장된 필드로 가정
           String image = userDoc['image'] ?? ''; // 'image' 필드가 없으면 빈 문자열로 대체
+          String name = userDoc['displayName'];
+
           userImages.add(image);
+          userName.add(name);
           userIDs.add(userDoc.id); // 해당 문서의 ID를 저장
         }
       });
@@ -75,6 +79,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
 
     print('User IDs: $userIDs');
     print('User Images: $userImages');
+    print(userName);
 
     return userImages;
   }
@@ -182,6 +187,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
               ),
 
               // 선택된 사용자가 쓴 글 표시
+              // 선택된 사용자가 쓴 글 표시
               Container(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
@@ -193,14 +199,25 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     ),
                     SizedBox(height: 16.0), // 간격 추가
                     selectedUserIndex != -1
-                        ? Text(
-                      userPosts[selectedUserIndex],
-                      style: TextStyle(fontSize: 18.0),
+                        ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '작성자: ${userName[selectedUserIndex]}',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          userPosts[selectedUserIndex],
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                      ],
                     )
                         : SizedBox.shrink(),
                   ],
                 ),
               ),
+
               // 지도를 표시할 Container
               Container(
                 height: 200,
