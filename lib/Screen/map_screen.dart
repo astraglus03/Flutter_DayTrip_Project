@@ -14,12 +14,30 @@ class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
 }
+List<Map<String, dynamic>> space = [];
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation = LatLng(36.83407, 127.1793);
   late LatLng exampleLocation = LatLng(36.834, 127.179);
   Set<Marker> _markers = {};
+  bool isStudySelected = false;
+  bool isTeamProjectSelected = false;
+  bool isExerciseSelected = false;
+  bool isWalkingSelected = false;
+  bool isRestSelected = false;
+
+  // "space" 컬렉션의 데이터를 저장할 변수
+  List<Map<String, dynamic>> spaceDataList = [];
+  List<Map<String, dynamic>> spacedetailDataList = [];
+  List<Map<String, dynamic>> spacephotoList = [];
+
+  //spaceDB 필드값 저장
+  late String DBimage = '';
+  late String DBlocation = '';
+  late String DBlocationName = '';
+  late String DBspaceName = '';
+  late String DBtag = '';
 
 
   Future<void> _updateAllLocations() async {
@@ -43,6 +61,19 @@ class _MapScreenState extends State<MapScreen> {
         spaceSnapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
           final locationString = document.data()!['location'];
           final name = document.data()!['name'];
+          final spaceName = document.data()!['spaceName'];
+          String locationName = document.data()!['locationName'];
+          String image = document.data()!['image'];
+
+          spaceDataList.add({'name': spaceName});
+          spacedetailDataList.add({'locationName': locationName});
+          spacephotoList.add({'image': image});
+          print(spaceDataList);
+          print(spacedetailDataList);
+          print(spacephotoList);
+          space = spaceDataList;
+          print(space);
+
 
           if (locationString != null) {
             final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
@@ -144,13 +175,14 @@ class _MapScreenState extends State<MapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildSearchButton('공부'),
-                _buildSearchButton('팀플'),
-                _buildSearchButton('운동'),
-                _buildSearchButton('산책'),
-                _buildSearchButton('휴식'),
+                _buildSearchButton('공부', isStudySelected),
+                _buildSearchButton('팀플', isTeamProjectSelected),
+                _buildSearchButton('운동', isExerciseSelected),
+                _buildSearchButton('산책', isWalkingSelected),
+                _buildSearchButton('휴식', isRestSelected),
               ],
             ),
+
           ),
 
           DraggableScrollableSheet(
@@ -172,24 +204,58 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 child: ListView.builder(
                   controller: scrollController,
-                  itemCount: 20,
+                  itemCount: spaceDataList.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('Item $index'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaceBlogScreen(),
+                    final spaceData = spaceDataList[index];
+                    final spaceName = spaceData['name'];
+                    final locationName = spacedetailDataList[index]['locationName'];
+                    final image = spacephotoList[index]['image'];
+
+                    return Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('$spaceName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                          Text('$locationName'),
+                          SizedBox(height: 8.0),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              image,
+                              height: 150.0, // Adjust the height as needed
+                              width: double.infinity,
+                              fit: BoxFit.cover, // This controls how the image is fitted
+                            ),
                           ),
-                        );
-                      },
+                          SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlaceBlogScreen(
+                                    image: DBimage,
+                                    location: DBlocation,
+                                    locationName: DBlocationName,
+                                    spaceName: DBspaceName,
+                                    tag: DBtag,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text('자세히 보기'),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
               );
             },
           ),
+
+
 
           Positioned(
             bottom: 16.0,
@@ -214,10 +280,10 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildSearchButton(String label) {
+  Widget _buildSearchButton(String label, bool isSelected) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: isSelected ? Colors.white : Colors.black,
         borderRadius: BorderRadius.circular(30.0),
         border: Border.all(color: Colors.white, width: 1.0),
       ),
@@ -225,18 +291,46 @@ class _MapScreenState extends State<MapScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
-          onTap: () {},
+          onTap: () {
+            // 여기에 버튼이 눌렸을 때 수행할 로직을 추가합니다.
+            // 예를 들어, 선택된 상태를 설정하고 해당하는 작업을 트리거할 수 있습니다.
+            // 이 예제에서는 선택된 레이블을 출력합니다.
+            print('선택된 항목: $label');
+
+            // 같은 버튼을 두 번 눌렀을 때 체크가 해제되도록 토글합니다.
+            setState(() {
+              switch (label) {
+                case '공부':
+                  isStudySelected = !isStudySelected;
+                  break;
+                case '팀플':
+                  isTeamProjectSelected = !isTeamProjectSelected;
+                  break;
+                case '운동':
+                  isExerciseSelected = !isExerciseSelected;
+                  break;
+                case '산책':
+                  isWalkingSelected = !isWalkingSelected;
+                  break;
+                case '휴식':
+                  isRestSelected = !isRestSelected;
+                  break;
+              }
+            });
+          },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               label,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: isSelected ? Colors.black : Colors.white),
             ),
           ),
         ),
       ),
     );
   }
+
+
 
   void _addMarker() {
     final Marker marker = Marker(
@@ -301,6 +395,13 @@ class _MapScreenState extends State<MapScreen> {
           String spaceName = document.data()!['spaceName'];
           String tag = document.data()!['tag'];
 
+          //DB 불러온 값 변수에 저장
+          DBimage = image;
+          DBlocation = locationString;
+          DBlocationName = locationName;
+          DBspaceName = spaceName;
+          DBtag = tag;
+
           _showFoodDialog(image, locationString, locationName, spaceName, tag);
           return; // Stop iterating once data is found
         }
@@ -312,27 +413,23 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-
-
   void _showFoodDialog(String image, String locationString, String locationName, String spaceName, String tag) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('음식점 정보'),
+          title: Text('$spaceName'),
           content: Container(
-            width: 300,
-            height: 400,
+            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.network(image),
+                  SizedBox(height: 10,width:MediaQuery.of(context).size.width * 0.8),
+                  _buildRowWithIcon(Icons.location_on, locationName),
+                  _buildRowWithIcon(Icons.tag, '태그: $tag'),
                   SizedBox(height: 10),
-                  Text('위치: $locationString'),
-                  Text('장소 이름: $locationName'),
-                  Text('공간 이름: $spaceName'),
-                  Text('태그: $tag'),
+                  Image.network(image),
                 ],
               ),
             ),
@@ -344,7 +441,13 @@ class _MapScreenState extends State<MapScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlaceBlogScreen(),
+                    builder: (context) => PlaceBlogScreen(
+                      image: DBimage,
+                      location: DBlocation,
+                      locationName: DBlocationName,
+                      spaceName: DBspaceName,
+                      tag: DBtag,
+                    ),
                   ),
                 );
               },
@@ -360,6 +463,24 @@ class _MapScreenState extends State<MapScreen> {
       },
     );
   }
+
+  Widget _buildRowWithIcon(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon),
+        SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            text,
+            overflow: TextOverflow.ellipsis,  // 오버플로우 처리
+            maxLines: 2,  // 텍스트 한 줄로 제한
+          ),
+        ),
+      ],
+    );
+  }
+
+
 
 }
 const darkMapStyle = '''
