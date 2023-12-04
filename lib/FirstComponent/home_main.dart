@@ -199,6 +199,8 @@ class _HomeMainState extends State<HomeMain> {
           String image = data.containsKey('image') ? data['image'] : '';
           String pid = data.containsKey('pid') ? data['pid'] : '';
           String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String tag = data.containsKey('tag') ? data['tag']: '';
+          String locationName = data.containsKey('locationName') ? data['locationName']: '';
 
           if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
             updatedRecentImagePaths.add(image);
@@ -208,6 +210,8 @@ class _HomeMainState extends State<HomeMain> {
               image: image,
               pid: pid,
               writtenTime: writtenTime,
+              tag : tag,
+              locationName: locationName,
             ));
           }
         }
@@ -290,6 +294,8 @@ class RecentPostInfo{
   final String image;
   final String pid;
   final String writtenTime;
+  final String tag;
+  final String locationName;
   bool isLiked;
 
   RecentPostInfo({
@@ -297,6 +303,8 @@ class RecentPostInfo{
     required this.image,
     required this.pid,
     required this.writtenTime,
+    required this.tag,
+    required this.locationName,
     this.isLiked = false,
   });
 }
@@ -370,7 +378,7 @@ class Title extends StatelessWidget {
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
   final List<RecentPostInfo> postInfoList; // List of RecentPostInfo objects
-  final Function(String, bool) onLikeButtonPressed; // Function to handle like button press
+  final Function(String, bool) onLikeButtonPressed;
 
   const RecentPost({
     required this.imagePaths,
@@ -398,14 +406,33 @@ class _RecentPostState extends State<RecentPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {/*
-                // Navigate to PlaceBlogScreen when the image is tapped
+              onTap: () async {
+                String location = '';
+
+                // Assume location and locationName are in the space collection
+                QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                    .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
+                    .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
+                    .get();
+
+                // Check if the query has any results
+                if (spaceSnapshot.docs.isNotEmpty) {
+                  // Get the first document (assuming unique locationName values)
+                  location = spaceSnapshot.docs.first.get('location');
+                }
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlaceBlogScreen(),
+                    builder: (context) => PlaceBlogScreen(
+                      image: widget.postInfoList[index].image,
+                      location: location,
+                      locationName: widget.postInfoList[index].locationName,
+                      spaceName: widget.postInfoList[index].spaceName,
+                      tag: widget.postInfoList[index].tag,
+                    ),
                   ),
-                );*/
+                );
               },
               child: Stack(
                 children: [
@@ -429,6 +456,7 @@ class _RecentPostState extends State<RecentPost> {
                             : Icons.favorite_border, color: Colors.red,// Keep default icon color if not liked
                       ),
                       onPressed: () {
+                        print('Post Info List: ${widget.postInfoList[index]}');
                         // Toggle like status when the button is pressed
                         bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
                         String pid = widget.postInfoList[index].pid;
