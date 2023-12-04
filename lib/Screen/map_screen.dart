@@ -116,6 +116,85 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<void> _updatefilterLocations() async {
+    try {
+      setState(() {
+        _markers.clear();
+      });
+      // 사용자 컬렉션에서 모든 사용자 가져오기
+      QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> userDocument in usersSnapshot.docs) {
+        // 각 사용자 문서의 ID
+        String userId = userDocument.id;
+
+        // 사용자의 'space' 컬렉션에서 데이터 가져오기
+        QuerySnapshot<Map<String, dynamic>> spaceSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('space')
+            .get();
+
+        // 'space' 컬렉션의 각 문서에 대한 작업 수행
+        spaceSnapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
+          final locationString = document.data()!['location'];
+          final name = document.data()!['name'];
+          final spaceName = document.data()!['spaceName'];
+          String locationName = document.data()!['locationName'];
+          String image = document.data()!['image'];
+          String tag = document.data()!['tag'];
+
+          // 데이터 리스트에 추가
+          spacephotoList.add({'image': image});
+          spacelocation.add({'location': locationString});
+          spacedetailDataList.add({'locationName': locationName});
+          spaceDataList.add({'name': spaceName});
+          spaceTag.add({'tag': tag});
+
+          space = spaceDataList;
+
+          // 선택한 태그에 따라 마커 필터링 및 추가
+          if ((isStudySelected && tag == '카페') ||
+              (isTeamProjectSelected && tag == '음식점') ||
+              (isExerciseSelected && tag == '편의점') ||
+              (isWalkingSelected && tag == '학교건물') ||
+              (isRestSelected && tag == '주차장')) {
+            if (locationString != null) {
+              // 위치 데이터 파싱 및 LatLng 객체 생성
+              final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
+              final coordinates = cleanString.split(',');
+              double latitude = double.parse(coordinates[0].trim());
+              double longitude = double.parse(coordinates[1].trim());
+
+              final LatLng placeLocation = LatLng(latitude, longitude);
+
+              // 마커 생성 및 추가
+              final Marker marker = Marker(
+                markerId: MarkerId(placeLocation.toString()),
+                position: placeLocation,
+                infoWindow: InfoWindow(
+                  title: name,
+                  snippet: '여기에 있습니다.',
+                ),
+                onTap: () {
+                  _fetchFoodMarkerData(placeLocation);
+                },
+              );
+
+              setState(() {
+                _markers.add(marker);
+              });
+            }
+          }
+        });
+      }
+    } catch (e) {
+      print('에러: $e');
+    }
+  }
+
 
 
   @override
@@ -185,11 +264,11 @@ class _MapScreenState extends State<MapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildSearchButton('공부', isStudySelected),
-                _buildSearchButton('팀플', isTeamProjectSelected),
-                _buildSearchButton('운동', isExerciseSelected),
-                _buildSearchButton('산책', isWalkingSelected),
-                _buildSearchButton('휴식', isRestSelected),
+                _buildSearchButton('카페', isStudySelected),
+                _buildSearchButton('음식점', isTeamProjectSelected),
+                _buildSearchButton('편의점', isExerciseSelected),
+                _buildSearchButton('학교건물', isWalkingSelected),
+                _buildSearchButton('주차장', isRestSelected),
               ],
             ),
 
@@ -302,6 +381,7 @@ class _MapScreenState extends State<MapScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
           onTap: () {
+            _updatefilterLocations();
             // 여기에 버튼이 눌렸을 때 수행할 로직을 추가합니다.
             // 예를 들어, 선택된 상태를 설정하고 해당하는 작업을 트리거할 수 있습니다.
             // 이 예제에서는 선택된 레이블을 출력합니다.
@@ -310,19 +390,19 @@ class _MapScreenState extends State<MapScreen> {
             // 같은 버튼을 두 번 눌렀을 때 체크가 해제되도록 토글합니다.
             setState(() {
               switch (label) {
-                case '공부':
+                case '카페':
                   isStudySelected = !isStudySelected;
                   break;
-                case '팀플':
+                case '음식점':
                   isTeamProjectSelected = !isTeamProjectSelected;
                   break;
-                case '운동':
+                case '편의점':
                   isExerciseSelected = !isExerciseSelected;
                   break;
-                case '산책':
+                case '학교건물':
                   isWalkingSelected = !isWalkingSelected;
                   break;
-                case '휴식':
+                case '주차장':
                   isRestSelected = !isRestSelected;
                   break;
               }
