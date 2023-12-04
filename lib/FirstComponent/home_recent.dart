@@ -1,8 +1,7 @@
 import 'package:final_project/Screen/place_blog_screen.dart';
-import 'package:flutter/material.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class HomeRecent extends StatefulWidget {
@@ -29,7 +28,6 @@ class PostTab extends StatefulWidget {
 
   @override
   State<PostTab> createState() => _PostTabState();
-
 }
 
 class _PostTabState extends State<PostTab> {
@@ -42,102 +40,110 @@ class _PostTabState extends State<PostTab> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 6, // 6개의 탭
-        initialIndex: 0,
-        child: Scaffold(
-            appBar: AppBar(
-              title: Text('최신 피드', style: TextStyle(color: Colors.white)),
-              //backgroundColor: Colors.black,
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: '전체'),
-                  Tab(text: '카페'),
-                  Tab(text: '음식점'),
-                  Tab(text: '편의점'),
-                  Tab(text: '학교건물'),
-                  Tab(text: '문화'),
-                ],
-                onTap: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
+      length: 6, // 6개의 탭
+      initialIndex: 0,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('최신 피드', style: TextStyle(color: Colors.white)),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: '전체'),
+              Tab(text: '카페'),
+              Tab(text: '음식점'),
+              Tab(text: '편의점'),
+              Tab(text: '학교건물'),
+              Tab(text: '문화'),
+            ],
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+          ),
+        ),
+        body: TabBarView(
+          children: List.generate(
+            tabInfo.length,
+                (tabIndex) => GridView.builder(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
+                mainAxisExtent: 340,
+                childAspectRatio: 0.5,
+                mainAxisSpacing: 0.0,
               ),
-            ),
-          body: TabBarView(
-            children: List.generate(
-              tabInfo.length,
-                  (tabIndex) => GridView.builder(
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
-                  mainAxisExtent: 340,
-                  childAspectRatio: 0.5,
-                  mainAxisSpacing: 0.0,
-                ),
-                itemCount: tabInfo[tabIndex].length,
-                itemBuilder: (BuildContext context, int index) {
-                  var info = tabInfo[tabIndex][index];
-                  bool isLiked = likedItemsList[tabIndex].contains(index);
+              itemCount: tabInfo[tabIndex].length,
+              itemBuilder: (BuildContext context, int index) {
+                var info = tabInfo[tabIndex][index];
+                bool isLiked = likedItemsList[tabIndex].contains(index);
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlaceBlogScreen(),
-                        ),
-                      );
-                    },
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2,
-                              height: MediaQuery.of(context).size.height / 3,
-                              margin: EdgeInsets.symmetric(horizontal: 0.5),
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(info['imagePath']),
-                                  fit: BoxFit.cover,
-                                ),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlaceBlogScreen(),
+                      ),
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: MediaQuery.of(context).size.height / 3.2,
+                            margin: EdgeInsets.symmetric(horizontal: 0.5),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(info['imagePath']),
+                                fit: BoxFit.cover,
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text(info['spaceName']),
-                            //Text(info['pid']),
-                            Text(info['locationName']),
-                          ],
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (isLiked) {
-                                  likedItemsList[tabIndex].remove(index);
-                                } else {
-                                  likedItemsList[tabIndex].add(index);
-                                }
-                              });
-                            },
-                            child: Icon(
-                              isLiked
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: Colors.red,
-                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            info['spaceName'],
+                            overflow: TextOverflow.ellipsis, // 텍스트가 너무 길 경우 생략 처리
+                            maxLines: 3,
+                          ),
+                          //Text(info['pid']),
+                          Text(
+                            info['locationName'],
+                            overflow: TextOverflow.ellipsis, // 텍스트가 너무 길 경우 생략 처리
+                            maxLines: 3,
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            toggleLike(info['pid'], isLiked);
+                            setState(() {
+                              if (isLiked) {
+                                likedItemsList[tabIndex].remove(index);
+                              } else {
+                                likedItemsList[tabIndex].add(index);
+                              }
+                            });
+                          },
+                          child: Icon(
+                            isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.red,
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -256,6 +262,67 @@ class _PostTabState extends State<PostTab> {
     [], // 탭5
     [], // 탭6
   ];
+
+  Future<void> toggleLike(String pid, bool isLiked) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      try {
+        final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+        final querySnapshot = await usersCollectionRef.get();
+
+        for (final userDoc in querySnapshot.docs) {
+          final postCollectionRef = userDoc.reference.collection('post');
+          final postDoc = await postCollectionRef.doc(pid).get();
+
+          if (postDoc.exists) {
+            DocumentReference postDocRef = postDoc.reference;
+
+            if (!isLiked) {
+              await postDocRef.update({
+                'likes': FieldValue.arrayUnion([uid]),
+              });
+              print("Liked post successfully");
+            } else {
+              await postDocRef.update({
+                'likes': FieldValue.arrayRemove([uid]),
+              });
+              print("Unliked post successfully");
+            }
+
+
+            updateSpecificTab(pid, isLiked, 1); // 1번탭: 카페
+            updateSpecificTab(pid, isLiked, 2); // 2번탭: 음식점
+            updateSpecificTab(pid, isLiked, 3); // 3번탭: 편의점
+            updateSpecificTab(pid, isLiked, 4); // 4번탭: 학교공간
+            updateSpecificTab(pid, isLiked, 5); // 5번탭: 문화
+
+
+            updateSpecificTab(pid, isLiked, 0); // 0번탭: 전체
+          }
+        }
+      } catch (error) {
+        print('Error toggling like: $error');
+      }
+    }
+  }
+
+  void updateSpecificTab(String pid, bool isLiked, int tabIndex) {
+
+    if (tabIndex >= 0 && tabIndex < tabInfo.length) {
+      for (int i = 0; i < tabInfo[tabIndex].length; i++) {
+        if (tabInfo[tabIndex][i]['pid'] == pid) {
+          setState(() {
+            isLiked ? likedItemsList[tabIndex].remove(i) : likedItemsList[tabIndex].add(i);
+          });
+          break;
+        }
+      }
+    }
+  }
+
 }
 
 class RecentPostInfo{
