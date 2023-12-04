@@ -179,7 +179,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                     height: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey[300],
+                      color: Colors.black26, //Colors.grey[300],
                     ),
 
                     child: Padding(
@@ -204,7 +204,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -214,6 +214,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         decoration: InputDecoration(
                           hintText: '장소 이름을 입력하세요.',
                           border: InputBorder.none,
+                          hintStyle: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -226,7 +227,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -236,6 +237,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         decoration: InputDecoration(
                           hintText: '전시 행사 이름을 입력하세요.',
                           border: InputBorder.none,
+                          hintStyle: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),

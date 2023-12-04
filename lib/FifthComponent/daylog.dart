@@ -56,11 +56,10 @@ class _DayLogState extends State<DayLog> {
     final user = FirebaseAuth.instance.currentUser;
     final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-         allUsersCollectionRef
-        .collection('oneLine')
-        .snapshots()
-        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-      List<OneLineInfo> updatedOneLineInfoList = querySnapshot.docs.map((doc) {
+    final querySnapshot = await allUsersCollectionRef.collection('oneLine').get();
+
+    setState(() {
+      oneLineInfoList = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
         String date = data.containsKey('date') ? data['date'] : '';
@@ -74,10 +73,6 @@ class _DayLogState extends State<DayLog> {
           tag: tag,
         );
       }).toList();
-
-      setState(() {
-        oneLineInfoList = updatedOneLineInfoList;
-      });
     });
   }
 
@@ -86,28 +81,19 @@ class _DayLogState extends State<DayLog> {
     final user = FirebaseAuth.instance.currentUser;
     final allUsersCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-         allUsersCollectionRef
-        .collection('post')
-        .snapshots()
-        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-      List<MyPostInfo> updatedMyPostInfoList = querySnapshot.docs.map((doc) {
+    final querySnapshot = await allUsersCollectionRef.collection('post').get();
+
+    setState(() {
+      MyPostInfoList = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
-        String image = data.containsKey('image') ? data['image']: '';
-
-        // String date = data.containsKey('date') ? data['date'] : '';
-        // String locationName = data.containsKey('locationName') ? data['locationName'] : '';
-        // String tag = data.containsKey('tag') ? data['tag'] : '';
+        String image = data.containsKey('image') ? data['image'] : '';
 
         return MyPostInfo(
           spaceName: spaceName,
           image: image,
         );
       }).toList();
-
-      setState(() {
-        MyPostInfoList = updatedMyPostInfoList;
-      });
     });
   }
 
@@ -172,8 +158,7 @@ class _DayLogState extends State<DayLog> {
         SizedBox(height: 10,),
 
         if (selectedMyPost)
-           MyPostList(postList: MyPostInfoList),
-
+          MyPostList(postList: MyPostInfoList),
         if (selectedTimeLine)
           Column(
             children: oneLineInfoList.map((info) {

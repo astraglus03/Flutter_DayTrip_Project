@@ -130,9 +130,11 @@ class _AllPostListState extends State<AllPostList> {
             );
           }).toList();
 
-          setState(() {
-            allPostInfoList.addAll(updatedAllPostInfoList);
-          });
+          if (mounted) {
+            setState(() {
+              allPostInfoList.addAll(updatedAllPostInfoList);
+            });
+          }
         }
       } catch (error) {
         print('Error fetching posts: $error');
