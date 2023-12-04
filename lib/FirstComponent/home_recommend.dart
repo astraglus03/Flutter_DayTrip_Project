@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'home_recom_detail.dart';
 
@@ -17,6 +18,42 @@ class _HomeRecommendState extends State<HomeRecommend> {
 
   List<String>? currentPlaces;
   String? selectedTag;
+
+  List<Map<String, dynamic>> placesData = []; // placesData를 클래스 레벨 변수로 정의
+
+  Future<void> fetchPlacesByTag(String tag) async {
+    try {
+      placesData.clear(); // 이전 데이터 지우기
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collectionGroup('post')
+          .where('recomTag', isEqualTo: tag)
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey('spaceName')) {
+          Map<String, dynamic> placeData = {
+            'spaceName': data['spaceName'],
+            'locationName': data['locationName'],
+            'originTag': data['tag'],
+            'imagePath': data['image'],
+          };
+          placesData.add(placeData);
+        }
+      });
+
+      updatePlacesList(tag); // 데이터를 가져온 후 장소 목록 업데이트
+    } catch (e) {
+      print("장소 가져오기 오류: $e");
+    }
+  }
+
+  void updatePlacesList(String tag) {
+    setState(() {
+      currentPlaces = placesData.map((data) => data['spaceName'] as String).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +86,12 @@ class _HomeRecommendState extends State<HomeRecommend> {
               ],
             ),
             SizedBox(height: 20),
-            Result(updatePlaces: updatePlaces, currentPlaces: currentPlaces, tag: selectedTag),
+            Result(
+              updatePlaces: updatePlaces,
+              currentPlaces: currentPlaces,
+              tag: selectedTag,
+              placesData: placesData, // placesData를 Result 위젯에 전달
+            ),
             SizedBox(height: 20),
           ],
         ),
@@ -68,9 +110,13 @@ class _HomeRecommendState extends State<HomeRecommend> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(30.0),
-          onTap: () {
+          onTap: () async {
             selectedTag = label; // 선택된 태그 업데이트
-            updatePlaces(label);
+            await fetchPlacesByTag(selectedTag!);
+
+            List<String> places = placesData.map((data) => data['spaceName'] as String).toList();
+            // Update places with spaceNames
+            updatePlaces(label, places);
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
@@ -88,23 +134,25 @@ class _HomeRecommendState extends State<HomeRecommend> {
     );
   }
 
-  void updatePlaces(String tag) {
+  void updatePlaces(String tag, List<String> places) {
     setState(() {
-      currentPlaces = tagsToPlaces[tag];
+      currentPlaces = places;
     });
   }
 }
 
 class Result extends StatelessWidget {
-  final Function(String) updatePlaces;
+  final Function(String, List<String>) updatePlaces;
   final List<String>? currentPlaces;
   final String? tag;
+  final List<Map<String, dynamic>> placesData;
 
   Result({
     Key? key,
     required this.updatePlaces,
     required this.currentPlaces,
     this.tag,
+    required this.placesData,
   }) : super(key: key);
 
   @override
@@ -123,18 +171,23 @@ class Result extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),
               itemCount: currentPlaces!.length,
               itemBuilder: (BuildContext context, int index) {
+                String placeName = currentPlaces![index];
+
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 5),
                   child: ListTile(
-                    title: Text(currentPlaces![index]),
+                    title: Text(placeName),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => HomeRecomDetail(
                             placeName: currentPlaces![index],
-                            tag: tag,
+                            tag: tag!,
+                            locationName: placesData[index]['locationName'],
+                            originTag: placesData[index]['recomTag'],
+                            imagePath: placesData[index]['imagePath'],
                           ),
                         ),
                       );

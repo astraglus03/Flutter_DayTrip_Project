@@ -75,16 +75,17 @@ class _PostTabState extends State<PostTab> {
               itemCount: tabInfo[tabIndex].length,
               itemBuilder: (BuildContext context, int index) {
                 var info = tabInfo[tabIndex][index];
+                print('정보: ${info}');
                 bool isLiked = likedItemsList[tabIndex].contains(index);
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlaceBlogScreen(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => PlaceBlogScreen(image: image, location: location, locationName: locationName, spaceName: spaceName, tag: tag),
+                    //   ),
+                    // );
                   },
                   child: Stack(
                     children: [
