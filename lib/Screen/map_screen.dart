@@ -45,6 +45,15 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _updateAllLocations() async {
     try {
+      setState(() {
+        _markers.clear();
+        spaceDataList = []; //spaceName
+        spacedetailDataList = []; //locationName
+        spacephotoList = []; //image
+        spacelocation = []; //image
+        spaceTag = []; //tag
+        print('초기화');
+      });
       QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .get();
@@ -195,16 +204,18 @@ class _MapScreenState extends State<MapScreen> {
               });
             }
           }
-          if(
-          isStudySelected == false &&
+
+          _buildSheetContent();
+        });
+      }
+      if(
+      isStudySelected == false &&
           isTeamProjectSelected == false &&
           isExerciseSelected == false &&
           isWalkingSelected == false &&
           isRestSelected == false){
-            _updateAllLocations();
-          }
-          _buildSheetContent();
-        });
+        _updateAllLocations();
+        print('업데이트');
       }
     } catch (e) {
       print('에러: $e');

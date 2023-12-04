@@ -38,7 +38,8 @@ class _SearchScreenState extends State<SearchScreen> {
           padding: EdgeInsets.fromLTRB(16.0, 35.0, 40.0, 0.0),
           child: CupertinoSearchTextField(
             backgroundColor: Colors.black,
-            onTap: () {},
+            onTap: () {
+            },
             onChanged: (String value) {
               // 검색어가 변경될 때마다 검색 결과 갱신
               setState(() {
