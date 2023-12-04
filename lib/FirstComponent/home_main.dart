@@ -22,6 +22,11 @@ class _HomeMainState extends State<HomeMain> {
   List<String> recentImagePaths = [];
   List<RecentPostInfo> recentPostInfoList = [];
 
+  List<String> exhibitionImagePaths = [];
+  List<ExhibitionPostInfo> exhibitionPostInfoList = [];
+
+
+
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
 
@@ -86,8 +91,6 @@ class _HomeMainState extends State<HomeMain> {
               },
             ),
             SizedBox(height: 10),
-            //ImageSlider(),
-            //SizedBox(height: 20),
             RecentPost(
               imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
               postInfoList: recentPostInfoList, // Pass the list of RecentPostInfo objects
@@ -109,19 +112,25 @@ class _HomeMainState extends State<HomeMain> {
             ),
             SizedBox(height: 10),
             ExhibitionSchedule(
-              selectedDay: selectedDay, // 선택된 요일 정보 전달
+              selectedDay: selectedDay,
+              imagePaths: exhibitionImagePaths, // Provide the imagePaths here
+              exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
               onDaySelected: (String day) {
                 setState(() {
-                  selectedDay = day; // 선택된 요일 업데이트
+                  selectedDay = day;
                 });
-                onDaySelected(day); // 변환된 값을 전달
+                onDaySelected(day);
                 print('Selected day: $day');
               },
             ),
 
             SizedBox(height: 20),
-            if (selectedDay.isNotEmpty) // 선택된 요일에 맞게 정보 표시
-              SelectedDay(selectedDay: selectedDay),
+            if (selectedDay.isNotEmpty)
+              SelectedDay(
+                selectedDay: selectedDay,
+                imagePaths: exhibitionImagePaths, // Provide the imagePaths here
+                exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
+              ),
 
             SizedBox(height: 20),
 
@@ -158,19 +167,18 @@ class _HomeMainState extends State<HomeMain> {
   }
 
   void onDateSelectedFromCalendar(DateTime selectedDate) {
-    // Handle the selected date here
     print('Selected date from calendar: $selectedDate');
   }
 
   void onDateSelectedFromCustom(DateTime selectedDate) {
-    // Handle the selected date here
     print('Selected date from custom: $selectedDate');
   }
 
-  @override // SaveClass 인스턴스 초기화
+  @override
   void initState() {
     super.initState();
     fetchRecentPostModel();
+    fetchExhibitionPostModel();
   }
 
   Future<void> fetchRecentPostModel() async {
@@ -226,8 +234,57 @@ class _HomeMainState extends State<HomeMain> {
         now.month == parsedTime.month &&
         now.day == parsedTime.day;
   }
+
+  Future<void> fetchExhibitionPostModel() async {
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      List<String> updatedExhibitionImagePaths = [];
+      List<ExhibitionPostInfo> updatedExhibitionPostInfoList = [];
+
+
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('space');
+
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          //String pid = data.containsKey('pid') ? data['pid'] : '';
+          //String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+          String exhibi_tag = data.containsKey('exhibi_tag') ? data['exhibi_tag'] : '';
+          String exhibi_name = data.containsKey('exhibi_name') ? data['exhibi_name'] : '';
+          String exhibi_date = data.containsKey('exhibi_date') ? data['exhibi_date'] : '';
+
+          updatedExhibitionImagePaths.add(image);
+
+          updatedExhibitionPostInfoList.add(ExhibitionPostInfo(
+            spaceName: spaceName,
+            image: image,
+            locationName : locationName,
+            exhibi_tag: exhibi_tag,
+            exhibi_name: exhibi_name,
+            exhibi_date: exhibi_date,
+          ));
+        }
+      }
+
+      setState(() {
+        exhibitionPostInfoList = updatedExhibitionPostInfoList;
+        exhibitionImagePaths = updatedExhibitionImagePaths;
+      });
+    } catch (e) {
+      // Handle exceptions
+      print('Error fetching data: $e');
+      // You might want to show an error message to the user here
+    }
+  }
 }
 
+// 최신 피드 db
 class RecentPostInfo{
   final String spaceName;
   final String image;
@@ -243,7 +300,38 @@ class RecentPostInfo{
     this.isLiked = false,
   });
 }
+// 전시 행사 db
+class ExhibitionPostInfo{
+  final String spaceName;
+  final String image;
+  final String locationName;
+  final String exhibi_tag;
+  final String exhibi_name;
+  final String exhibi_date;
 
+  ExhibitionPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.locationName,
+    required this.exhibi_tag,
+    required this.exhibi_name,
+    required this.exhibi_date,
+  });
+}
+// 인기 피드 db
+class PopularPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+  final String writtenTime;
+
+  PopularPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+    required this.writtenTime,
+  });
+}
 // 최신 피드 / 전체 보기> 버튼
 class Title extends StatelessWidget {
   final String title;
@@ -370,10 +458,15 @@ class ExhibitionSchedule extends StatelessWidget {
   final List<String> days = ["일", "월", "화", "수", "목", "금", "토"];
   final String selectedDay;
   final void Function(String) onDaySelected; // 함수
+  final List<String> imagePaths;
+
+  List<ExhibitionPostInfo> exhibitionPostInfoList = []; // exhibitionPostInfoList 정의
 
   ExhibitionSchedule({
     required this.selectedDay,
     required this.onDaySelected,
+    required this.imagePaths,
+    required this.exhibitionPostInfoList,
   });
 
   @override
@@ -434,9 +527,13 @@ class DayButton extends StatelessWidget {
 
 class SelectedDay extends StatefulWidget {
   final String selectedDay;
+  List<String> imagePaths = []; // imagePaths 정의
+  final List<ExhibitionPostInfo> exhibitionPostInfoList; // 추가된 부분
 
-  const SelectedDay({
+  SelectedDay({
     required this.selectedDay,
+    required this.exhibitionPostInfoList, // 추가된 부분
+    required this.imagePaths,
   });
 
   @override
@@ -445,146 +542,125 @@ class SelectedDay extends StatefulWidget {
 
 class _SelectedDayState extends State<SelectedDay> {
   late String _selectedDay;
+  late ExhibitionPostInfo _selectedPostInfo; // 추가된 부분
 
   @override
   void initState() {
     super.initState();
     _selectedDay = widget.selectedDay;
+    _selectedPostInfo = _getSelectedPostInfo(widget.selectedDay); // 추가된 부분
   }
 
   @override
   Widget build(BuildContext context) {
-    _selectedDay =
-        widget.selectedDay; // build 메서드에서도 선택된 요일 값을 업데이트(이 코드 안 쓰면 갱신 안 됨)
-    switch (_selectedDay) {
-      case '일':
-      // 일요일에 대한 정보
-        return Row(
-          children: [
-            Expanded(
-              flex: 1, // Row의 1/4 영역 차지
-              child: Image.asset(
-                'asset/img/company1.jpg',
-                width: 50,
-                height: 120,
-                fit: BoxFit.cover,
-              ), // 일요일 이미지
-            ),
-            Expanded(
-              flex: 3, // Row의 3/4 영역 차지
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                // 수평 방향(좌우로) 여백
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '전시', //
-                      style: TextStyle(fontSize: 13, color: Colors.red),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '한국의 기하학적 추상미술',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      '경기도',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: EdgeInsets.zero, // 좌측 여백 조절
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // 오버플로우 방지
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero, // 아이콘 버튼 주변의 패딩 제거
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () {},
-                          ),
-                          SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
-                          Text(
-                            '2023년 11월 16일 ~ 2024년 5월 19일',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      case '월':
-      // 월요일에 대한 정보
-        return Row(
-          children: [
-            Expanded(
-              flex: 1, // Row의 1/4 영역 차지
-              child: Image.asset(
-                'asset/img/company2.jpg',
-                width: 50,
-                height: 120,
-                fit: BoxFit.cover,
-              ), // 일요일 이미지
-            ),
-            Expanded(
-              flex: 3, // Row의 3/4 영역 차지
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                // 수평 방향(좌우로) 여백
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '팝업', //
-                      style: TextStyle(fontSize: 13, color: Colors.red),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '신세계백화점 본점 크리스마스 마켓',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      '서울',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: EdgeInsets.zero, // 좌측 여백 조절
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // 오버플로우 방지
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero, // 아이콘 버튼 주변의 패딩 제거
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () {},
-                          ),
-                          SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
-                          Text(
-                            '2023년 11월 9일 ~ 2023년 12월 27일',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-    // 기본적으로 해당 요일에 정보가 없으면 빈 공간 반환
-      default:
-        return SizedBox(); // 선택된 요일이 없으면 빈 공간 반환
-    }
+    _selectedPostInfo = _getSelectedPostInfo(_selectedDay); // 선택된 요일에 해당하는 정보 가져오기
+
+    // 선택된 요일에 따라 다른 정보를 반환합니다.
+    return _buildExhibitionInfo(_selectedPostInfo);
   }
+
+  Widget _buildExhibitionInfo(ExhibitionPostInfo postInfo) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Image.network(
+            _selectedPostInfo.image,
+            width: 50,
+            height: 120,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  postInfo.exhibi_tag,
+                  style: TextStyle(fontSize: 13, color: Colors.red),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  postInfo.exhibi_name,
+                  style: TextStyle(fontSize: 10),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  postInfo.locationName,
+                  style: TextStyle(fontSize: 10),
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: EdgeInsets.zero,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () {},
+                      ),
+                      SizedBox(width: 1),
+                      Text(
+                        postInfo.exhibi_date,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  // 선택된 요일에 해당하는 전시 정보를 반환하는 함수
+  ExhibitionPostInfo _getSelectedPostInfo(String day) {
+    return widget.exhibitionPostInfoList.firstWhere(
+          (info) {
+        if (info.exhibi_date.isNotEmpty) {
+          DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(info.exhibi_date);
+          String dayOfWeek = getDayOfWeekFromDate(parsedDate);
+          return dayOfWeek == day;
+        }
+        return false; // exhibi_date가 비어있는 경우 false 반환
+      },
+      orElse: () => ExhibitionPostInfo(
+        spaceName: '',
+        image: '',
+        locationName: '',
+        exhibi_tag: '',
+        exhibi_name: '',
+        exhibi_date: '',
+      ),
+    );
+  }
+
+  String getDayOfWeekFromDate(DateTime date) {
+    List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[date.weekday - 1];
+  }
+
+
+
+/*
+// Define a function to get the day of the week from a date
+  String getDayOfWeekFromDate(String dateStr) {
+    final date = DateTime.parse(dateStr.replaceAll('년 ', '-').replaceAll('월 ', '-').replaceAll('일', ''));
+    List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[date.weekday - 1];
+  }
+
+ */
 }
+
 
 // 인기 게시물
 class PopularPost extends StatefulWidget {
