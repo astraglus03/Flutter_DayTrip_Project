@@ -21,6 +21,9 @@ class _HomeMainState extends State<HomeMain> {
 
   List<String> recentImagePaths = [];
   List<RecentPostInfo> recentPostInfoList = [];
+  List<String> popularImagePaths = [];
+  List<PopularPostInfo> popularPostInfoList = [];
+
 
   List<String> exhibitionImagePaths = [];
   List<ExhibitionPostInfo> exhibitionPostInfoList = [];
@@ -31,7 +34,6 @@ class _HomeMainState extends State<HomeMain> {
   List<bool> isLiked = List.generate(3, (index) => false);
 
   Future<void> toggleLike(String pid, bool isLiked) async {
-    // Get the current user
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -51,13 +53,11 @@ class _HomeMainState extends State<HomeMain> {
               DocumentReference postDocRef = postDoc.reference;
 
               if (isLiked) {
-                // Add user's uid to likes array if not already liked
                 await postDocRef.update({
                   'likes': FieldValue.arrayUnion([uid]),
                 });
                 print("Liked post successfully");
               } else {
-                // Remove user's uid from likes array if already liked
                 await postDocRef.update({
                   'likes': FieldValue.arrayRemove([uid]),
                 });
@@ -93,8 +93,8 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(height: 10),
             RecentPost(
               imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
-              postInfoList: recentPostInfoList, // Pass the list of RecentPostInfo objects
-              onLikeButtonPressed: toggleLike, // Pass the toggleLike function
+              postInfoList: recentPostInfoList,
+              onLikeButtonPressed: toggleLike,
             ),
 
             SizedBox(height: 20),
@@ -113,8 +113,8 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(height: 10),
             ExhibitionSchedule(
               selectedDay: selectedDay,
-              imagePaths: exhibitionImagePaths, // Provide the imagePaths here
-              exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
+              imagePaths: exhibitionImagePaths,
+              exhibitionPostInfoList: exhibitionPostInfoList,
               onDaySelected: (String day) {
                 setState(() {
                   selectedDay = day;
@@ -128,8 +128,8 @@ class _HomeMainState extends State<HomeMain> {
             if (selectedDay.isNotEmpty)
               SelectedDay(
                 selectedDay: selectedDay,
-                imagePaths: exhibitionImagePaths, // Provide the imagePaths here
-                exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
+                imagePaths: exhibitionImagePaths,
+                exhibitionPostInfoList: exhibitionPostInfoList,
               ),
 
             SizedBox(height: 20),
@@ -146,12 +146,9 @@ class _HomeMainState extends State<HomeMain> {
             ),
             SizedBox(height: 10),
             PopularPost(
-              imagePaths: [
-                'asset/img/friend.jpg',
-                'asset/img/friend2.jpg',
-                'asset/img/friend3.jpg',
-                // Add more image paths as needed
-              ],
+              imagePaths: popularImagePaths.take(3).toList(), // 3장까지만 가져오기
+              postInfoList: popularPostInfoList,
+              onLikeButtonPressed: toggleLike,
             ),
           ],
         ),
@@ -186,7 +183,10 @@ class _HomeMainState extends State<HomeMain> {
       final usersCollectionRef = FirebaseFirestore.instance.collection('users');
 
       List<String> updatedRecentImagePaths = [];
+      List<String> updatedPopularImagePaths = [];
       List<RecentPostInfo> updatedRecentPostInfoList = [];
+      List<PopularPostInfo> updatedPopularPostInfoList = [];
+
 
       final querySnapshot = await usersCollectionRef.get();
       for (final userDoc in querySnapshot.docs) {
@@ -214,17 +214,30 @@ class _HomeMainState extends State<HomeMain> {
               locationName: locationName,
             ));
           }
+
+          if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
+            updatedPopularImagePaths.add(image);
+
+            updatedPopularPostInfoList.add(PopularPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+              writtenTime: writtenTime,
+              tag : tag,
+              locationName: locationName,
+            ));
+          }
         }
       }
 
       setState(() {
         recentPostInfoList = updatedRecentPostInfoList;
         recentImagePaths = updatedRecentImagePaths;
+        popularPostInfoList = updatedPopularPostInfoList;
+        popularImagePaths = updatedPopularImagePaths;
       });
     } catch (e) {
-      // Handle exceptions
       print('Error fetching data: $e');
-      // You might want to show an error message to the user here
     }
   }
 
@@ -256,8 +269,6 @@ class _HomeMainState extends State<HomeMain> {
           final data = postDoc.data();
           String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
           String image = data.containsKey('image') ? data['image'] : '';
-          //String pid = data.containsKey('pid') ? data['pid'] : '';
-          //String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
           String locationName = data.containsKey('locationName') ? data['locationName'] : '';
           String exhibi_tag = data.containsKey('exhibi_tag') ? data['exhibi_tag'] : '';
           String exhibi_name = data.containsKey('exhibi_name') ? data['exhibi_name'] : '';
@@ -281,9 +292,7 @@ class _HomeMainState extends State<HomeMain> {
         exhibitionImagePaths = updatedExhibitionImagePaths;
       });
     } catch (e) {
-      // Handle exceptions
       print('Error fetching data: $e');
-      // You might want to show an error message to the user here
     }
   }
 }
@@ -332,12 +341,18 @@ class PopularPostInfo{
   final String image;
   final String pid;
   final String writtenTime;
+  final String tag;
+  final String locationName;
+  bool isLiked;
 
   PopularPostInfo({
     required this.spaceName,
     required this.image,
     required this.pid,
     required this.writtenTime,
+    required this.tag,
+    required this.locationName,
+    this.isLiked = false,
   });
 }
 // 최신 피드 / 전체 보기> 버튼
@@ -377,7 +392,7 @@ class Title extends StatelessWidget {
 
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
-  final List<RecentPostInfo> postInfoList; // List of RecentPostInfo objects
+  final List<RecentPostInfo> postInfoList;
   final Function(String, bool) onLikeButtonPressed;
 
   const RecentPost({
@@ -453,10 +468,9 @@ class _RecentPostState extends State<RecentPost> {
                       icon: Icon(
                         widget.postInfoList[index].isLiked
                             ? Icons.favorite
-                            : Icons.favorite_border, color: Colors.red,// Keep default icon color if not liked
+                            : Icons.favorite_border, color: Colors.red,
                       ),
                       onPressed: () {
-                        print('Post Info List: ${widget.postInfoList[index]}');
                         // Toggle like status when the button is pressed
                         bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
                         String pid = widget.postInfoList[index].pid;
@@ -693,20 +707,25 @@ class _SelectedDayState extends State<SelectedDay> {
 // 인기 게시물
 class PopularPost extends StatefulWidget {
   final List<String> imagePaths;
+  final List<PopularPostInfo> postInfoList; // List of RecentPostInfo objects
+  final Function(String, bool) onLikeButtonPressed;
 
-  const PopularPost({required this.imagePaths});
+  const PopularPost({
+    required this.imagePaths,
+    required this.postInfoList,
+    required this.onLikeButtonPressed,
+  });
 
   @override
   _PopularPostState createState() => _PopularPostState();
 }
 
 class _PopularPostState extends State<PopularPost> {
-  List<bool> isLikedList = []; // Track liked status for each image
+  List<bool> isLikedList = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize liked status for each image as false initially
     isLikedList = List<bool>.generate(widget.imagePaths.length, (index) => false);
   }
 
@@ -725,14 +744,30 @@ class _PopularPostState extends State<PopularPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {/*
-                // Navigate to PlaceBlogScreen when the image is tapped
+              onTap: () async {
+                String location = '';
+
+                QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                    .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
+                    .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
+                    .get();
+
+                if (spaceSnapshot.docs.isNotEmpty) {
+                  location = spaceSnapshot.docs.first.get('location');
+                }
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlaceBlogScreen(),
+                    builder: (context) => PlaceBlogScreen(
+                      image: widget.postInfoList[index].image,
+                      location: location,
+                      locationName: widget.postInfoList[index].locationName,
+                      spaceName: widget.postInfoList[index].spaceName,
+                      tag: widget.postInfoList[index].tag,
+                    ),
                   ),
-                );*/
+                );
               },
               child: Stack(
                 children: [
@@ -742,7 +777,7 @@ class _PopularPostState extends State<PopularPost> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
+                        image: NetworkImage(imagePath),
                       ),
                     ),
                   ),
@@ -751,15 +786,18 @@ class _PopularPostState extends State<PopularPost> {
                     right: 10,
                     child: IconButton(
                       icon: Icon(
-                        isLikedList[index] ? Icons.favorite : Icons.favorite_border,
-                        color: isLikedList[index] ? Colors.red : Colors.red, // Change icon color
+                        widget.postInfoList[index].isLiked
+                            ? Icons.favorite
+                            : Icons.favorite_border, color: Colors.red,
                       ),
                       onPressed: () {
+                        bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
+                        String pid = widget.postInfoList[index].pid;
+                        widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
+
                         setState(() {
-                          // Toggle the liked status on button press
-                          isLikedList[index] = !isLikedList[index];
+                          widget.postInfoList[index].isLiked = !isCurrentlyLiked;
                         });
-                        // TODO: Define additional action when the like button is pressed
                       },
                     ),
                   ),

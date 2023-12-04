@@ -75,7 +75,7 @@ class _PostTabState extends State<PostTab> {
               itemCount: tabInfo[tabIndex].length,
               itemBuilder: (BuildContext context, int index) {
                 var info = tabInfo[tabIndex][index];
-                print('정보: ${info}');
+                // print('정보: ${info}');
                 bool isLiked = likedItemsList[tabIndex].contains(index);
 
 
