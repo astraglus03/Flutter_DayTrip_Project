@@ -553,6 +553,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
   @override
   Widget build(BuildContext context) {
+    _selectedDay = widget.selectedDay;
     _selectedPostInfo = _getSelectedPostInfo(_selectedDay); // 선택된 요일에 해당하는 정보 가져오기
 
     // 선택된 요일에 따라 다른 정보를 반환합니다.
@@ -648,17 +649,6 @@ class _SelectedDayState extends State<SelectedDay> {
     return days[date.weekday - 1];
   }
 
-
-
-/*
-// Define a function to get the day of the week from a date
-  String getDayOfWeekFromDate(String dateStr) {
-    final date = DateTime.parse(dateStr.replaceAll('년 ', '-').replaceAll('월 ', '-').replaceAll('일', ''));
-    List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
-    return days[date.weekday - 1];
-  }
-
- */
 }
 
 
