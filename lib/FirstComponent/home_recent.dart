@@ -71,6 +71,7 @@ class _PostTabState extends State<PostTab> {
                 childAspectRatio: 0.5,
                 mainAxisSpacing: 0.0,
               ),
+
               itemCount: tabInfo[tabIndex].length,
               itemBuilder: (BuildContext context, int index) {
                 var info = tabInfo[tabIndex][index];
