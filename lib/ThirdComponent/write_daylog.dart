@@ -566,7 +566,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
       child: Text(
         buttonText,
         style: TextStyle(
-          color: hashTagButton == buttonText ? Colors.white : Colors.black,
+          color: Colors.white,
         ),
       ),
       style: ButtonStyle(
@@ -574,7 +574,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
             ? MaterialStateProperty.all<Color>(Colors.blue) // 선택된 버튼의 배경색
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
-          color: Colors.black,
+          color: Colors.white,
           width: 1.0,
         )),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

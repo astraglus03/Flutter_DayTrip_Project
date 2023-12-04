@@ -4,6 +4,7 @@ import 'package:final_project/model_db/usermodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/login/login_or_register_page.dart';
+import 'package:intl/intl.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({Key? key});
@@ -41,8 +42,9 @@ class AuthPage extends StatelessWidget {
 
     // 사용자 정보를 저장할 문서에 접근
     final userDocRef = userRef.doc(currentUserUID);
-
     final userSnapshot = await userDocRef.get();
+    final koreaCreateTime = await getUserKoreaTime(user.metadata.creationTime!);
+    final koreaLastSignInTime = await getUserKoreaTime(user.metadata.lastSignInTime!);
 
     if (!userSnapshot.exists) {
       // 사용자 정보를 userModel로 변환
@@ -50,8 +52,8 @@ class AuthPage extends StatelessWidget {
         displayName: user.displayName ?? '',
         image: user.photoURL ?? '',
         uid: currentUserUID,
-        createTime: user.metadata.creationTime.toString(),
-        lastSignInTime: user.metadata.lastSignInTime.toString(),
+        createTime: koreaCreateTime.toString(),
+        lastSignInTime: koreaLastSignInTime.toString(),
       );
 
       // '사용자 정보' 문서에 사용자 정보 추가
@@ -59,8 +61,17 @@ class AuthPage extends StatelessWidget {
 
     } else {
       // 이미 사용자 정보가 존재하는 경우
-      print('사용자 정보가 이미 존재합니다.');
+      print('마지막 로그인 시간: ${koreaLastSignInTime}.');
+      await userDocRef.update({
+        'lastSignInTime': koreaLastSignInTime,
+      });
     }
+  }
+
+  Future<String> getUserKoreaTime(DateTime utcTime) async {
+    final koreaTimeZone = utcTime.toLocal(); // UTC 시간을 로컬 시간으로 변환
+    final koreaTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(koreaTimeZone); // 원하는 형식으로 포맷
+    return koreaTime;
   }
 
 }

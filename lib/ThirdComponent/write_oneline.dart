@@ -203,7 +203,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: Colors.grey[300],
+                    color: Colors.black26,
                   ),
 
                   child: Padding(
@@ -217,9 +217,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                           },
                           child: Text(
                             DateFormat('yyyy년 MM월 dd일').format(selectedDate),
-                            style: TextStyle(
-                              color: Colors.black,
-                            ),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         IconButton(
@@ -242,7 +240,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                   height: 40,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.grey[300],
+                    color: Colors.black26,
                   ),
 
                   child: Padding(
@@ -385,7 +383,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       child: Text(
         buttonText,
         style: TextStyle(
-          color: hashTagButton == buttonText ? Colors.white : Colors.black,
+          color: Colors.white
         ),
       ),
       style: ButtonStyle(
@@ -393,7 +391,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
             ? MaterialStateProperty.all<Color>(Colors.blue)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
-          color: Colors.black,
+          color: Colors.white,
           width: 1.0,
         )),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

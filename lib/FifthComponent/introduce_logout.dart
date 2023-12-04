@@ -1,5 +1,10 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'daylog.dart';
 
 class IntroduceAndLogout extends StatelessWidget {
 
@@ -123,13 +128,64 @@ class CardImage extends StatelessWidget {
   }
 }
 
-class ProfileName extends StatelessWidget {
-  final user = FirebaseAuth.instance.currentUser!;
+class ProfileName extends StatefulWidget {
 
   ProfileName({super.key});
 
   @override
+  State<ProfileName> createState() => _ProfileNameState();
+}
+
+class _ProfileNameState extends State<ProfileName> {
+  final user = FirebaseAuth.instance.currentUser!;
+
+  List<MyPostInfo> myPostInfoList = [];
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // 데이터 가져오는 메서드 호출을 initState()에서 제거
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  void fetchData() {
+    final allUsersCollectionRef =
+    FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    // 이전 리스너 구독을 취소하고 새로운 리스너를 설정
+    _subscription?.cancel();
+    _subscription = allUsersCollectionRef
+        .collection('post')
+        .snapshots()
+        .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      List<MyPostInfo> updatedMyPostInfoList = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data();
+        String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+        String image = data.containsKey('image') ? data['image'] : '';
+
+        return MyPostInfo(
+          spaceName: spaceName,
+          image: image,
+        );
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          myPostInfoList = updatedMyPostInfoList;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    fetchData();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,7 +195,7 @@ class ProfileName extends StatelessWidget {
           fontSize: 24,
         ),),
         SizedBox(height: 5,),
-        Text("작성한 게시물 수: ??"),
+        Text("작성한 게시물 수: ${myPostInfoList.length}"),
       ],
     );
   }
