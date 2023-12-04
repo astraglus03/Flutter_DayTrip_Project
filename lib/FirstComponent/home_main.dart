@@ -215,7 +215,7 @@ class _HomeMainState extends State<HomeMain> {
             ));
           }
 
-          if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
+          if (writtenTime.isNotEmpty) {
             updatedPopularImagePaths.add(image);
 
             updatedPopularPostInfoList.add(PopularPostInfo(

@@ -147,7 +147,7 @@ class _PostTabState extends State<PostTab> {
                         right: 10,
                         child: GestureDetector(
                           onTap: () {
-                            toggleLike(info['pid'], isLiked);
+                            toggleLike(info['pid'], isLiked,tabIndex);
                             setState(() {
                               if (isLiked) {
                                 likedItemsList[tabIndex].remove(index);
@@ -164,6 +164,13 @@ class _PostTabState extends State<PostTab> {
                           ),
                         ),
                       ),
+                      Positioned(
+                        top: 30,
+                        right: 10,
+                        child: Text("+${info['likesCount']}", style: TextStyle(
+                          color: Colors.red,
+                        ),),
+                      ),
                     ],
                   ),
                 );
@@ -175,24 +182,26 @@ class _PostTabState extends State<PostTab> {
     );
   }
 
-  @override // SaveClass 인스턴스 초기화
+  Stream<QuerySnapshot> getPostsStream() {
+    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+    return usersCollectionRef.snapshots(); // 변경 사항을 지속적으로 가져오는 스트림
+  }
+  @override
   void initState() {
     super.initState();
-    fetchPopularPostModel();
+    getPostsStream().listen((QuerySnapshot querySnapshot) {
+      fetchPopularPostModel(querySnapshot);
+    });
   }
 
-  Future<void> fetchPopularPostModel() async {
-    final usersCollectionRef = FirebaseFirestore.instance.collection('users');
-
+  Future<void> fetchPopularPostModel(QuerySnapshot querySnapshot) async {
     List<Set<int>> updatedLikedItemsList = List.generate(6, (_) => {});
     List<List<Map<String, dynamic>>> updatedTabInfo = List.generate(6, (_) => []);
 
-    final querySnapshot = await usersCollectionRef.get();
-
     for (final userDoc in querySnapshot.docs) {
       final postCollectionRef = userDoc.reference.collection('post');
-
       final postQuerySnapshot = await postCollectionRef.get();
+
       for (final postDoc in postQuerySnapshot.docs) {
         final data = postDoc.data();
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
@@ -202,69 +211,83 @@ class _PostTabState extends State<PostTab> {
         String locationName = data.containsKey('locationName') ? data['locationName'] : '';
         String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
 
+        int likesCount = 0;
+        if (data.containsKey('likes')) {
+          if (data['likes'] is List) {
+            likesCount = data['likes'].length;
+          }
+        }
+
+
         // 0번 탭 - 전체 정보 가져오기
-        if (writtenTime.isNotEmpty && _isToday(writtenTime)){
+        if (writtenTime.isNotEmpty){
           updatedTabInfo[0].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
 
         // 1번 탭 - 카페 정보 가져오기
-        if((writtenTime.isNotEmpty && _isToday(writtenTime)) && tag == '카페') {
+        if((writtenTime.isNotEmpty) && tag == '카페') {
           updatedTabInfo[1].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
 
         // 2번 탭 - 음식점 정보 가져오기
-        if((writtenTime.isNotEmpty && _isToday(writtenTime)) && tag == '음식점') {
+        if((writtenTime.isNotEmpty) && tag == '음식점') {
           updatedTabInfo[2].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
 
         // 3번 탭 - 편의점 정보 가져오기
-        if((writtenTime.isNotEmpty && _isToday(writtenTime)) && tag == '편의점') {
+        if((writtenTime.isNotEmpty ) && tag == '편의점') {
           updatedTabInfo[3].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
 
         // 4번 탭 - 학교 건물 정보 가져오기
-        if((writtenTime.isNotEmpty && _isToday(writtenTime)) && tag == '학교건물') {
+        if((writtenTime.isNotEmpty) && tag == '학교건물') {
           updatedTabInfo[4].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
 
         // 5번 탭 - 편의점 정보 가져오기
-        if((writtenTime.isNotEmpty && _isToday(writtenTime)) && tag == '문화') {
+        if((writtenTime.isNotEmpty) && tag == '문화') {
           updatedTabInfo[5].add({
             'spaceName': spaceName,
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
             'tag': tag,
+            'likesCount': likesCount,
           });
         }
       }
@@ -278,16 +301,6 @@ class _PostTabState extends State<PostTab> {
     });
   }
 
-  bool _isToday(String writtenTime) {
-    final now = DateTime.now();
-    final parsedTime = DateFormat('yyyy/MM/dd - HH:mm:ss').parse(writtenTime);
-
-    // Compare the year, month, and day of both dates
-    return now.year == parsedTime.year &&
-        now.month == parsedTime.month &&
-        now.day == parsedTime.day;
-  }
-
   final List<List<Map<String, dynamic>>> tabInfo = [
     [], // 탭1
     [], // 탭2
@@ -297,7 +310,7 @@ class _PostTabState extends State<PostTab> {
     [], // 탭6
   ];
 
-  Future<void> toggleLike(String pid, bool isLiked) async {
+  Future<void> toggleLike(String pid, bool isLiked, int tabIndex) async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -326,15 +339,18 @@ class _PostTabState extends State<PostTab> {
               print("Unliked post successfully");
             }
 
+            updateLikeCount(pid, isLiked, tabIndex);
 
-            updateSpecificTab(pid, isLiked, 1); // 1번탭: 카페
-            updateSpecificTab(pid, isLiked, 2); // 2번탭: 음식점
-            updateSpecificTab(pid, isLiked, 3); // 3번탭: 편의점
-            updateSpecificTab(pid, isLiked, 4); // 4번탭: 학교공간
-            updateSpecificTab(pid, isLiked, 5); // 5번탭: 문화
+            setState(() {
+              updateSpecificTab(pid, isLiked, 1); // 1번탭: 카페
+              updateSpecificTab(pid, isLiked, 2); // 2번탭: 음식점
+              updateSpecificTab(pid, isLiked, 3); // 3번탭: 편의점
+              updateSpecificTab(pid, isLiked, 4); // 4번탭: 학교공간
+              updateSpecificTab(pid, isLiked, 5); // 5번탭: 문화
+              updateSpecificTab(pid, isLiked, 0); // 0번탭: 전체
+            });
 
 
-            updateSpecificTab(pid, isLiked, 0); // 0번탭: 전체
           }
         }
       } catch (error) {
@@ -344,16 +360,42 @@ class _PostTabState extends State<PostTab> {
   }
 
   void updateSpecificTab(String pid, bool isLiked, int tabIndex) {
-
     if (tabIndex >= 0 && tabIndex < tabInfo.length) {
       for (int i = 0; i < tabInfo[tabIndex].length; i++) {
         if (tabInfo[tabIndex][i]['pid'] == pid) {
           setState(() {
             isLiked ? likedItemsList[tabIndex].remove(i) : likedItemsList[tabIndex].add(i);
+
+            // 좋아요 상태에 따라 likesCount 업데이트
+            int currentLikesCount = tabInfo[tabIndex][i]['likesCount'];
+            tabInfo[tabIndex][i]['likesCount'] = isLiked ? currentLikesCount - 1 : currentLikesCount + 1;
           });
           break;
         }
       }
+    }
+  }
+
+
+  void updateLikeCount(String pid, bool isLiked, int tabIndex) {
+    if (tabIndex >= 0 && tabIndex < tabInfo.length) {
+      setState(() {
+        for (int i = 0; i < tabInfo[tabIndex].length; i++) {
+          if (tabInfo[tabIndex][i]['pid'] == pid) {
+            int currentLikesCount = tabInfo[tabIndex][i]['likesCount'];
+
+            // 좋아요 누르면 likesCount가 증가하고, 취소하면 감소하도록 업데이트
+            isLiked ? currentLikesCount-- : currentLikesCount++;
+
+            // 업데이트된 likesCount 적용
+            tabInfo[tabIndex][i]['likesCount'] = currentLikesCount;
+
+            // 좋아요를 누르거나 취소할 때 해당 아이템의 likedItemsList에 인덱스를 추가하거나 제거
+            isLiked ? likedItemsList[tabIndex].remove(i) : likedItemsList[tabIndex].add(i);
+            break;
+          }
+        }
+      });
     }
   }
 
