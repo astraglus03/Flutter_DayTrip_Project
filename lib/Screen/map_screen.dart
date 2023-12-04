@@ -116,6 +116,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+
   Future<void> _updatefilterLocations() async {
     try {
       setState(() {
@@ -145,15 +146,8 @@ class _MapScreenState extends State<MapScreen> {
           String locationName = document.data()!['locationName'];
           String image = document.data()!['image'];
           String tag = document.data()!['tag'];
+          final bool select = false;
 
-          // 데이터 리스트에 추가
-          spacephotoList.add({'image': image});
-          spacelocation.add({'location': locationString});
-          spacedetailDataList.add({'locationName': locationName});
-          spaceDataList.add({'name': spaceName});
-          spaceTag.add({'tag': tag});
-
-          space = spaceDataList;
 
           // 선택한 태그에 따라 마커 필터링 및 추가
           if ((isStudySelected && tag == '카페') ||
@@ -169,6 +163,14 @@ class _MapScreenState extends State<MapScreen> {
               double longitude = double.parse(coordinates[1].trim());
 
               final LatLng placeLocation = LatLng(latitude, longitude);
+              // 데이터 리스트에 추가
+              spacephotoList.add({'image': image});
+              spacelocation.add({'location': locationString});
+              spacedetailDataList.add({'locationName': locationName});
+              spaceDataList.add({'name': spaceName});
+              spaceTag.add({'tag': tag});
+
+              space = spaceDataList;
 
               // 마커 생성 및 추가
               final Marker marker = Marker(
@@ -188,6 +190,14 @@ class _MapScreenState extends State<MapScreen> {
               });
             }
           }
+          if(
+          isStudySelected == false &&
+          isTeamProjectSelected == false &&
+          isExerciseSelected == false &&
+          isWalkingSelected == false &&
+          isRestSelected == false){
+            _updateAllLocations();
+          }
         });
       }
     } catch (e) {
@@ -195,7 +205,77 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  Widget _buildSheetContent() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.2,
+      minChildSize: 0.1,
+      maxChildSize: 0.9,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5.0,
+                spreadRadius: 2.0,
+              ),
+            ],
+          ),
+          child: ListView.builder(
+            controller: scrollController,
+            itemCount: spaceDataList.length,
+            itemBuilder: (context, index) {
+              final spaceData = spaceDataList[index];
+              final spaceName = spaceData['name'];
+              final locationName = spacedetailDataList[index]['locationName'];
+              final image = spacephotoList[index]['image'];
 
+              return Container(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('$spaceName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    Text('$locationName'),
+                    SizedBox(height: 8.0),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        image,
+                        height: 150.0,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlaceBlogScreen(
+                              image: spacephotoList[index]['image'],
+                              location: spacelocation[index]['location'],
+                              locationName: spacedetailDataList[index]['locationName'],
+                              spaceName: spaceDataList[index]['name'],
+                              tag: spaceTag[index]['tag'],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text('자세히 보기'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -274,77 +354,7 @@ class _MapScreenState extends State<MapScreen> {
 
           ),
 
-          DraggableScrollableSheet(
-            initialChildSize: 0.2,
-            minChildSize: 0.1,
-            maxChildSize: 0.9,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 5.0,
-                      spreadRadius: 2.0,
-                    ),
-                  ],
-                ),
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: spaceDataList.length,
-                  itemBuilder: (context, index) {
-                    final spaceData = spaceDataList[index];
-                    final spaceName = spaceData['name'];
-                    final locationName = spacedetailDataList[index]['locationName'];
-                    final image = spacephotoList[index]['image'];
-
-                    return Container(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('$spaceName', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                          Text('$locationName'),
-                          SizedBox(height: 8.0),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              image,
-                              height: 150.0, // Adjust the height as needed
-                              width: double.infinity,
-                              fit: BoxFit.cover, // This controls how the image is fitted
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PlaceBlogScreen(
-                                    image: spacephotoList[index]['image'],
-                                    location: spacelocation[index]['location'],
-                                    locationName: spacedetailDataList[index]['locationName'],
-                                    spaceName: spaceDataList[index]['name'],
-                                    tag: spaceTag[index]['tag'],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text('자세히 보기'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-
-
+          _buildSheetContent(),
 
           Positioned(
             bottom: 16.0,
