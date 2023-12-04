@@ -102,9 +102,9 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       );
 
       final updatedSpace = space.copyWith(
-        exhibi_tag: hashTagButton.toString(),
-        exhibi_date: parsedDate,
-        exhibi_name: _textEditingController1.text,
+        exhibiTag: hashTagButton.toString(),
+        exhibiDate: parsedDate,
+        exhibiName: _textEditingController1.text,
       );
       final user = FirebaseAuth.instance.currentUser!;
       final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
