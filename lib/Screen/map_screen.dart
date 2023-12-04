@@ -28,9 +28,12 @@ class _MapScreenState extends State<MapScreen> {
   bool isRestSelected = false;
 
   // "space" 컬렉션의 데이터를 저장할 변수
-  List<Map<String, dynamic>> spaceDataList = [];
-  List<Map<String, dynamic>> spacedetailDataList = [];
-  List<Map<String, dynamic>> spacephotoList = [];
+  List<Map<String, dynamic>> spaceDataList = []; //spaceName
+  List<Map<String, dynamic>> spacedetailDataList = []; //locationName
+  List<Map<String, dynamic>> spacephotoList = []; //image
+  List<Map<String, dynamic>>  spacelocation = []; //image
+  List<Map<String, dynamic>> spaceTag = []; //tag
+
 
   //spaceDB 필드값 저장
   late String DBimage = '';
@@ -64,13 +67,20 @@ class _MapScreenState extends State<MapScreen> {
           final spaceName = document.data()!['spaceName'];
           String locationName = document.data()!['locationName'];
           String image = document.data()!['image'];
+          String tag = document.data()!['tag'];
 
-          spaceDataList.add({'name': spaceName});
-          spacedetailDataList.add({'locationName': locationName});
           spacephotoList.add({'image': image});
+          spacelocation.add({'location': locationString});
+          spacedetailDataList.add({'locationName': locationName});
+          spaceDataList.add({'name': spaceName});
+          spaceTag.add({'tag': tag});
+
           print(spaceDataList);
           print(spacedetailDataList);
           print(spacephotoList);
+          print(spaceTag);
+          print(spacelocation);
+
           space = spaceDataList;
           print(space);
 
@@ -235,11 +245,11 @@ class _MapScreenState extends State<MapScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => PlaceBlogScreen(
-                                    image: DBimage,
-                                    location: DBlocation,
-                                    locationName: DBlocationName,
-                                    spaceName: DBspaceName,
-                                    tag: DBtag,
+                                    image: spacephotoList[index]['image'],
+                                    location: spacelocation[index]['location'],
+                                    locationName: spacedetailDataList[index]['locationName'],
+                                    spaceName: spaceDataList[index]['name'],
+                                    tag: spaceTag[index]['tag'],
                                   ),
                                 ),
                               );
