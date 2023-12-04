@@ -339,8 +339,6 @@ class _PostTabState extends State<PostTab> {
               print("Unliked post successfully");
             }
 
-            updateLikeCount(pid, isLiked, tabIndex);
-
             setState(() {
               updateSpecificTab(pid, isLiked, 1); // 1번탭: 카페
               updateSpecificTab(pid, isLiked, 2); // 2번탭: 음식점
@@ -374,30 +372,31 @@ class _PostTabState extends State<PostTab> {
         }
       }
     }
+    // updateLikeCount(pid, isLiked, tabIndex);
   }
 
 
-  void updateLikeCount(String pid, bool isLiked, int tabIndex) {
-    if (tabIndex >= 0 && tabIndex < tabInfo.length) {
-      setState(() {
-        for (int i = 0; i < tabInfo[tabIndex].length; i++) {
-          if (tabInfo[tabIndex][i]['pid'] == pid) {
-            int currentLikesCount = tabInfo[tabIndex][i]['likesCount'];
-
-            // 좋아요 누르면 likesCount가 증가하고, 취소하면 감소하도록 업데이트
-            isLiked ? currentLikesCount-- : currentLikesCount++;
-
-            // 업데이트된 likesCount 적용
-            tabInfo[tabIndex][i]['likesCount'] = currentLikesCount;
-
-            // 좋아요를 누르거나 취소할 때 해당 아이템의 likedItemsList에 인덱스를 추가하거나 제거
-            isLiked ? likedItemsList[tabIndex].remove(i) : likedItemsList[tabIndex].add(i);
-            break;
-          }
-        }
-      });
-    }
-  }
+  // void updateLikeCount(String pid, bool isLiked, int tabIndex) {
+  //   if (tabIndex >= 0 && tabIndex < tabInfo.length) {
+  //     setState(() {
+  //       for (int i = 0; i < tabInfo[tabIndex].length; i++) {
+  //         if (tabInfo[tabIndex][i]['pid'] == pid) {
+  //           int currentLikesCount = tabInfo[tabIndex][i]['likesCount'];
+  //
+  //           // 좋아요 누르면 likesCount가 증가하고, 취소하면 감소하도록 업데이트
+  //           isLiked ? currentLikesCount-- : currentLikesCount++;
+  //
+  //           // 업데이트된 likesCount 적용
+  //           tabInfo[tabIndex][i]['likesCount'] = currentLikesCount;
+  //
+  //           // 좋아요를 누르거나 취소할 때 해당 아이템의 likedItemsList에 인덱스를 추가하거나 제거
+  //           isLiked ? likedItemsList[tabIndex].remove(i) : likedItemsList[tabIndex].add(i);
+  //           break;
+  //         }
+  //       }
+  //     });
+  //   }
+  // }
 
 }
 class PopularPostInfo{
