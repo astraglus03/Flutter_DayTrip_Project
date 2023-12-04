@@ -86,6 +86,7 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
 
   @override
   Widget build(BuildContext context) {
+    print('현재 위치: ${convertedLocation}');
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -171,18 +172,13 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
               // 지도를 표시하는 Container
               Container(
                 height: 300,
-                child: GoogleMap(
-                  initialCameraPosition: convertedLocation != null
-                      ? CameraPosition(
+                child: convertedLocation != null
+                    ? GoogleMap(
+                  initialCameraPosition: CameraPosition(
                     target: convertedLocation!,
                     zoom: 15.0,
-                  )
-                      : CameraPosition(
-                    target: convertedLocation!,
-                    zoom: 2.0,
                   ),
                   onMapCreated: (GoogleMapController controller) {
-                    // 지도 스타일 적용
                     controller.setMapStyle(darkMapStyle);
                   },
                   markers: convertedLocation != null
@@ -191,13 +187,14 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
                       markerId: MarkerId('마커'),
                       position: convertedLocation!,
                       infoWindow: InfoWindow(
-                        title: '해당 위치',
-                        snippet: '여기가 해당 위치입니다.',
+                        title: '현재 위치',
+                        snippet: '해당 위치 입니다.',
                       ),
                     ),
                   ])
                       : Set<Marker>(),
-                ),
+                )
+                    : Center(child: CircularProgressIndicator()),
               ),
               Container(
                 padding: EdgeInsets.all(16.0),
