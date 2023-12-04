@@ -121,6 +121,11 @@ class _MapScreenState extends State<MapScreen> {
     try {
       setState(() {
         _markers.clear();
+        spaceDataList = []; //spaceName
+        spacedetailDataList = []; //locationName
+        spacephotoList = []; //image
+        spacelocation = []; //image
+        spaceTag = []; //tag
       });
       // 사용자 컬렉션에서 모든 사용자 가져오기
       QuerySnapshot<Map<String, dynamic>> usersSnapshot = await FirebaseFirestore.instance
@@ -146,7 +151,6 @@ class _MapScreenState extends State<MapScreen> {
           String locationName = document.data()!['locationName'];
           String image = document.data()!['image'];
           String tag = document.data()!['tag'];
-          final bool select = false;
 
 
           // 선택한 태그에 따라 마커 필터링 및 추가
@@ -164,6 +168,7 @@ class _MapScreenState extends State<MapScreen> {
 
               final LatLng placeLocation = LatLng(latitude, longitude);
               // 데이터 리스트에 추가
+
               spacephotoList.add({'image': image});
               spacelocation.add({'location': locationString});
               spacedetailDataList.add({'locationName': locationName});
@@ -198,6 +203,7 @@ class _MapScreenState extends State<MapScreen> {
           isRestSelected == false){
             _updateAllLocations();
           }
+          _buildSheetContent();
         });
       }
     } catch (e) {
@@ -355,6 +361,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
 
           _buildSheetContent(),
+
 
           Positioned(
             bottom: 16.0,
