@@ -14,8 +14,7 @@ void main() async {
   );
 
   runApp(MaterialApp(
-    theme: ThemeData(),
-    darkTheme: ThemeData.dark(),
+    theme: ThemeData.dark(),
     debugShowCheckedModeBanner: false,
     home: AuthPage(),
   ));

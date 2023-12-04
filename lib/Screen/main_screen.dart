@@ -1,11 +1,10 @@
-import 'package:final_project/FirstComponent/home_recom_detail.dart';
-import 'package:final_project/FirstComponent/home_recommend.dart';
-import 'package:final_project/FourthComponent/save_class.dart';
+import 'package:final_project/FourthComponent/provider.dart';
 import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/home_screen.dart';
 import 'package:final_project/Screen/map_screen.dart';
 import 'package:final_project/Screen/bookmark_screen.dart';
 import 'package:final_project/Screen/plus_widget.dart';
+import 'package:final_project/ThirdComponent/add_newExhibition.dart';
 import 'package:final_project/ThirdComponent/add_newspace.dart';
 import 'package:final_project/ThirdComponent/write_daylog.dart';
 import 'package:final_project/ThirdComponent/write_oneline.dart';
@@ -37,7 +36,6 @@ class _MainScreenState extends State<MainScreen> {
 
     // 바텀내비바 카메라
     MyPageScreen(),
-
   ];
 
   void _onItemTapped(int index) {
@@ -78,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
                     borderRadius: BorderRadius.circular(50),
                     color: Colors.grey[300],
                   ),
-                  child: Icon(Icons.add_location_rounded, color: Colors.red,),
+                  child: Icon(Icons.short_text, color: Colors.deepPurple,),
                 ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +135,7 @@ class _MainScreenState extends State<MainScreen> {
                     borderRadius: BorderRadius.circular(50),
                     color: Colors.grey[300],
                   ),
-                  child: Icon(Icons.place, color: Colors.white,),
+                  child: Icon(Icons.place, color: Colors.red,),
                 ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,6 +155,37 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AddNewSpace()),
+                  );
+                },
+              ),
+              SizedBox(height: 10,),
+              ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.grey[300],
+                  ),
+                  child: Icon(Icons.museum, color: Colors.green,),
+                ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("전시∙행사 추가", style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),),
+                    SizedBox(height: 3,),
+                    Text("새로운 전시∙행사를 추가해 보세요.", style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 14,
+                    ),),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddNewExhibition()),
                   );
                 },
               ),
@@ -187,39 +216,39 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  ChangeNotifierProvider(
-        create: (_) => SaveClass(),
-      child:Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_rounded),
-            label: '',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        onTap: _onItemTapped,
+    return ChangeNotifierProvider(
+      create: (_) => LikeState(),
+      child: Scaffold(
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle_rounded),
+              label: '',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+        ),
       ),
-    ),
     );
   }
 }

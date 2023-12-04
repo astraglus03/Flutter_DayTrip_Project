@@ -1,10 +1,12 @@
 import 'package:final_project/FirstComponent/home_exhibition.dart';
 import 'package:final_project/FirstComponent/home_popular.dart';
 import 'package:final_project/FirstComponent/home_recent.dart';
-import 'package:final_project/Screen/mypage_screen.dart';
 import 'package:final_project/Screen/place_blog_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({Key? key});
@@ -17,8 +19,58 @@ class _HomeMainState extends State<HomeMain> {
   String selectedDay = ''; // 선택된 요일 추적을 위한 변수
   int selectedDayIndex = -1; // 선택된 요일을 추적하기 위한 변수
 
+  List<String> recentImagePaths = [];
+  List<RecentPostInfo> recentPostInfoList = [];
+
+  List<String> exhibitionImagePaths = [];
+  List<ExhibitionPostInfo> exhibitionPostInfoList = [];
+
+
+
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
+
+  Future<void> toggleLike(String pid, bool isLiked) async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      int index = recentPostInfoList.indexWhere((post) => post.pid == pid);
+      if (index != -1) {
+        try {
+          final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+          final querySnapshot = await usersCollectionRef.get();
+
+          for (final userDoc in querySnapshot.docs) {
+            final postCollectionRef = userDoc.reference.collection('post');
+            final postDoc = await postCollectionRef.doc(pid).get();
+
+            if (postDoc.exists) {
+              DocumentReference postDocRef = postDoc.reference;
+
+              if (isLiked) {
+                // Add user's uid to likes array if not already liked
+                await postDocRef.update({
+                  'likes': FieldValue.arrayUnion([uid]),
+                });
+                print("Liked post successfully");
+              } else {
+                // Remove user's uid from likes array if already liked
+                await postDocRef.update({
+                  'likes': FieldValue.arrayRemove([uid]),
+                });
+                print("Unliked post successfully");
+              }
+            }
+          }
+        } catch (error) {
+          print('Error toggling like: $error');
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +91,10 @@ class _HomeMainState extends State<HomeMain> {
               },
             ),
             SizedBox(height: 10),
-            //ImageSlider(),
-            //SizedBox(height: 20),
             RecentPost(
-              imagePaths: [
-                'asset/img/school1.jpg',
-                'asset/img/school2.jpg',
-                'asset/img/school3.jpg',
-                // Add more image paths as needed
-              ],
-              isLiked: isLiked,
-              onLikeButtonPressed: (int index) {
-                setState(() {
-                  isLiked[index] = !isLiked[index]; // 좋아요 상태 토글
-                });
-              },
+              imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
+              postInfoList: recentPostInfoList, // Pass the list of RecentPostInfo objects
+              onLikeButtonPressed: toggleLike, // Pass the toggleLike function
             ),
 
             SizedBox(height: 20),
@@ -71,19 +112,25 @@ class _HomeMainState extends State<HomeMain> {
             ),
             SizedBox(height: 10),
             ExhibitionSchedule(
-              selectedDay: selectedDay, // 선택된 요일 정보 전달
+              selectedDay: selectedDay,
+              imagePaths: exhibitionImagePaths, // Provide the imagePaths here
+              exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
               onDaySelected: (String day) {
                 setState(() {
-                  selectedDay = day; // 선택된 요일 업데이트
+                  selectedDay = day;
                 });
-                onDaySelected(day); // 변환된 값을 전달
+                onDaySelected(day);
                 print('Selected day: $day');
               },
             ),
 
             SizedBox(height: 20),
-            if (selectedDay.isNotEmpty) // 선택된 요일에 맞게 정보 표시
-              SelectedDay(selectedDay: selectedDay),
+            if (selectedDay.isNotEmpty)
+              SelectedDay(
+                selectedDay: selectedDay,
+                imagePaths: exhibitionImagePaths, // Provide the imagePaths here
+                exhibitionPostInfoList: exhibitionPostInfoList, // Provide the exhibitionPostInfoList here
+              ),
 
             SizedBox(height: 20),
 
@@ -120,16 +167,171 @@ class _HomeMainState extends State<HomeMain> {
   }
 
   void onDateSelectedFromCalendar(DateTime selectedDate) {
-    // Handle the selected date here
     print('Selected date from calendar: $selectedDate');
   }
 
   void onDateSelectedFromCustom(DateTime selectedDate) {
-    // Handle the selected date here
     print('Selected date from custom: $selectedDate');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRecentPostModel();
+    fetchExhibitionPostModel();
+  }
+
+  Future<void> fetchRecentPostModel() async {
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      List<String> updatedRecentImagePaths = [];
+      List<RecentPostInfo> updatedRecentPostInfoList = [];
+
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('post');
+
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          String pid = data.containsKey('pid') ? data['pid'] : '';
+          String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+
+          if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
+            updatedRecentImagePaths.add(image);
+
+            updatedRecentPostInfoList.add(RecentPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+              writtenTime: writtenTime,
+            ));
+          }
+        }
+      }
+
+      setState(() {
+        recentPostInfoList = updatedRecentPostInfoList;
+        recentImagePaths = updatedRecentImagePaths;
+      });
+    } catch (e) {
+      // Handle exceptions
+      print('Error fetching data: $e');
+      // You might want to show an error message to the user here
+    }
+  }
+
+
+  bool _isToday(String writtenTime) {
+    final now = DateTime.now();
+    final parsedTime = DateFormat('yyyy/MM/dd - HH:mm:ss').parse(writtenTime);
+
+    // Compare the year, month, and day of both dates
+    return now.year == parsedTime.year &&
+        now.month == parsedTime.month &&
+        now.day == parsedTime.day;
+  }
+
+  Future<void> fetchExhibitionPostModel() async {
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      List<String> updatedExhibitionImagePaths = [];
+      List<ExhibitionPostInfo> updatedExhibitionPostInfoList = [];
+
+
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('space');
+
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          //String pid = data.containsKey('pid') ? data['pid'] : '';
+          //String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+          String exhibi_tag = data.containsKey('exhibi_tag') ? data['exhibi_tag'] : '';
+          String exhibi_name = data.containsKey('exhibi_name') ? data['exhibi_name'] : '';
+          String exhibi_date = data.containsKey('exhibi_date') ? data['exhibi_date'] : '';
+
+          updatedExhibitionImagePaths.add(image);
+
+          updatedExhibitionPostInfoList.add(ExhibitionPostInfo(
+            spaceName: spaceName,
+            image: image,
+            locationName : locationName,
+            exhibi_tag: exhibi_tag,
+            exhibi_name: exhibi_name,
+            exhibi_date: exhibi_date,
+          ));
+        }
+      }
+
+      setState(() {
+        exhibitionPostInfoList = updatedExhibitionPostInfoList;
+        exhibitionImagePaths = updatedExhibitionImagePaths;
+      });
+    } catch (e) {
+      // Handle exceptions
+      print('Error fetching data: $e');
+      // You might want to show an error message to the user here
+    }
   }
 }
 
+// 최신 피드 db
+class RecentPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+  final String writtenTime;
+  bool isLiked;
+
+  RecentPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+    required this.writtenTime,
+    this.isLiked = false,
+  });
+}
+// 전시 행사 db
+class ExhibitionPostInfo{
+  final String spaceName;
+  final String image;
+  final String locationName;
+  final String exhibi_tag;
+  final String exhibi_name;
+  final String exhibi_date;
+
+  ExhibitionPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.locationName,
+    required this.exhibi_tag,
+    required this.exhibi_name,
+    required this.exhibi_date,
+  });
+}
+// 인기 피드 db
+class PopularPostInfo{
+  final String spaceName;
+  final String image;
+  final String pid;
+  final String writtenTime;
+
+  PopularPostInfo({
+    required this.spaceName,
+    required this.image,
+    required this.pid,
+    required this.writtenTime,
+  });
+}
 // 최신 피드 / 전체 보기> 버튼
 class Title extends StatelessWidget {
   final String title;
@@ -165,15 +367,14 @@ class Title extends StatelessWidget {
   }
 }
 
-// 최신 피드 : 캐로셸 Carousel (이미지 슬라이드)
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
-  final List<bool> isLiked; // 각 이미지의 좋아요 상태를 저장하는 리스트
-  final Function(int) onLikeButtonPressed; // 좋아요 버튼 눌렀을 때의 콜백 함수
+  final List<RecentPostInfo> postInfoList; // List of RecentPostInfo objects
+  final Function(String, bool) onLikeButtonPressed; // Function to handle like button press
 
   const RecentPost({
     required this.imagePaths,
-    required this.isLiked,
+    required this.postInfoList,
     required this.onLikeButtonPressed,
   });
 
@@ -214,7 +415,7 @@ class _RecentPostState extends State<RecentPost> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
+                        image: NetworkImage(imagePath),
                       ),
                     ),
                   ),
@@ -223,15 +424,21 @@ class _RecentPostState extends State<RecentPost> {
                     right: 10,
                     child: IconButton(
                       icon: Icon(
-                        widget.isLiked[index]
+                        widget.postInfoList[index].isLiked
                             ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: widget.isLiked[index] ? Colors.red : Colors.red, // Change icon color
+                            : Icons.favorite_border, color: Colors.red,// Keep default icon color if not liked
                       ),
                       onPressed: () {
+                        // Toggle like status when the button is pressed
+                        bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
+                        String pid = widget.postInfoList[index].pid;
+
+                        // Call the function to handle like button press
+                        widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
+
                         setState(() {
-                          // Toggle the liked status
-                          widget.isLiked[index] = !widget.isLiked[index];
+                          // Update the like status in the UI
+                          widget.postInfoList[index].isLiked = !isCurrentlyLiked;
                         });
                       },
                     ),
@@ -251,10 +458,15 @@ class ExhibitionSchedule extends StatelessWidget {
   final List<String> days = ["일", "월", "화", "수", "목", "금", "토"];
   final String selectedDay;
   final void Function(String) onDaySelected; // 함수
+  final List<String> imagePaths;
+
+  List<ExhibitionPostInfo> exhibitionPostInfoList = []; // exhibitionPostInfoList 정의
 
   ExhibitionSchedule({
     required this.selectedDay,
     required this.onDaySelected,
+    required this.imagePaths,
+    required this.exhibitionPostInfoList,
   });
 
   @override
@@ -315,9 +527,13 @@ class DayButton extends StatelessWidget {
 
 class SelectedDay extends StatefulWidget {
   final String selectedDay;
+  List<String> imagePaths = []; // imagePaths 정의
+  final List<ExhibitionPostInfo> exhibitionPostInfoList; // 추가된 부분
 
-  const SelectedDay({
+  SelectedDay({
     required this.selectedDay,
+    required this.exhibitionPostInfoList, // 추가된 부분
+    required this.imagePaths,
   });
 
   @override
@@ -326,146 +542,125 @@ class SelectedDay extends StatefulWidget {
 
 class _SelectedDayState extends State<SelectedDay> {
   late String _selectedDay;
+  late ExhibitionPostInfo _selectedPostInfo; // 추가된 부분
 
   @override
   void initState() {
     super.initState();
     _selectedDay = widget.selectedDay;
+    _selectedPostInfo = _getSelectedPostInfo(widget.selectedDay); // 추가된 부분
   }
 
   @override
   Widget build(BuildContext context) {
-    _selectedDay =
-        widget.selectedDay; // build 메서드에서도 선택된 요일 값을 업데이트(이 코드 안 쓰면 갱신 안 됨)
-    switch (_selectedDay) {
-      case '일':
-      // 일요일에 대한 정보
-        return Row(
-          children: [
-            Expanded(
-              flex: 1, // Row의 1/4 영역 차지
-              child: Image.asset(
-                'asset/img/company1.jpg',
-                width: 50,
-                height: 120,
-                fit: BoxFit.cover,
-              ), // 일요일 이미지
-            ),
-            Expanded(
-              flex: 3, // Row의 3/4 영역 차지
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                // 수평 방향(좌우로) 여백
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '전시', //
-                      style: TextStyle(fontSize: 13, color: Colors.red),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '한국의 기하학적 추상미술',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      '경기도',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: EdgeInsets.zero, // 좌측 여백 조절
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // 오버플로우 방지
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero, // 아이콘 버튼 주변의 패딩 제거
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () {},
-                          ),
-                          SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
-                          Text(
-                            '2023년 11월 16일 ~ 2024년 5월 19일',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      case '월':
-      // 월요일에 대한 정보
-        return Row(
-          children: [
-            Expanded(
-              flex: 1, // Row의 1/4 영역 차지
-              child: Image.asset(
-                'asset/img/company2.jpg',
-                width: 50,
-                height: 120,
-                fit: BoxFit.cover,
-              ), // 일요일 이미지
-            ),
-            Expanded(
-              flex: 3, // Row의 3/4 영역 차지
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                // 수평 방향(좌우로) 여백
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '팝업', //
-                      style: TextStyle(fontSize: 13, color: Colors.red),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '신세계백화점 본점 크리스마스 마켓',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      '서울',
-                      style: TextStyle(fontSize: 10),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: EdgeInsets.zero, // 좌측 여백 조절
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // 오버플로우 방지
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero, // 아이콘 버튼 주변의 패딩 제거
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () {},
-                          ),
-                          SizedBox(width: 1), // 아이콘과 텍스트 사이의 간격
-                          Text(
-                            '2023년 11월 9일 ~ 2023년 12월 27일',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-    // 기본적으로 해당 요일에 정보가 없으면 빈 공간 반환
-      default:
-        return SizedBox(); // 선택된 요일이 없으면 빈 공간 반환
-    }
+    _selectedPostInfo = _getSelectedPostInfo(_selectedDay); // 선택된 요일에 해당하는 정보 가져오기
+
+    // 선택된 요일에 따라 다른 정보를 반환합니다.
+    return _buildExhibitionInfo(_selectedPostInfo);
   }
+
+  Widget _buildExhibitionInfo(ExhibitionPostInfo postInfo) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Image.network(
+            _selectedPostInfo.image,
+            width: 50,
+            height: 120,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  postInfo.exhibi_tag,
+                  style: TextStyle(fontSize: 13, color: Colors.red),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  postInfo.exhibi_name,
+                  style: TextStyle(fontSize: 10),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  postInfo.locationName,
+                  style: TextStyle(fontSize: 10),
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: EdgeInsets.zero,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () {},
+                      ),
+                      SizedBox(width: 1),
+                      Text(
+                        postInfo.exhibi_date,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  // 선택된 요일에 해당하는 전시 정보를 반환하는 함수
+  ExhibitionPostInfo _getSelectedPostInfo(String day) {
+    return widget.exhibitionPostInfoList.firstWhere(
+          (info) {
+        if (info.exhibi_date.isNotEmpty) {
+          DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(info.exhibi_date);
+          String dayOfWeek = getDayOfWeekFromDate(parsedDate);
+          return dayOfWeek == day;
+        }
+        return false; // exhibi_date가 비어있는 경우 false 반환
+      },
+      orElse: () => ExhibitionPostInfo(
+        spaceName: '',
+        image: '',
+        locationName: '',
+        exhibi_tag: '',
+        exhibi_name: '',
+        exhibi_date: '',
+      ),
+    );
+  }
+
+  String getDayOfWeekFromDate(DateTime date) {
+    List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[date.weekday - 1];
+  }
+
+
+
+/*
+// Define a function to get the day of the week from a date
+  String getDayOfWeekFromDate(String dateStr) {
+    final date = DateTime.parse(dateStr.replaceAll('년 ', '-').replaceAll('월 ', '-').replaceAll('일', ''));
+    List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[date.weekday - 1];
+  }
+
+ */
 }
+
 
 // 인기 게시물
 class PopularPost extends StatefulWidget {

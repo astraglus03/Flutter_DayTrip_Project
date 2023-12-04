@@ -1,14 +1,14 @@
-// 공간 추가 모델
-
-import 'dart:ui';
+import 'package:intl/intl.dart';
 
 class SpaceModel {
   final String spaceName;
-  final String location; // 위도 경도
+  final String location;
   final String locationName;
   final String tag;
   final String image;
-
+  String? exhibiTag;
+  DateTime? exhibiDate;
+  String? exhibiName;
 
   SpaceModel({
     required this.spaceName,
@@ -16,33 +16,43 @@ class SpaceModel {
     required this.tag,
     required this.image,
     required this.locationName,
+    this.exhibiTag,
+    this.exhibiDate,
+    this.exhibiName,
   });
 
-  SpaceModel.fromJson({ // ➊ JSON으로부터 모델을 만들어내는 생성자
-    required Map<String, dynamic> json,
-  })  : spaceName = json['spaceName'],
+  SpaceModel.fromJson(Map<String, dynamic> json)
+      : spaceName = json['spaceName'],
         location = json['location'],
         tag = json['tag'],
         image = json['image'],
-        locationName = json['locationName'];
+        locationName = json['locationName'],
+        exhibiTag = json['exhibi_tag'],
+        exhibiDate = DateFormat('yyyy년 MM월 dd일').parse(json['exhibi_date']),
+        exhibiName = json['exhibi_name'];
 
-  Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
+  Map<String, dynamic> toJson() {
     return {
       'spaceName': spaceName,
       'location': location,
       'tag': tag,
       'image': image,
       'locationName': locationName,
+      'exhibi_tag': exhibiTag,
+      'exhibi_date': exhibiDate != null ? DateFormat('yyyy년 MM월 dd일').format(exhibiDate!) : null,
+      'exhibi_name': exhibiName,
     };
   }
 
-  SpaceModel copyWith({  // ➌ 현재 모델을 특정 속성만 변환해서 새로 생성
+  SpaceModel copyWith({
     String? spaceName,
     String? location,
     String? tag,
     String? image,
     String? locationName,
-    String? recom_tag,
+    String? exhibiTag,
+    DateTime? exhibiDate,
+    String? exhibiName,
   }) {
     return SpaceModel(
       spaceName: spaceName ?? this.spaceName,
@@ -50,8 +60,9 @@ class SpaceModel {
       tag: tag ?? this.tag,
       image: image ?? this.image,
       locationName: locationName ?? this.locationName,
+      exhibiTag: exhibiTag ?? this.exhibiTag,
+      exhibiDate: exhibiDate ?? this.exhibiDate,
+      exhibiName: exhibiName ?? this.exhibiName,
     );
   }
-
-
 }

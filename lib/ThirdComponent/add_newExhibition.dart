@@ -2,28 +2,32 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/model_db/space.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-class AddNewSpace extends StatefulWidget {
-  const AddNewSpace({super.key});
+class AddNewExhibition extends StatefulWidget {
+  const AddNewExhibition({super.key});
 
   @override
-  State<AddNewSpace> createState() => _AddNewSpaceState();
+  State<AddNewExhibition> createState() => _AddNewExhibitionState();
 }
 
-class _AddNewSpaceState extends State<AddNewSpace> {
+class _AddNewExhibitionState extends State<AddNewExhibition> {
 
   late GoogleMapController mapController;
   File? selectedGalleryImage;
   String? hashTagButton;
   String? spacexy;
   LatLng? newSpaceLocation;
+  DateTime selectedDate = DateTime.now();
   TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _textEditingController1 = TextEditingController();
 
   void _onMapTapped(LatLng location) async {
     setState(() {
@@ -47,6 +51,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   void dispose() {
     // 페이지가 dispose될 때 컨트롤러를 정리합니다.
     _textEditingController.dispose();
+    _textEditingController1.dispose();
     super.dispose();
   }
 
@@ -64,7 +69,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     }
     return 'Address not found';
   }
-
 
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
@@ -86,20 +90,28 @@ class _AddNewSpaceState extends State<AddNewSpace> {
     final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
 
     if (imageUrl != null) {
+      final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
+      final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
       final String address = await _getAddressFromLatLng(newSpaceLocation!);
       final space = SpaceModel(
         spaceName: _textEditingController.text,
         location: newSpaceLocation.toString(),
-        tag: hashTagButton.toString(),
+        tag: '문화',
         image: imageUrl,
         locationName: address,
+      );
+
+      final updatedSpace = space.copyWith(
+        exhibiTag: hashTagButton.toString(),
+        exhibiDate: parsedDate,
+        exhibiName: _textEditingController1.text,
       );
       final user = FirebaseAuth.instance.currentUser!;
       final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
       await userCollectionRef.collection('space')
-          .doc(space.spaceName)
-          .set(space.toJson());
+          .doc(updatedSpace.spaceName)
+          .set(updatedSpace.toJson());
       // print('장소 이름: ${space.spaceName}');
       // print('위치: ${space.location}');
       // print('태그: ${space.tag}');
@@ -192,7 +204,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26, //Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -211,22 +223,90 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                   SizedBox(height: 10,),
 
                   Container(
+                    width: double.infinity,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.black26,
+                    ),
+
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20,),
+                      child: TextFormField(
+                        controller: _textEditingController1,
+                        decoration: InputDecoration(
+                          hintText: '전시 행사 이름을 입력하세요.',
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 10,),
+
+                  Container(
+                    height: 1, // 선의 높이
+                    color: Colors.grey[300], // 선의 색상
+                  ),
+
+                  Container(
                     height: 60,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        buildButton('카페'),
+                        buildButton('전시'),
                         SizedBox(width: 10),
-                        buildButton('음식점'),
+                        buildButton('팝업'),
                         SizedBox(width: 10),
-                        buildButton('편의점'),
+                        buildButton('공연'),
                         SizedBox(width: 10),
-                        buildButton('학교건물'),
-                        SizedBox(width: 10),
-                        buildButton('주차장'),
+                        buildButton('축제'),
                         SizedBox(width: 10),
                       ],
                     ),
+                  ),
+
+                  Container(
+                    height: 1, // 선의 높이
+                    color: Colors.grey[300], // 선의 색상
+                  ),
+
+                  GestureDetector(
+                    onTap: () {
+                      _selectDate();
+                    },
+                    child: Container(
+                      // 이거 넣어야 터치 이벤트가 된다.. 어이가없따 흥
+                      color: Colors.transparent,
+                      height: 60,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("시작 날짜: "),
+                          Row(
+                            children: [
+                              Icon(
+                                  Icons.calendar_today
+                              ),
+                              SizedBox(width: 4,),
+                              Text(DateFormat('yyyy년 MM월 dd일').format(selectedDate),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),),
+                              Icon(
+                                Icons.keyboard_arrow_right_outlined,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    height: 1, // 선의 높이
+                    color: Colors.grey[300], // 선의 색상
                   ),
 
                   SizedBox(height: 10,),
@@ -244,8 +324,8 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                             });
 
                             return AlertDialog(
-                              title: Text('장소가 추가되었습니다'),
-                              content: Text('한 줄 평 작성할때 확인 가능합니다.'),
+                              title: Text('행사가 추가되었습니다'),
+                              content: Text('한 줄 평 작성할 때 확인 가능합니다.'),
                             );
                           }
                       );
@@ -294,18 +374,14 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       child: Text(
         buttonText,
         style: TextStyle(
-          // color: hashTagButton == buttonText ? Colors.white : Colors.black,
-          color: Colors.white,
+          color: hashTagButton == buttonText ? Colors.white : Colors.white,
         ),
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
             ? MaterialStateProperty.all<Color>(Colors.blue) // 선택된 버튼의 배경색
             : MaterialStateProperty.all<Color>(Colors.transparent),
-        side: MaterialStateProperty.all(BorderSide(
-          color: Colors.white,
-          width: 1.0,
-        )),
+        side: MaterialStateProperty.all(BorderSide(color: Colors.white, width: 1.0,)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18.0),
@@ -313,5 +389,35 @@ class _AddNewSpaceState extends State<AddNewSpace> {
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? pickedDate = await showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200.0,
+          color: Colors.black,
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.date,
+            initialDateTime: selectedDate,
+            onDateTimeChanged: (DateTime newDate) {
+              setState(() {
+                selectedDate = newDate;
+                final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
+                final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
+                print('데이트타임: ${parsedDate}');
+              });
+            },
+          ),
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
   }
 }
