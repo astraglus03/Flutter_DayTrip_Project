@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({Key? key});
@@ -74,83 +75,85 @@ class _HomeMainState extends State<HomeMain> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Title(
-              title: "최신 피드",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeRecent()),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            RecentPost(
-              imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
-              postInfoList: recentPostInfoList,
-              onLikeButtonPressed: toggleLike,
-            ),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Title(
+                title: "최신 피드",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeRecent()),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              RecentPost(
+                imagePaths: recentImagePaths.take(3).toList(), // 3장까지만 가져오기
+                postInfoList: recentPostInfoList,
+                onLikeButtonPressed: toggleLike,
+              ),
 
-            SizedBox(height: 20),
-            Title(
-              title: "다가오는 전시 ∙ 행사 일정",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeExhibition(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            ExhibitionSchedule(
-              selectedDay: selectedDay,
-              imagePaths: exhibitionImagePaths,
-              exhibitionPostInfoList: exhibitionPostInfoList,
-              onDaySelected: (String day) {
-                setState(() {
-                  selectedDay = day;
-                });
-                onDaySelected(day);
-                print('Selected day: $day');
-              },
-            ),
-
-            SizedBox(height: 20),
-            if (selectedDay.isNotEmpty)
-              SelectedDay(
+              SizedBox(height: 20),
+              Title(
+                title: "다가오는 전시 ∙ 행사 일정",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomeExhibition(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              ExhibitionSchedule(
                 selectedDay: selectedDay,
                 imagePaths: exhibitionImagePaths,
                 exhibitionPostInfoList: exhibitionPostInfoList,
+                onDaySelected: (String day) {
+                  setState(() {
+                    selectedDay = day;
+                  });
+                  onDaySelected(day);
+                  print('Selected day: $day');
+                },
               ),
 
-            SizedBox(height: 20),
+              SizedBox(height: 20),
+              if (selectedDay.isNotEmpty)
+                SelectedDay(
+                  selectedDay: selectedDay,
+                  imagePaths: exhibitionImagePaths,
+                  exhibitionPostInfoList: exhibitionPostInfoList,
+                ),
 
-            Title(
-              title: "인기 피드",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePopular()),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            PopularPost(
-              imagePaths: popularImagePaths.take(3).toList(), // 3장까지만 가져오기
-              postInfoList: popularPostInfoList,
-              onLikeButtonPressed: toggleLike,
-            ),
-          ],
+              SizedBox(height: 20),
+
+              Title(
+                title: "인기 피드",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePopular()),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              PopularPost(
+                imagePaths: popularImagePaths.take(3).toList(), // 3장까지만 가져오기
+                postInfoList: popularPostInfoList,
+                onLikeButtonPressed: toggleLike,
+              ),
+            ],
+          ),
         ),
       ),
     );

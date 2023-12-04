@@ -38,6 +38,7 @@ class _HomeRecommendState extends State<HomeRecommend> {
             'locationName': data['locationName'],
             'originTag': data['tag'],
             'imagePath': data['image'],
+            'tag': data['recomTag'],
           };
           placesData.add(placeData);
         }
@@ -172,7 +173,7 @@ class Result extends StatelessWidget {
               itemCount: currentPlaces!.length,
               itemBuilder: (BuildContext context, int index) {
                 String placeName = currentPlaces![index];
-
+                print('추천태그:${placesData[index]['originTag']}');
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 5),
@@ -186,7 +187,7 @@ class Result extends StatelessWidget {
                             placeName: currentPlaces![index],
                             tag: tag!,
                             locationName: placesData[index]['locationName'],
-                            originTag: placesData[index]['recomTag'],
+                            originTag: placesData[index]['originTag'],
                             imagePath: placesData[index]['imagePath'],
                           ),
                         ),

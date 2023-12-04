@@ -15,7 +15,7 @@ class PlaceBlogScreen extends StatefulWidget {
     required this.location,
     required this.locationName,
     required this.spaceName,
-    required this.tag
+    required this.tag,
   });
 
   @override
@@ -116,7 +116,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Text(
-                        '${widget.spaceName}\n\n${widget.tag}',
+                        '${widget.spaceName}\n\n${widget.locationName}\n\n${widget.tag}',
                         style: TextStyle(fontSize: 18.0),
                       ),
                     ),

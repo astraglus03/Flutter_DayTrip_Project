@@ -13,7 +13,7 @@ class HomeRecomDetail extends StatefulWidget {
   HomeRecomDetail({
     required this.placeName,
     required this.tag,
-    this.originTag, // Add parameters for additional data
+    this.originTag,
     this.locationName,
     this.imagePath,
   });

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/FirstComponent/likeprovider.dart';
 import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class HomePopular extends StatefulWidget {
   const HomePopular({Key? key}) : super(key: key);
@@ -16,8 +18,11 @@ class _HomePopularState extends State<HomePopular> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PostTab(), // DayLog 위젯을 여기에 추가
+    return ChangeNotifierProvider(
+        create: (_) => LikedItemsProvider(),
+    child: Scaffold(
+    body: PostTab(),// DayLog 위젯을 여기에 추가
+    ),
     );
   }
 }
@@ -208,8 +213,10 @@ class _PostTabState extends State<PostTab> {
         String image = data.containsKey('image') ? data['image'] : '';
         String pid = data.containsKey('pid') ? data['pid'] : '';
         String tag = data.containsKey('tag') ? data['tag'] : '';
-        String locationName = data.containsKey('locationName') ? data['locationName'] : '';
-        String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+        String locationName =
+        data.containsKey('locationName') ? data['locationName'] : '';
+        String writtenTime =
+        data.containsKey('writtenTime') ? data['writtenTime'] : '';
 
         int likesCount = 0;
         if (data.containsKey('likes')) {
@@ -290,6 +297,10 @@ class _PostTabState extends State<PostTab> {
             'likesCount': likesCount,
           });
         }
+
+        updatedTabInfo.forEach((tab) {
+          tab.sort((a, b) => b['likesCount'].compareTo(a['likesCount']));
+        });
       }
     }
 
