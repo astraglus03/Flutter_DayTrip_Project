@@ -21,9 +21,12 @@ class PlaceBlogScreen extends StatefulWidget {
   @override
   _PlaceBlogScreenState createState() => _PlaceBlogScreenState();
 }
+
 List<String> userImages = [];
 List<String> userIDs = [];
 List<String> userName = [];
+List<String> contents = [];
+
 class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
   int selectedUserIndex = -1; // 선택된 사용자를 추적하기 위한 변수
   List<String> userPosts = [
@@ -32,6 +35,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
     '사용자 3의 글입니다.',
     '사용자 4의 글입니다.',
   ];
+
 
   List<String> userImages = []; // 사용자 이미지 URL 목록
 
@@ -69,9 +73,11 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
           // 'image'가 이미지 URL이 저장된 필드로 가정
           String image = userDoc['image'] ?? ''; // 'image' 필드가 없으면 빈 문자열로 대체
           String name = userDoc['displayName'];
+          String content = postDoc['postContent'];
 
           userImages.add(image);
           userName.add(name);
+          contents.add(content);
           userIDs.add(userDoc.id); // 해당 문서의 ID를 저장
         }
       });
@@ -79,6 +85,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
 
     print('User IDs: $userIDs');
     print('User Images: $userImages');
+    print(contents);
     print(userName);
 
     return userImages;
@@ -130,6 +137,11 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                           IconButton(
                             icon: Icon(Icons.arrow_back, color: Colors.white,),
                             onPressed: () {
+                              userImages = [];
+                              userIDs = [];
+                              userName = [];
+                              contents = [];
+                              selectedUserIndex = -1;
                               Navigator.of(context).pop();
                             },
                           ),
@@ -208,7 +220,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         ),
                         SizedBox(height: 8.0),
                         Text(
-                          userPosts[selectedUserIndex],
+                          '작성 글: ${contents[selectedUserIndex]}',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],
