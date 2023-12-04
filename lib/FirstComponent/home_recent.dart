@@ -78,6 +78,7 @@ class _PostTabState extends State<PostTab> {
                 bool isLiked = likedItemsList[tabIndex].contains(index);
 
                 return GestureDetector(
+                  /*
                   onTap: () {
                     Navigator.push(
                       context,
@@ -86,6 +87,7 @@ class _PostTabState extends State<PostTab> {
                       ),
                     );
                   },
+                   */
                   child: Stack(
                     children: [
                       Column(
