@@ -287,11 +287,9 @@ class _HomeExhibitionState extends State<HomeExhibition> {
   Widget build(BuildContext context) {
     //String formattedDate = DateFormat('yyyy년 MM월').format(currentDate);
     return Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-            backgroundColor: Colors.white,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white,),
+              icon: Icon(Icons.arrow_back),
               onPressed: () {
                 exhibitions_1=[];exhibitions_2=[];exhibitions_3=[];
                 exhibitions_4=[];exhibitions_5=[];exhibitions_6=[];
@@ -322,10 +320,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(DateFormat('yyyy년 MM월').format(currentDate),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                      )), // 현재 날짜 표시),
+                      textAlign: TextAlign.center), // 현재 날짜 표시),
                   IconButton(
                     icon: Icon(Icons.arrow_drop_down),
                     onPressed: () {
@@ -565,7 +560,7 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
                           dayName.substring(0, 1),
                           style: TextStyle(
                             fontSize: 24.0,
-                            color: isSelected ? Colors.black : Colors.black54,
+                            color: isSelected ? Colors.white : Colors.white54,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -584,7 +579,7 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
                           "${index + 1}",
                           style: const TextStyle(
                             fontSize: 16.0,
-                            color: Colors.black54,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

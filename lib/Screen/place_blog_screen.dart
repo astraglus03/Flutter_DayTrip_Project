@@ -117,6 +117,8 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                   Stack(
                     children: [
                       Container(
+                        width: double.infinity,
+                        height: 400,
                         child: Image.network(widget.image, fit: BoxFit.cover,),
                       ),
                       Positioned(
