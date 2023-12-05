@@ -22,7 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.black,
             toolbarHeight: 10.0, // AppBar의 높이 조정
             bottom: TabBar(
-              tabs: [
+                indicatorColor:Colors.orange,
+                tabs: [
                 Tab(text: '피드'),
                 Tab(text: '추천'),
               ],
