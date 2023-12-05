@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart'; // 이 부분은 날짜 형식을 지역에 맞게 설정하기 위해 필요한 패키지입니다.
 
@@ -98,6 +99,9 @@ class _HomeMainState extends State<HomeMain> {
 
   List<String> recentImagePaths = [];
   List<RecentPostInfo> recentPostInfoList = [];
+  List<String> popularImagePaths = [];
+  List<PopularPostInfo> popularPostInfoList = [];
+
 
   List<String> exhibitionImagePaths = [];
   List<ExhibitionPostInfo> exhibitionPostInfoList = [];
@@ -106,7 +110,6 @@ class _HomeMainState extends State<HomeMain> {
   List<bool> isLiked = List.generate(3, (index) => false);
 
   Future<void> toggleLike(String pid, bool isLiked) async {
-    // Get the current user
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -127,13 +130,11 @@ class _HomeMainState extends State<HomeMain> {
               DocumentReference postDocRef = postDoc.reference;
 
               if (isLiked) {
-                // Add user's uid to likes array if not already liked
                 await postDocRef.update({
                   'likes': FieldValue.arrayUnion([uid]),
                 });
                 print("Liked post successfully");
               } else {
-                // Remove user's uid from likes array if already liked
                 await postDocRef.update({
                   'likes': FieldValue.arrayRemove([uid]),
                 });
@@ -150,87 +151,86 @@ class _HomeMainState extends State<HomeMain> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Title(
-              title: "최신 피드",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeRecent()),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            RecentPost(
-              imagePaths: recentImagePaths.take(3).toList(),
-              // 3장까지만 가져오기
-              postInfoList: recentPostInfoList,
-              // Pass the list of RecentPostInfo objects
-              onLikeButtonPressed: toggleLike, // Pass the toggleLike function
-            ),
-            SizedBox(height: 20),
-            Title(
-              title: "다가오는 전시 ∙ 행사 일정",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeExhibition(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            ExhibitionSchedule(
-              selectedDay: selectedDay, // 선택된 요일 정보 전달
-              onDaySelected: (String day) {
-                setState(() {
-                  selectedDay = day; // 선택된 요일 업데이트
-                });
-                onDaySelected(day); // 변환된 값을 전달
-                print('ExhibitionSchedule의 선택 요일: $day');
-              },
-            ),
-            SizedBox(height: 20),
-            if (selectedDay.isNotEmpty)
-              SelectedDay(
-                selectedDay: selectedDay,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Title(
+                title: "최신 피드",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeRecent()),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              RecentPost(
+                imagePaths: recentImagePaths.take(3).toList(),
+                // 3장까지만 가져오기
+                postInfoList: recentPostInfoList,
+                // Pass the list of RecentPostInfo objects
+                onLikeButtonPressed: toggleLike, // Pass the toggleLike function
+              ),
+              SizedBox(height: 20),
+              Title(
+                title: "다가오는 전시 ∙ 행사 일정",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomeExhibition(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              ExhibitionSchedule(
+                selectedDay: selectedDay, // 선택된 요일 정보 전달
                 onDaySelected: (String day) {
                   setState(() {
                     selectedDay = day; // 선택된 요일 업데이트
                   });
                   onDaySelected(day); // 변환된 값을 전달
-                  print('Selected day의 선택 요일: $day');
+                  print('ExhibitionSchedule의 선택 요일: $day');
                 },
               ),
-            SizedBox(height: 20),
-            Title(
-              title: "인기 피드",
-              showAll: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePopular()),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            PopularPost(
-              imagePaths: [
-                'asset/img/friend.jpg',
-                'asset/img/friend2.jpg',
-                'asset/img/friend3.jpg',
-                // Add more image paths as needed
-              ],
-            ),
-          ],
+              SizedBox(height: 20),
+              if (selectedDay.isNotEmpty)
+                SelectedDay(
+                  selectedDay: selectedDay,
+                  onDaySelected: (String day) {
+                    setState(() {
+                      selectedDay = day; // 선택된 요일 업데이트
+                    });
+                    onDaySelected(day); // 변환된 값을 전달
+                    print('Selected day의 선택 요일: $day');
+                  },
+                ),
+              SizedBox(height: 20),
+              Title(
+                title: "인기 피드",
+                showAll: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePopular()),
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              PopularPost(
+              imagePaths: popularImagePaths.take(3).toList(), // 3장까지만 가져오기
+              postInfoList: popularPostInfoList,
+              onLikeButtonPressed: toggleLike,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -265,7 +265,10 @@ class _HomeMainState extends State<HomeMain> {
       final usersCollectionRef = FirebaseFirestore.instance.collection('users');
 
       List<String> updatedRecentImagePaths = [];
+      List<String> updatedPopularImagePaths = [];
       List<RecentPostInfo> updatedRecentPostInfoList = [];
+      List<PopularPostInfo> updatedPopularPostInfoList = [];
+
 
       final querySnapshot = await usersCollectionRef.get();
       for (final userDoc in querySnapshot.docs) {
@@ -278,8 +281,9 @@ class _HomeMainState extends State<HomeMain> {
               data.containsKey('spaceName') ? data['spaceName'] : '';
           String image = data.containsKey('image') ? data['image'] : '';
           String pid = data.containsKey('pid') ? data['pid'] : '';
-          String writtenTime =
-              data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String tag = data.containsKey('tag') ? data['tag']: '';
+          String locationName = data.containsKey('locationName') ? data['locationName']: '';
 
           if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
             updatedRecentImagePaths.add(image);
@@ -289,6 +293,21 @@ class _HomeMainState extends State<HomeMain> {
               image: image,
               pid: pid,
               writtenTime: writtenTime,
+              tag : tag,
+              locationName: locationName,
+            ));
+          }
+
+          if (writtenTime.isNotEmpty) {
+            updatedPopularImagePaths.add(image);
+
+            updatedPopularPostInfoList.add(PopularPostInfo(
+              spaceName: spaceName,
+              image: image,
+              pid: pid,
+              writtenTime: writtenTime,
+              tag : tag,
+              locationName: locationName,
             ));
           }
         }
@@ -297,11 +316,11 @@ class _HomeMainState extends State<HomeMain> {
       setState(() {
         recentPostInfoList = updatedRecentPostInfoList;
         recentImagePaths = updatedRecentImagePaths;
+        popularPostInfoList = updatedPopularPostInfoList;
+        popularImagePaths = updatedPopularImagePaths;
       });
     } catch (e) {
-      // Handle exceptions
       print('Error fetching data: $e');
-      // You might want to show an error message to the user here
     }
   }
 
@@ -314,6 +333,50 @@ class _HomeMainState extends State<HomeMain> {
         now.month == parsedTime.month &&
         now.day == parsedTime.day;
   }
+
+  Future<void> fetchExhibitionPostModel() async {
+    try {
+      final usersCollectionRef = FirebaseFirestore.instance.collection('users');
+
+      List<String> updatedExhibitionImagePaths = [];
+      List<ExhibitionPostInfo> updatedExhibitionPostInfoList = [];
+
+
+      final querySnapshot = await usersCollectionRef.get();
+      for (final userDoc in querySnapshot.docs) {
+        final postCollectionRef = userDoc.reference.collection('space');
+
+        final postQuerySnapshot = await postCollectionRef.get();
+        for (final postDoc in postQuerySnapshot.docs) {
+          final data = postDoc.data();
+          String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
+          String image = data.containsKey('image') ? data['image'] : '';
+          String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+          String exhibi_tag = data.containsKey('exhibi_tag') ? data['exhibi_tag'] : '';
+          String exhibi_name = data.containsKey('exhibi_name') ? data['exhibi_name'] : '';
+          String exhibi_date = data.containsKey('exhibi_date') ? data['exhibi_date'] : '';
+
+          updatedExhibitionImagePaths.add(image);
+
+          updatedExhibitionPostInfoList.add(ExhibitionPostInfo(
+            spaceName: spaceName,
+            image: image,
+            locationName : locationName,
+            exhibi_tag: exhibi_tag,
+            exhibi_name: exhibi_name,
+            exhibi_date: exhibi_date,
+          ));
+        }
+      }
+
+      setState(() {
+        exhibitionPostInfoList = updatedExhibitionPostInfoList;
+        exhibitionImagePaths = updatedExhibitionImagePaths;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 }
 
 // 최신 피드 db
@@ -322,6 +385,8 @@ class RecentPostInfo {
   final String image;
   final String pid;
   final String writtenTime;
+  final String tag;
+  final String locationName;
   bool isLiked;
 
   RecentPostInfo({
@@ -329,6 +394,8 @@ class RecentPostInfo {
     required this.image,
     required this.pid,
     required this.writtenTime,
+    required this.tag,
+    required this.locationName,
     this.isLiked = false,
   });
 }
@@ -358,12 +425,18 @@ class PopularPostInfo {
   final String image;
   final String pid;
   final String writtenTime;
+  final String tag;
+  final String locationName;
+  bool isLiked;
 
   PopularPostInfo({
     required this.spaceName,
     required this.image,
     required this.pid,
     required this.writtenTime,
+    required this.tag,
+    required this.locationName,
+    this.isLiked = false,
   });
 }
 
@@ -404,9 +477,9 @@ class Title extends StatelessWidget {
 
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
-  final List<RecentPostInfo> postInfoList; // List of RecentPostInfo objects
-  final Function(String, bool)
-      onLikeButtonPressed; // Function to handle like button press
+  final List<RecentPostInfo> postInfoList;
+  final Function(String, bool) onLikeButtonPressed;
+
 
   const RecentPost({
     required this.imagePaths,
@@ -434,7 +507,38 @@ class _RecentPostState extends State<RecentPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {},
+              onTap: () async {
+                String location = '';
+
+                // Assume location and locationName are in the space collection
+                QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                    .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
+                    .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
+                    .get();
+
+                // Check if the query has any results
+                if (spaceSnapshot.docs.isNotEmpty) {
+                  // Get the first document (assuming unique locationName values)
+                  location = spaceSnapshot.docs.first.get('location');
+                }
+
+                print('포스트인포:${widget.postInfoList[0].locationName}');
+                print('포스트인포:${widget.postInfoList[1].locationName}');
+                print('포스트인포:${widget.postInfoList[2].locationName}');
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context, ) => PlaceBlogScreen(
+                      image: widget.postInfoList[index].image,
+                      location: location,
+                      locationName: widget.postInfoList[index].locationName,
+                      spaceName: widget.postInfoList[index].spaceName,
+                      tag: widget.postInfoList[index].tag,
+                    ),
+                  ),
+                );
+              },
               child: Stack(
                 children: [
                   Container(
@@ -454,9 +558,7 @@ class _RecentPostState extends State<RecentPost> {
                       icon: Icon(
                         widget.postInfoList[index].isLiked
                             ? Icons.favorite
-                            : Icons.favorite_border,
-                        color:
-                            Colors.red, // Keep default icon color if not liked
+                            : Icons.favorite_border, color: Colors.red,
                       ),
                       onPressed: () {
                         // Toggle like status when the button is pressed
@@ -816,22 +918,26 @@ class _SelectedDayState extends State<SelectedDay> {
 // 인기 게시물
 class PopularPost extends StatefulWidget {
   final List<String> imagePaths;
+  final List<PopularPostInfo> postInfoList; // List of RecentPostInfo objects
+  final Function(String, bool) onLikeButtonPressed;
 
-  const PopularPost({required this.imagePaths});
+  const PopularPost({
+    required this.imagePaths,
+    required this.postInfoList,
+    required this.onLikeButtonPressed,
+  });
 
   @override
   _PopularPostState createState() => _PopularPostState();
 }
 
 class _PopularPostState extends State<PopularPost> {
-  List<bool> isLikedList = []; // Track liked status for each image
+  List<bool> isLikedList = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize liked status for each image as false initially
-    isLikedList =
-        List<bool>.generate(widget.imagePaths.length, (index) => false);
+    isLikedList = List<bool>.generate(widget.imagePaths.length, (index) => false);
   }
 
   @override
@@ -849,8 +955,30 @@ class _PopularPostState extends State<PopularPost> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () {
-                _updateAllLocations();
+              onTap: () async {
+                String location = '';
+
+                QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                    .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
+                    .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
+                    .get();
+
+                if (spaceSnapshot.docs.isNotEmpty) {
+                  location = spaceSnapshot.docs.first.get('location');
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceBlogScreen(
+                      image: widget.postInfoList[index].image,
+                      location: location,
+                      locationName: widget.postInfoList[index].locationName,
+                      spaceName: widget.postInfoList[index].spaceName,
+                      tag: widget.postInfoList[index].tag,
+                    ),
+                  ),
+                );
               },
               child: Stack(
                 children: [
@@ -860,7 +988,7 @@ class _PopularPostState extends State<PopularPost> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
+                        image: NetworkImage(imagePath),
                       ),
                     ),
                   ),
@@ -869,19 +997,18 @@ class _PopularPostState extends State<PopularPost> {
                     right: 10,
                     child: IconButton(
                       icon: Icon(
-                        isLikedList[index]
+                        widget.postInfoList[index].isLiked
                             ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: isLikedList[index]
-                            ? Colors.red
-                            : Colors.red, // Change icon color
+                            : Icons.favorite_border, color: Colors.red,
                       ),
                       onPressed: () {
+                        bool isCurrentlyLiked = widget.postInfoList[index].isLiked;
+                        String pid = widget.postInfoList[index].pid;
+                        widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
+
                         setState(() {
-                          // Toggle the liked status on button press
-                          isLikedList[index] = !isLikedList[index];
+                          widget.postInfoList[index].isLiked = !isCurrentlyLiked;
                         });
-                        // TODO: Define additional action when the like button is pressed
                       },
                     ),
                   ),

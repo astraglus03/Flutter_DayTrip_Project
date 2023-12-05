@@ -75,17 +75,30 @@ class _PostTabState extends State<PostTab> {
               itemCount: tabInfo[tabIndex].length,
               itemBuilder: (BuildContext context, int index) {
                 var info = tabInfo[tabIndex][index];
+                // print('정보: ${info}');
                 bool isLiked = likedItemsList[tabIndex].contains(index);
 
+
                 return GestureDetector(
-                  onTap: () {/*
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlaceBlogScreen(),
-                      ),
-                    );*/
+                  onTap: () async {
+                    var info = tabInfo[tabIndex][index];
+                    String location = '';
+
+                    QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                        .collectionGroup('space')
+                        .where('locationName', isEqualTo: info['locationName'])
+                        .get();
+
+                    if (spaceSnapshot.docs.isNotEmpty) {
+                      location = spaceSnapshot.docs.first.get('location') ?? '';
+                    }
+
+                    String image = info['imagePath'] ?? '';
+                    String locationName = info['locationName'] ?? '';
+                    String spaceName = info['spaceName'] ?? '';
+                    String tag = info['tag'] ?? '';
                   },
+
                   child: Stack(
                     children: [
                       Column(
@@ -182,6 +195,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
 
@@ -192,6 +206,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
 
@@ -202,6 +217,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
 
@@ -212,6 +228,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
 
@@ -222,6 +239,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
 
@@ -232,6 +250,7 @@ class _PostTabState extends State<PostTab> {
             'imagePath': image,
             'pid': pid,
             'locationName' : locationName,
+            'tag': tag,
           });
         }
       }
