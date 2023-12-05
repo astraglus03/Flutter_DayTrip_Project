@@ -68,24 +68,12 @@ class _WriteOneLineState extends State<WriteOneLine> {
     final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
     final CollectionReference oneLineCollection = userCollectionRef.collection('oneLine');
 
-    final DocumentReference spaceRef = userCollectionRef.collection('space').doc(selectedTitle);
-
     try {
-      final DocumentSnapshot snapshot = await spaceRef.get();
-      int? currentOid;
-      if (snapshot.exists) {
-        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-        currentOid = data?['currentOid'] as int?;
-      }
-
-      // 만약 currentOid가 null이면 1로 초기화
-      currentOid ??= 1;
 
       final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
 
       final oneLine = OneLineModel(
-        oid: currentOid, // oid 설정
         uid: user.uid,
         date: parsedDate,
         spaceName: selectedTitle.toString(),
@@ -94,12 +82,9 @@ class _WriteOneLineState extends State<WriteOneLine> {
         locationName: selectedLocation.toString(),
       );
 
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        await transaction.set(oneLineCollection.doc(oneLine.oid.toString()), oneLine.toJson());
-
-        // 현재 oid 값 증가시키기
-        await transaction.update(spaceRef, {'currentOid': (currentOid ?? 1) + 1});
-      });
+      await oneLineCollection
+          .doc(oneLine.oneLineContent)
+          .set(oneLine.toJson());
     } catch (e) {
       // 문서를 가져오는 도중에 오류 발생 시 처리할 내용
       print('Error fetching document: $e');
