@@ -175,6 +175,7 @@ class _AllPostListState extends State<AllPostList> {
             runSpacing: 8.0,
             children: allPostInfoList.asMap().entries.map((entry) {
               AllPostInfo postInfo = entry.value;
+              print("포스트인포:${postInfo}");
               return GestureDetector(
                 onTap: () async {
                   String location = '';

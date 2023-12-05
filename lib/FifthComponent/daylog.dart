@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -20,10 +21,16 @@ class OneLineInfo {
 class MyPostInfo{
   final String spaceName;
   final String image;
+  final String locationName;
+  final String tag;
+  final String location;
 
   MyPostInfo({
     required this.spaceName,
     required this.image,
+    required this.locationName,
+    required this.location,
+    required this.tag,
   });
 }
 
@@ -88,10 +95,16 @@ class _DayLogState extends State<DayLog> {
         Map<String, dynamic> data = doc.data();
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
         String image = data.containsKey('image') ? data['image'] : '';
+        String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+        String tag= data.containsKey('tag') ? data['tag'] : '';
+        String location = data.containsKey('location') ? data['location'] : '';
 
         return MyPostInfo(
           spaceName: spaceName,
           image: image,
+          location:location,
+          locationName:locationName,
+          tag: tag,
         );
       }).toList();
     });
@@ -207,8 +220,9 @@ class MyPostList extends StatelessWidget {
             : Wrap(
           spacing: 6.0,
           runSpacing: 8.0,
-          children: postList.map((postInfo) {
-            return PostItem(postInfo: postInfo);
+          children: postList.asMap().entries.map((entry) {
+            // entry.key is the index, entry.value is the MyPostInfo object
+            return PostItem(postInfo: entry.value, index: entry.key);
           }).toList(),
         ),
       ],
@@ -218,15 +232,51 @@ class MyPostList extends StatelessWidget {
 
 class PostItem extends StatelessWidget {
   final MyPostInfo postInfo;
+  final int index;
 
   const PostItem({
     required this.postInfo,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
 
-    return Stack(
+    return GestureDetector(
+        onTap: () async {
+          var info = postInfo;
+          String location = '';
+
+      QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+          .collectionGroup('space')
+          .where('locationName', isEqualTo: info.locationName)
+          .get();
+
+      if (spaceSnapshot.docs.isNotEmpty) {
+        location = spaceSnapshot.docs.first.get('location') ?? '';
+      }
+
+      String image = info.image ?? '';
+      String locationName = info.locationName ?? '';
+      String spaceName = info.spaceName ?? '';
+      String tag = info.tag ?? '';
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return PlaceBlogScreen(
+              image: image,
+              locationName: locationName,
+              spaceName: spaceName,
+              tag: tag,
+              location: location,
+            );
+          },
+        ),
+      );
+    },
+    child: Stack(
       children: [
         SizedBox(
           width: 133,
@@ -256,6 +306,7 @@ class PostItem extends StatelessWidget {
           ),
         ),
       ],
+    ),
     );
   }
 }

@@ -243,7 +243,7 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
                         Icon(Icons.tag, size: 24.0, color: Colors.green), // 태그 아이콘
                         SizedBox(width: 8.0),
                         Text(
-                          '태그: ${widget.tag}',
+                          '추천태그: ${widget.tag}',
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],
