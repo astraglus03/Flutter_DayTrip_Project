@@ -379,7 +379,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.blue) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(color: Colors.white, width: 1.0,)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

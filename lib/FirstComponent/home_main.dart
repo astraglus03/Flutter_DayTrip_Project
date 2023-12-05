@@ -621,7 +621,7 @@ class DayButton extends StatelessWidget {
             width: 1.0,
           ),
           borderRadius: BorderRadius.circular(20.0),
-          color: isSelected ? Colors.blue : Colors.transparent,
+          color: isSelected ? Colors.orange : Colors.transparent,
         ),
         child: Text(
           day,

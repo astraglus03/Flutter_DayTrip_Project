@@ -373,7 +373,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.blue)
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
           color: Colors.white,
