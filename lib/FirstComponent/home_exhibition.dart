@@ -1,8 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/const/colors.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; // DateFormat을 사용하기 위해 import
 import 'package:intl/date_symbol_data_local.dart'; // 이거 써야 한국어 적용됨.
+
+List<Map<String, dynamic>> db_exhibi_date = [];
+List<Map<String, dynamic>> db_exhibi_name = [];
+List<Map<String, dynamic>> db_exhibi_tag = [];
+List<Map<String, dynamic>> db_image = [];
+List<Map<String, dynamic>> db_locationName = [];
+List<Map<String, dynamic>> db_spaceName = [];
+
+//spaceDB 필드값 저장
+late String DBexhibidate = '';
+late String DBexhibiname = '';
+late String DBexhibitag = '';
+late String DBimage = '';
+late String DBlocationName = '';
+late String DBspaceName = '';
+late String DBtag = '';
+
+// 전시 db
+Future<void> _updateAllLocations() async {
+  try {
+    QuerySnapshot<Map<String, dynamic>> usersSnapshot =
+    await FirebaseFirestore.instance.collection('users').get();
+
+    for (QueryDocumentSnapshot<Map<String, dynamic>> userDocument
+    in usersSnapshot.docs) {
+      // 각 사용자 문서의 ID
+      String userId = userDocument.id;
+
+      // "space" 컬렉션에 대한 쿼리 수행
+      QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('space')
+          .get();
+
+      // "space" 컬렉션의 각 문서에 대한 작업 수행
+      spaceSnapshot.docs
+          .forEach((DocumentSnapshot<Map<String, dynamic>> document) {
+        final locationString = document.data()!['location'];
+        final name = document.data()!['name'];
+        final spaceName = document.data()!['spaceName'];
+        String locationName =
+            document.data()!['locationName'] ?? ''; // 또는 다른 기본값 설정
+        String image = document.data()!['image'] ?? ''; // 또는 다른 기본값 설정
+        String exhibi_date =
+            document.data()!['exhibi_date'] ?? ''; // 또는 다른 기본값 설정
+        String exhibi_tag =
+            document.data()!['exhibi_tag'] ?? ''; // 또는 다른 기본값 설정
+        String exhibi_name =
+            document.data()!['exhibi_name'] ?? ''; // 또는 다른 기본값 설정
+        String tag = document.data()!['tag'] ?? ''; // 또는 다른 기본값 설정
+
+        if (exhibi_date.isNotEmpty && tag == '문화') {
+          db_spaceName.add({'spaceName': spaceName});
+          db_locationName.add({'locationName': locationName});
+          db_image.add({'image': image});
+          db_exhibi_date.add({'exhibi_date': exhibi_date});
+          db_exhibi_tag.add({'exhibi_tag': exhibi_tag});
+          db_exhibi_name.add({'exhibi_name': exhibi_name});
+        }
+      });
+    }
+
+    print(db_spaceName);
+    print(db_locationName);
+    print(db_image);
+    print(db_exhibi_tag);
+    print(db_exhibi_name);
+    print(db_exhibi_date);
+  } catch (e) {
+    print('에러: $e');
+  }
+}
 
 class HomeExhibition extends StatefulWidget {
 
@@ -85,7 +160,6 @@ class _HomeExhibitionState extends State<HomeExhibition> {
       this.selectedDayIndex = day; // 선택된 요일 업데이트
     });
     //print('Selected day: $day');
-
   }
 
   // 메인 캘린더 함수
@@ -352,19 +426,9 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
                     widget.onDaySelected(
                       lastDayOfMonth2.add(Duration(days: index + 1)), // 일 기준에 맞춘 변수 넣기. 요일 변수에 맞춘 lastDayOfMonth를 넣으면 인덱스가 1씩 밀림
                     );
-
-                    ///////////////고쳐
                     // 선택된 날짜의 인덱스 -> 중앙 정렬하기 위해 업데이트
                     //if(index == selectedIndex){
                     print('Index: $index');
-                    /*
-                    double newScrollPosition = (lastDayOfMonth2.add(Duration(days: index + 1)).day - 1) * itemWidth - screenWidth / 2 + itemWidth / 2;
-                    _controller.animateTo(
-                      newScrollPosition,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.ease,
-                    );
-                     */
 
                   }),
                   child: Column(
