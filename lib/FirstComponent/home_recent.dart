@@ -97,21 +97,6 @@ class _PostTabState extends State<PostTab> {
                     String locationName = info['locationName'] ?? '';
                     String spaceName = info['spaceName'] ?? '';
                     String tag = info['tag'] ?? '';
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return PlaceBlogScreen(
-                            image: image,
-                            locationName: locationName,
-                            spaceName: spaceName,
-                            tag: tag,
-                            location: location,
-                          );
-                        },
-                      ),
-                    );
                   },
 
                   child: Stack(
