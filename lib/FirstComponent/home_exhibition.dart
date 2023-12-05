@@ -633,35 +633,26 @@ class _SelectedDayState extends State<SelectedDay> {
   @override
   void didUpdateWidget(covariant SelectedDay oldWidget) {
     super.didUpdateWidget(oldWidget);
-/*
+
     if (oldWidget.selectedDayIndex != widget.selectedDayIndex) {
       updateSelectedDay(widget.selectedDayIndex);
     }
 
- */
+
   }
-  /*
+
   void updateSelectedDay(int day) {
     setState(() {
       _selectedDayIndex = day;
       //exhibitions_4.clear(); // 기존 전시 정보를 비웁니다.
       //exhibitions_5.clear(); // 기존 전시 정보를 비웁니다.
       //_fetchExhibitionsForSelectedDay();
-      exhibitions_1.clear();exhibitions_2.clear();exhibitions_3.clear();
-      exhibitions_4.clear();exhibitions_5.clear();exhibitions_6.clear();
-      exhibitions_7.clear();exhibitions_8.clear();exhibitions_9.clear();
-      exhibitions_10.clear();exhibitions_11.clear();exhibitions_12.clear();
-      exhibitions_13.clear();exhibitions_14.clear();exhibitions_15.clear();
-      exhibitions_16.clear();exhibitions_17.clear();exhibitions_18.clear();
-      exhibitions_19.clear();exhibitions_20.clear();exhibitions_21.clear();
-      exhibitions_22.clear();exhibitions_23.clear();exhibitions_24.clear();
-      exhibitions_25.clear();exhibitions_26.clear();exhibitions_27.clear();
-      exhibitions_28.clear();exhibitions_29.clear();exhibitions_30.clear();
+
       //_fetchExhibitionsForSelectedDay();
     });
   }
 
-   */
+
 
   @override
   Widget build(BuildContext context) {

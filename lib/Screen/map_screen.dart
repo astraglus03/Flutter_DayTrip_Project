@@ -209,7 +209,7 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
       if(
-      isStudySelected == false &&
+          isStudySelected == false &&
           isTeamProjectSelected == false &&
           isExerciseSelected == false &&
           isWalkingSelected == false &&
@@ -556,6 +556,8 @@ class _MapScreenState extends State<MapScreen> {
             TextButton(
               child: Text('관련 글 보기'),
               onPressed: () {
+                Navigator.pop(context);
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(

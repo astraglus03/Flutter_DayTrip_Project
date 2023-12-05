@@ -3,23 +3,23 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:final_project/Screen/map_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PlaceBlogScreen extends StatefulWidget {
+class ExhibiBlogScreen extends StatefulWidget {
   final String image;
-  final String location;
+  final String exhibiloation;
   final String locationName;
-  final String spaceName;
-  final String tag;
+  final String exhibiName;
+  final String exhibiTag;
 
-  PlaceBlogScreen({
+  ExhibiBlogScreen({
     required this.image,
-    required this.location,
+    required this.exhibiloation,
     required this.locationName,
-    required this.spaceName,
-    required this.tag
+    required this.exhibiName,
+    required this.exhibiTag
   });
 
   @override
-  _PlaceBlogScreenState createState() => _PlaceBlogScreenState();
+  _ExhibiBlogScreenState createState() => _ExhibiBlogScreenState();
 }
 
 List<String> userImages = [];
@@ -27,7 +27,7 @@ List<String> userIDs = [];
 List<String> userName = [];
 List<String> contents = [];
 
-class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
+class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
   int selectedUserIndex = -1; // 선택된 사용자를 추적하기 위한 변수
   List<String> userPosts = [
     '사용자 1의 글입니다.',
@@ -40,7 +40,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
   List<String> userImages = []; // 사용자 이미지 URL 목록
 
   Future<void> loadUserImages() async {
-    userImages = await getUserImages(widget.spaceName);
+    userImages = await getUserImages(widget.exhibiName);
     setState(() {}); // 이 부분을 추가하여 화면을 갱신합니다.
 
     print(userImages);
@@ -94,10 +94,10 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('spaceName: ${widget.spaceName}');
-    print('location: ${widget.location}');
+    print('spaceName: ${widget.exhibiName}');
+    print('location: ${widget.exhibiloation}');
     print('locationName: ${widget.locationName}');
-    print('tag: ${widget.tag}');
+    print('tag: ${widget.exhibiTag}');
     print('image: ${widget.image}');
     return WillPopScope(
         onWillPop: () async {
@@ -125,7 +125,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         child: Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Text(
-                            '${widget.spaceName}\n\n${widget.locationName}\n\n${widget.tag}',
+                            '${widget.exhibiName}\n\n${widget.exhibiTag}',
                             style: TextStyle(fontSize: 18.0),
                           ),
                         ),
@@ -246,8 +246,8 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                       // 초기 카메라 위치 설정
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
-                          double.parse(widget.location.split('(')[1].split(',')[0].trim()), // 위도 추출
-                          double.parse(widget.location.split(',')[1].split(')')[0].trim()), // 경도 추출
+                          double.parse(widget.exhibiloation.split('(')[1].split(',')[0].trim()), // 위도 추출
+                          double.parse(widget.exhibiloation.split(',')[1].split(')')[0].trim()), // 경도 추출
                         ),
                         zoom: 15.0,
                       ),
@@ -260,12 +260,12 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         Marker(
                           markerId: MarkerId('locationMarker'),
                           position: LatLng(
-                            double.parse(widget.location.split('(')[1].split(',')[0].trim()), // 위도 추출
-                            double.parse(widget.location.split(',')[1].split(')')[0].trim()), // 경도 추출
+                            double.parse(widget.exhibiloation.split('(')[1].split(',')[0].trim()), // 위도 추출
+                            double.parse(widget.exhibiloation.split(',')[1].split(')')[0].trim()), // 경도 추출
                           ),
                           infoWindow: InfoWindow(
-                            title: '${widget.spaceName}',
-                            snippet: '${widget.tag}',
+                            title: '${widget.exhibiName}',
+                            snippet: '${widget.exhibiTag}',
                           ),
                         ),
                       },
@@ -283,18 +283,18 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                           '장소 정보',
                           style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                         ),
+                        SizedBox(height: 10,),
                         Row(
                           children: [
                             Icon(Icons.place, size: 24.0, color: Colors.blue), // 장소 아이콘
                             SizedBox(width: 8.0),
                             Text(
-                              '장소 이름: ${widget.spaceName}',
+                              '공연,전시 이름 : ${widget.exhibiName}',
                               style: TextStyle(fontSize: 18.0),
                             ),
                           ],
                         ),
                         SizedBox(height: 10,),
-
                         Row(
                           children: [
                             Icon(Icons.location_on, size: 24.0, color: Colors.red), // 주소 아이콘
@@ -310,13 +310,12 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                           ],
                         ),
                         SizedBox(height: 10,),
-
                         Row(
                           children: [
                             Icon(Icons.tag, size: 24.0, color: Colors.green), // 태그 아이콘
                             SizedBox(width: 8.0),
                             Text(
-                              '태그: ${widget.tag}',
+                              '태그 : ${widget.exhibiTag}',
                               style: TextStyle(fontSize: 18.0),
                             ),
                           ],
