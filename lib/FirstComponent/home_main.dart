@@ -754,7 +754,6 @@ class _SelectedDayState extends State<SelectedDay> {
     );
   }
 
-
   void _fetchExhibitionsForSelectedDay() {
     exhibitions_mon.clear(); // 이거 안 쓰면 요일 버튼 누를 때마다 전시 정보 누적해서 저장함
     exhibitions_tue.clear();
@@ -763,7 +762,6 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_fri.clear();
     exhibitions_sat.clear();
     exhibitions_sun.clear();
-
 
     for (int i = 0; i < db_exhibi_date.length; i++) {
       String exhibiDate = db_exhibi_date[i]['exhibi_date'];
@@ -775,8 +773,6 @@ class _SelectedDayState extends State<SelectedDay> {
       String exhibiTag = db_exhibi_tag[i]['exhibi_tag'];
       String exhibiName = db_exhibi_name[i]['exhibi_name'];
       String exhibiloation = db_exhibi_location[i]['location'];
-
-
 
       Widget exhibitionWidget = YourWidgetForExhibition(
         image,
@@ -811,12 +807,9 @@ class _SelectedDayState extends State<SelectedDay> {
         },
       );
 
-
-
       if(getDayFromDate(exhibiDate) == '월'){
         setState(() {
           exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-
         });
       }
       else if(getDayFromDate(exhibiDate) == '화'){
@@ -856,7 +849,7 @@ class _SelectedDayState extends State<SelectedDay> {
       String exhibi_tag,
       String exhibi_name,
       String exhibi_date,
-      String exhibiloation,{
+      String exhibilocation,{
         VoidCallback? onTap,
       }) {
     return GestureDetector(

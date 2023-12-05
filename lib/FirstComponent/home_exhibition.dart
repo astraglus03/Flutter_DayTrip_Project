@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:final_project/const/colors.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; // DateFormat을 사용하기 위해 import
-import 'package:intl/date_symbol_data_local.dart'; // 이거 써야 한국어 적용됨.
+import 'package:intl/date_symbol_data_local.dart';
+
+import '../Screen/exhibi_blog_screen.dart'; // 이거 써야 한국어 적용됨.
 
 List<Map<String, dynamic>> db_exhibi_date = [];
 List<Map<String, dynamic>> db_exhibi_name = [];
@@ -11,6 +13,7 @@ List<Map<String, dynamic>> db_exhibi_tag = [];
 List<Map<String, dynamic>> db_image = [];
 List<Map<String, dynamic>> db_locationName = [];
 List<Map<String, dynamic>> db_spaceName = [];
+List<Map<String, dynamic>> db_exhibi_location = [];
 
 // 전시 db
 Future<void> _updateAllLocations() async {
@@ -39,6 +42,8 @@ Future<void> _updateAllLocations() async {
         final spaceName = document.data()!['spaceName'];
         String locationName =
             document.data()!['locationName'] ?? ''; // 또는 다른 기본값 설정
+        String location =
+            document.data()!['location'] ?? ''; // 또는 다른 기본값 설정
         String image = document.data()!['image'] ?? ''; // 또는 다른 기본값 설정
         String exhibi_date =
             document.data()!['exhibi_date'] ?? ''; // 또는 다른 기본값 설정
@@ -51,6 +56,7 @@ Future<void> _updateAllLocations() async {
         if (exhibi_date.isNotEmpty && tag == '문화') {
           db_spaceName.add({'spaceName': spaceName});
           db_locationName.add({'locationName': locationName});
+          db_exhibi_location.add({'location': location});
           db_image.add({'image': image});
           db_exhibi_date.add({'exhibi_date': exhibi_date});
           db_exhibi_tag.add({'exhibi_tag': exhibi_tag});
@@ -87,97 +93,7 @@ late List<Widget> exhibitions_27 = [];late List<Widget> exhibitions_28 = [];
 late List<Widget> exhibitions_29 = [];late List<Widget> exhibitions_30 = [];
 
 
-void _fetchExhibitionsForSelectedDay() {
 
-  for (int i = 0; i < db_exhibi_date.length; i++) {
-    String exhibiDate = db_exhibi_date[i]['exhibi_date'];
-    print(getDayFromDate(exhibiDate));
-
-    String spaceName = db_spaceName[i]['spaceName'];
-    String locationName = db_locationName[i]['locationName'];
-    String image = db_image[i]['image'];
-    String exhibiTag = db_exhibi_tag[i]['exhibi_tag'];
-    String exhibiName = db_exhibi_name[i]['exhibi_name'];
-
-    Widget exhibitionWidget = YourWidgetForExhibition(
-      image,
-      locationName,
-      exhibiTag,
-      exhibiName,
-      exhibiDate,
-    );
-
-    if(getDayFromDate(exhibiDate) == '1') {
-      exhibitions_1.add(exhibitionWidget);
-    } else if(getDayFromDate(exhibiDate) == '2'){
-      exhibitions_2.add(exhibitionWidget);
-    } else if(getDayFromDate(exhibiDate) == '3'){
-      exhibitions_3.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '4'){
-      exhibitions_4.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '5'){
-      exhibitions_5.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '6'){
-      exhibitions_6.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '7'){
-      exhibitions_7.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '8'){
-      exhibitions_8.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '9'){
-      exhibitions_9.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '10'){
-      exhibitions_10.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '11'){
-      exhibitions_11.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '12'){
-      exhibitions_12.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '13'){
-      exhibitions_13.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '14'){
-      exhibitions_14.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '15'){
-      exhibitions_15.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '16'){
-      exhibitions_16.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '17'){
-      exhibitions_17.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '18'){
-      exhibitions_18.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '19'){
-      exhibitions_19.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '20'){
-      exhibitions_20.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '21'){
-      exhibitions_21.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '22'){
-      exhibitions_22.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '23'){
-      exhibitions_23.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '24'){
-      exhibitions_24.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '25'){
-      exhibitions_25.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '26'){
-      exhibitions_26.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '27'){
-      exhibitions_27.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '28'){
-      exhibitions_28.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '29'){
-      exhibitions_29.add(exhibitionWidget);
-    }else if(getDayFromDate(exhibiDate) == '30'){
-      exhibitions_30.add(exhibitionWidget);
-    }
-
-  }
-  print('db 가져온 내용');
-  print(db_exhibi_date);
-  print(db_exhibi_name);
-  print(db_exhibi_tag);
-
-
-
-}
 
 // 실제 위젯에 넣는 부분
 Widget YourWidgetForExhibition(
@@ -186,72 +102,79 @@ Widget YourWidgetForExhibition(
     String exhibi_tag,
     String exhibi_name,
     String exhibi_date,
-    ) {
-  return SizedBox(
-    height: 120.0,
-    child: Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            height: 120.0,
-            width: 50.0,
-            margin: EdgeInsets.symmetric(horizontal: 5.0),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(image),
+    String exhibiloation,{
+      VoidCallback? onTap,
+    }) {
+  return GestureDetector(
+    onTap: onTap,
+    child: SizedBox(
+      height: 120.0,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+              onTap: onTap, // 이 부분을 추가하여 전체 행에 대한 터치 처리를 수행합니다.
+              child: Container(
+                height: 120.0,
+                width: 50.0,
+                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(image),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  exhibi_tag,
-                  style: TextStyle(fontSize: 13, color: Colors.red),
-                ),
-                SizedBox(),
-                Text(
-                  exhibi_name,
-                  style: TextStyle(fontSize: 10),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  locationName,
-                  style: TextStyle(fontSize: 10),
-                ),
-                SizedBox(height: 5),
-                Padding(
-                  padding: EdgeInsets.zero,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () {},
-                      ),
-                      SizedBox(width: 1),
-                      Text(
-                        exhibi_date,
-                        style: TextStyle(fontSize: 10),
-                      ),
-
-                    ],
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exhibi_tag,
+                    style: TextStyle(fontSize: 13, color: Colors.red),
                   ),
-                ),
-              ],
+                  SizedBox(),
+                  Text(
+                    exhibi_name,
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    locationName,
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  SizedBox(height: 5),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(Icons.calendar_today),
+                          onPressed: () {},
+                        ),
+                        SizedBox(width: 1),
+                        Text(
+                          exhibi_date,
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
@@ -361,7 +284,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 exhibitions_22.clear();exhibitions_23.clear();exhibitions_24.clear();
                 exhibitions_25.clear();exhibitions_26.clear();exhibitions_27.clear();
                 exhibitions_28.clear();exhibitions_29.clear();exhibitions_30.clear();
-                _fetchExhibitionsForSelectedDay();
+                //_fetchExhibitionsForSelectedDay();
               },
             ),
             Text(
@@ -638,7 +561,6 @@ class _SelectedDayState extends State<SelectedDay> {
       updateSelectedDay(widget.selectedDayIndex);
     }
 
-
   }
 
   void updateSelectedDay(int day) {
@@ -646,7 +568,7 @@ class _SelectedDayState extends State<SelectedDay> {
       _selectedDayIndex = day;
       //exhibitions_4.clear(); // 기존 전시 정보를 비웁니다.
       //exhibitions_5.clear(); // 기존 전시 정보를 비웁니다.
-      //_fetchExhibitionsForSelectedDay();
+      _fetchExhibitionsForSelectedDay();
 
       //_fetchExhibitionsForSelectedDay();
     });
@@ -749,6 +671,122 @@ class _SelectedDayState extends State<SelectedDay> {
         ),
       ),
     );
+  }
+
+  void _fetchExhibitionsForSelectedDay() {
+
+    for (int i = 0; i < db_exhibi_date.length; i++) {
+      String exhibiDate = db_exhibi_date[i]['exhibi_date'];
+      print(getDayFromDate(exhibiDate));
+
+      String spaceName = db_spaceName[i]['spaceName'];
+      String locationName = db_locationName[i]['locationName'];
+      String image = db_image[i]['image'];
+      String exhibiTag = db_exhibi_tag[i]['exhibi_tag'];
+      String exhibiName = db_exhibi_name[i]['exhibi_name'];
+      String exhibiloation = db_exhibi_location[i]['location'];
+
+      Widget exhibitionWidget = YourWidgetForExhibition(
+        image,
+        locationName,
+        exhibiTag,
+        exhibiName,
+        exhibiDate,
+        exhibiloation,
+
+        onTap: () {
+          // onTap 이벤트 처리
+          print('전시물이 탭되었습니다!');
+          print(image);
+          print(exhibiloation);
+          print(locationName);
+          print(exhibiName);
+          print(exhibiTag);
+          print(exhibiDate);
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExhibiBlogScreen(
+                image: image,
+                exhibiloation: exhibiloation,
+                locationName: locationName,
+                exhibiName: exhibiName,
+                exhibiTag: exhibiTag,
+              ),
+            ),
+          );
+        },
+      );
+
+      if(getDayFromDate(exhibiDate) == '1') {
+        exhibitions_1.add(exhibitionWidget);
+      } else if(getDayFromDate(exhibiDate) == '2'){
+        exhibitions_2.add(exhibitionWidget);
+      } else if(getDayFromDate(exhibiDate) == '3'){
+        exhibitions_3.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '4'){
+        exhibitions_4.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '5'){
+        exhibitions_5.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '6'){
+        exhibitions_6.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '7'){
+        exhibitions_7.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '8'){
+        exhibitions_8.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '9'){
+        exhibitions_9.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '10'){
+        exhibitions_10.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '11'){
+        exhibitions_11.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '12'){
+        exhibitions_12.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '13'){
+        exhibitions_13.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '14'){
+        exhibitions_14.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '15'){
+        exhibitions_15.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '16'){
+        exhibitions_16.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '17'){
+        exhibitions_17.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '18'){
+        exhibitions_18.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '19'){
+        exhibitions_19.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '20'){
+        exhibitions_20.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '21'){
+        exhibitions_21.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '22'){
+        exhibitions_22.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '23'){
+        exhibitions_23.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '24'){
+        exhibitions_24.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '25'){
+        exhibitions_25.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '26'){
+        exhibitions_26.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '27'){
+        exhibitions_27.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '28'){
+        exhibitions_28.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '29'){
+        exhibitions_29.add(exhibitionWidget);
+      }else if(getDayFromDate(exhibiDate) == '30'){
+        exhibitions_30.add(exhibitionWidget);
+      }
+
+    }
+    print('db 가져온 내용');
+    print(db_exhibi_date);
+    print(db_exhibi_name);
+    print(db_exhibi_tag);
+
   }
 
 }
