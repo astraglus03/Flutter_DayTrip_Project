@@ -184,6 +184,22 @@ class _HomeMainState extends State<HomeMain> {
               title: "다가오는 전시 ∙ 행사 일정",
               showAll: true,
               onTap: () {
+                exhibitions_1=[];exhibitions_2=[];exhibitions_3=[];
+                exhibitions_4=[];exhibitions_5=[];exhibitions_6=[];
+                exhibitions_7=[];exhibitions_8=[];exhibitions_9=[];
+                exhibitions_10=[];exhibitions_11=[];exhibitions_12=[];
+                exhibitions_13=[];exhibitions_14=[];exhibitions_15=[];
+                exhibitions_16=[];exhibitions_17=[];exhibitions_18=[];
+                exhibitions_19=[];exhibitions_20=[];exhibitions_21=[];
+                exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
+                exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
+                exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
+                db_exhibi_date = [];
+                db_exhibi_name = [];
+                db_exhibi_tag = [];
+                db_image = [];
+                db_locationName = [];
+                db_spaceName = [];
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -255,6 +271,12 @@ class _HomeMainState extends State<HomeMain> {
 
   @override
   void initState() {
+    db_exhibi_date = [];
+    db_exhibi_name = [];
+    db_exhibi_tag = [];
+    db_image = [];
+    db_locationName = [];
+    db_spaceName = [];
     super.initState();
     fetchRecentPostModel();
     //fetchExhibitionPostModel();
@@ -651,7 +673,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_fri = [];
     exhibitions_sat = [];
 
-    _fetchExhibitionsForSelectedDay(_selectedDay);
+    //_fetchExhibitionsForSelectedDay();
   }
 
   @override
@@ -668,7 +690,7 @@ class _SelectedDayState extends State<SelectedDay> {
     setState(() {
       _selectedDay = day;
       exhibitions.clear(); // 기존 전시 정보를 비웁니다.
-      _fetchExhibitionsForSelectedDay(_selectedDay);
+      _fetchExhibitionsForSelectedDay();
     });
   }
 
@@ -732,7 +754,8 @@ class _SelectedDayState extends State<SelectedDay> {
     );
   }
 
-  void _fetchExhibitionsForSelectedDay(String selectedDay) {
+
+  void _fetchExhibitionsForSelectedDay() {
     exhibitions_mon.clear(); // 이거 안 쓰면 요일 버튼 누를 때마다 전시 정보 누적해서 저장함
     exhibitions_tue.clear();
     exhibitions_wed.clear();
@@ -985,6 +1008,7 @@ class _PopularPostState extends State<PopularPost> {
                     ),
                   ),
                 );
+
               },
               child: Stack(
                 children: [
