@@ -99,7 +99,16 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
     print('locationName: ${widget.locationName}');
     print('tag: ${widget.tag}');
     print('image: ${widget.image}');
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        userImages = [];
+        userIDs = [];
+        userName = [];
+        contents = [];
+        selectedUserIndex = -1;
+        return true; // 뒤로 가기 허용
+      },
+    child: Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -311,6 +320,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
           ),
         ),
       ),
+    )
     );
   }
 }
