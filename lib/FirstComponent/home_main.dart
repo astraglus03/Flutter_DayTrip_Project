@@ -195,13 +195,20 @@ class _HomeMainState extends State<HomeMain> {
                   selectedDay = day; // 선택된 요일 업데이트
                 });
                 onDaySelected(day); // 변환된 값을 전달
-                print('Selected day: $day');
+                print('ExhibitionSchedule의 선택 요일: $day');
               },
             ),
             SizedBox(height: 20),
             if (selectedDay.isNotEmpty)
               SelectedDay(
-                selectedDay: _selectedDay,
+                selectedDay: selectedDay,
+                onDaySelected: (String day) {
+                  setState(() {
+                    selectedDay = day; // 선택된 요일 업데이트
+                  });
+                  onDaySelected(day); // 변환된 값을 전달
+                  print('Selected day의 선택 요일: $day');
+                },
               ),
             SizedBox(height: 20),
             Title(
@@ -477,7 +484,6 @@ class _RecentPostState extends State<RecentPost> {
     );
   }
 }
-
 // 전시, 행사 일정
 class ExhibitionSchedule extends StatelessWidget {
   final List<String> days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -507,6 +513,7 @@ class ExhibitionSchedule extends StatelessWidget {
   }
 }
 
+
 // 일요일~토요일 버튼 선택 표시
 class DayButton extends StatelessWidget {
   final String day;
@@ -522,7 +529,7 @@ class DayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onSelected(day),
+      onTap: () => onSelected(day), // 선택된 요일을 onSelected 콜백으로 전달
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 5.0),
         padding: EdgeInsets.all(8.0),
@@ -545,11 +552,14 @@ class DayButton extends StatelessWidget {
   }
 }
 
+
 class SelectedDay extends StatefulWidget {
   final String selectedDay;
+  final void Function(String) onDaySelected; // 추가된 부분
 
   const SelectedDay({
     required this.selectedDay,
+    required this.onDaySelected, // 추가된 부분
   });
 
   @override
@@ -559,6 +569,13 @@ class SelectedDay extends StatefulWidget {
 class _SelectedDayState extends State<SelectedDay> {
   late String _selectedDay;
   late List<Widget> exhibitions; // 전시 정보를 담을 리스트
+  late List<Widget> exhibitions_sun;
+  late List<Widget> exhibitions_mon;
+  late List<Widget> exhibitions_tue;
+  late List<Widget> exhibitions_wed;
+  late List<Widget> exhibitions_thu;
+  late List<Widget> exhibitions_fri;
+  late List<Widget> exhibitions_sat;
 
   @override
   void initState() {
@@ -566,6 +583,14 @@ class _SelectedDayState extends State<SelectedDay> {
     initializeDateFormatting('ko_KR');
     _selectedDay = widget.selectedDay;
     exhibitions = [];
+    exhibitions_sun = [];
+    exhibitions_mon = [];
+    exhibitions_tue = [];
+    exhibitions_wed = [];
+    exhibitions_thu = [];
+    exhibitions_fri = [];
+    exhibitions_sat = [];
+
     _fetchExhibitionsForSelectedDay(_selectedDay);
   }
 
@@ -589,47 +614,118 @@ class _SelectedDayState extends State<SelectedDay> {
 
   @override
   Widget build(BuildContext context) {
+
+    print('빌드에서 선택 요일: ');
+    print(_selectedDay);
+    List<Widget> selectedList;
+
+    // 요일에 따라 선택된 리스트 할당
+    if (_selectedDay == '월') {
+      selectedList = exhibitions_mon;
+    } else if (_selectedDay == '화') {
+      selectedList = exhibitions_tue;
+    } else if (_selectedDay == '수') {
+      selectedList = exhibitions_wed;
+    }else if (_selectedDay == '목') {
+      selectedList = exhibitions_thu;
+    }else if (_selectedDay == '금') {
+      selectedList = exhibitions_fri;
+    }else if (_selectedDay == '토') {
+      selectedList = exhibitions_sat;
+    }else if (_selectedDay == '일') {
+      selectedList = exhibitions_sun;
+    }
+    else {
+      // 다른 요일에 대한 처리
+      // 예: 기본 리스트나 오류 처리 등
+      selectedList = []; // 기본적으로 빈 리스트로 설정
+    }
+
     return Container(
-      height: 300,
-      child: exhibitions.isEmpty
+      height: 240,
+      child: selectedList.isEmpty
           ? Center(child: Text('정보가 없습니다.'))
-          : ListView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: exhibitions.length,
-        itemBuilder: (context, index) {
-          return exhibitions[index];
-        },
+          : SingleChildScrollView(
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: selectedList.length,
+              itemBuilder: (context, index) {
+                return selectedList[index];
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
+
+
   void _fetchExhibitionsForSelectedDay(String selectedDay) {
-    exhibitions.clear(); // 기존에 있던 전시 정보를 비워줍니다.
+    exhibitions_mon.clear(); // 이거 안 쓰면 요일 버튼 누를 때마다 전시 정보 누적해서 저장함
+    exhibitions_tue.clear();
+    exhibitions_wed.clear();
+    exhibitions_thu.clear();
+    exhibitions_fri.clear();
+    exhibitions_sat.clear();
+    exhibitions_sun.clear();
 
     for (int i = 0; i < db_exhibi_date.length; i++) {
       String exhibiDate = db_exhibi_date[i]['exhibi_date'];
+      print(getDayFromDate(exhibiDate));
 
-      if (getDayFromDate(exhibiDate) == selectedDay) {
-        String spaceName = db_spaceName[i]['spaceName'];
-        String locationName = db_locationName[i]['locationName'];
-        String image = db_image[i]['image'];
-        String exhibiTag = db_exhibi_tag[i]['exhibi_tag'];
-        String exhibiName = db_exhibi_name[i]['exhibi_name'];
+      String spaceName = db_spaceName[i]['spaceName'];
+      String locationName = db_locationName[i]['locationName'];
+      String image = db_image[i]['image'];
+      String exhibiTag = db_exhibi_tag[i]['exhibi_tag'];
+      String exhibiName = db_exhibi_name[i]['exhibi_name'];
 
-        Widget exhibitionWidget = YourWidgetForExhibition(
-          image,
-          locationName,
-          exhibiTag,
-          exhibiName,
-          exhibiDate,
-        );
+      Widget exhibitionWidget = YourWidgetForExhibition(
+        image,
+        locationName,
+        exhibiTag,
+        exhibiName,
+        exhibiDate,
+      );
 
+      if(getDayFromDate(exhibiDate) == '월'){
         setState(() {
-          exhibitions.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
         });
       }
+      else if(getDayFromDate(exhibiDate) == '화'){
+        setState(() {
+          exhibitions_tue.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }else if(getDayFromDate(exhibiDate) == '수'){
+        setState(() {
+          exhibitions_wed.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }else if(getDayFromDate(exhibiDate) == '목'){
+        setState(() {
+          exhibitions_thu.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }else if(getDayFromDate(exhibiDate) == '금'){
+        setState(() {
+          exhibitions_fri.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }else if(getDayFromDate(exhibiDate) == '토'){
+        setState(() {
+          exhibitions_sat.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }else if(getDayFromDate(exhibiDate) == '일'){
+        setState(() {
+          exhibitions_sun.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+        });
+      }
+
+
     }
+
+
   }
 
   // 실제 위젯에 넣는 부분
