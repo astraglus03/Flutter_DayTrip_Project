@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/Screen/place_blog_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -134,8 +135,32 @@ class _SavedPostListState extends State<SavedPostList> {
                   print('포스트 데이터: ${postData}');
                   if (postData != null) {
                     return GestureDetector(
-                      onTap: () {
-                        // Handle item tap
+                      onTap: () async {
+                        String location = '';
+
+                        QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
+                            .collectionGroup('space')
+                            .where('locationName', isEqualTo: postData['locationName'])
+                            .get();
+
+                        if (spaceSnapshot.docs.isNotEmpty) {
+                          location = spaceSnapshot.docs.first.get('location') ?? '';
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return PlaceBlogScreen(
+                                image: postData['image'],
+                                locationName: postData['locationName'],
+                                spaceName: postData['spaceName'],
+                                tag: postData['tag'],
+                                location: location,
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: Stack(
                         children: [

@@ -55,21 +55,6 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
     super.dispose();
   }
 
-  Future<String> _getAddressFromLatLng(LatLng latLng) async {
-    final apiKey = 'AIzaSyD1ubnmfNlwjq9hDqMpfinM5P4Rr585FaU';
-    final endpoint = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${newSpaceLocation?.latitude},${newSpaceLocation?.longitude}&key=$apiKey &language=ko');
-
-    final response = await http.get(endpoint);
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      if (decoded['status'] == 'OK') {
-        return decoded['results'][0]['formatted_address'];
-      }
-    }
-    return 'Address not found';
-  }
-
   Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
     try {
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
@@ -93,25 +78,25 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
       final DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(formattedDateString);
       final String address = await _getAddressFromLatLng(newSpaceLocation!);
-      final space = SpaceModel(
+      print('주소:${address}');
+
+      final space = SpaceModel.full(
         spaceName: _textEditingController.text,
         location: newSpaceLocation.toString(),
         tag: '문화',
         image: imageUrl,
         locationName: address,
-      );
-
-      final updatedSpace = space.copyWith(
         exhibiTag: hashTagButton.toString(),
         exhibiDate: parsedDate,
         exhibiName: _textEditingController1.text,
       );
+
       final user = FirebaseAuth.instance.currentUser!;
-      final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user!.uid);
+      final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
       await userCollectionRef.collection('space')
-          .doc(updatedSpace.spaceName)
-          .set(updatedSpace.toJson());
+          .doc(space.spaceName)
+          .set(space.toJson());
       // print('장소 이름: ${space.spaceName}');
       // print('위치: ${space.location}');
       // print('태그: ${space.tag}');
@@ -121,6 +106,21 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
     } else {
       // 이미지 업로드 실패 처리
     }
+  }
+
+  Future<String> _getAddressFromLatLng(LatLng latLng) async {
+    final apiKey = 'AIzaSyD1ubnmfNlwjq9hDqMpfinM5P4Rr585FaU';
+    final endpoint = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${newSpaceLocation?.latitude},${newSpaceLocation?.longitude}&key=$apiKey &language=ko');
+
+    final response = await http.get(endpoint);
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      if (decoded['status'] == 'OK') {
+        return decoded['results'][0]['formatted_address'];
+      }
+    }
+    return 'Address not found';
   }
 
   @override

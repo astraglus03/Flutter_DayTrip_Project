@@ -209,7 +209,7 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
       if(
-      isStudySelected == false &&
+          isStudySelected == false &&
           isTeamProjectSelected == false &&
           isExerciseSelected == false &&
           isWalkingSelected == false &&

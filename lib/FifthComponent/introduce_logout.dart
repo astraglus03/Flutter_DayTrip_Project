@@ -168,11 +168,16 @@ class _ProfileNameState extends State<ProfileName> {
         Map<String, dynamic> data = doc.data();
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
         String image = data.containsKey('image') ? data['image'] : '';
+        String locationName = data.containsKey('locationName') ? data['locationName'] : '';
+        String tag= data.containsKey('tag') ? data['tag'] : '';
+        String location = data.containsKey('location') ? data['location'] : '';
 
         return MyPostInfo(
-          spaceName: spaceName,
-          image: image,
-        );
+            spaceName: spaceName,
+            image: image,
+            location:location,
+            locationName:locationName,
+            tag: tag,);
       }).toList();
 
       if (mounted) {
