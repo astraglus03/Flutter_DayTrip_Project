@@ -283,6 +283,7 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
                           '장소 정보',
                           style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                         ),
+                        SizedBox(height: 10,),
                         Row(
                           children: [
                             Icon(Icons.place, size: 24.0, color: Colors.blue), // 장소 아이콘
@@ -293,16 +294,22 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
                             ),
                           ],
                         ),
+                        SizedBox(height: 10,),
                         Row(
                           children: [
                             Icon(Icons.location_on, size: 24.0, color: Colors.red), // 주소 아이콘
                             SizedBox(width: 8.0),
-                            Text(
-                              '주소 : ${widget.locationName}',
-                              style: TextStyle(fontSize: 18.0),
+                            Expanded(
+                              child: Text(
+                                '주소: ${widget.locationName}',
+                                style: TextStyle(fontSize: 18.0),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                              ),
                             ),
                           ],
                         ),
+                        SizedBox(height: 10,),
                         Row(
                           children: [
                             Icon(Icons.tag, size: 24.0, color: Colors.green), // 태그 아이콘
