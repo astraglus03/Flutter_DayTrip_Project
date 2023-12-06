@@ -454,7 +454,7 @@ class Title extends StatelessWidget {
     );
   }
 }
-
+// 최신 피드
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
   final List<RecentPostInfo> postInfoList;
@@ -474,6 +474,15 @@ class RecentPost extends StatefulWidget {
 class _RecentPostState extends State<RecentPost> {
   @override
   Widget build(BuildContext context) {
+    if (widget.imagePaths.isEmpty || widget.postInfoList.isEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 200,
+        child: Center(
+          child: Text('최신 게시물이 없습니다.'),
+        ),
+      );
+    }
     return CarouselSlider(
       options: CarouselOptions(
         height: 300,
@@ -490,15 +499,13 @@ class _RecentPostState extends State<RecentPost> {
               onTap: () async {
                 String location = '';
 
-                // Assume location and locationName are in the space collection
+
                 QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
                     .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
                     .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
                     .get();
 
-                // Check if the query has any results
                 if (spaceSnapshot.docs.isNotEmpty) {
-                  // Get the first document (assuming unique locationName values)
                   location = spaceSnapshot.docs.first.get('location');
                 }
 
@@ -621,7 +628,7 @@ class DayButton extends StatelessWidget {
             width: 1.0,
           ),
           borderRadius: BorderRadius.circular(20.0),
-          color: isSelected ? Colors.blue : Colors.transparent,
+          color: isSelected ? Colors.orange : Colors.transparent,
         ),
         child: Text(
           day,

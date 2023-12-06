@@ -331,7 +331,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height,
           child: Center(
             child: MainCalendar(
               onDaySelected: (date, focusedDate) {
@@ -647,7 +647,7 @@ class _SelectedDayState extends State<SelectedDay> {
         // Your onTap logic here
       },
       child: Container(
-        height: 580,
+        height: 490,
         child: selectedList.isEmpty
             ? Center(child: Text('정보가 없습니다.'))
             : SingleChildScrollView(
@@ -818,7 +818,7 @@ class _MainCalendarState extends State<MainCalendar> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.7,
         child: Column(
           children: [
             // 날짜를 표시하는 캘린더 위젯
