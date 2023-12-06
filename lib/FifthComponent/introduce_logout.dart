@@ -55,7 +55,7 @@ class IntroduceAndLogout extends StatelessWidget {
                     },
                     child: Text('로그아웃'),
                     style: TextButton.styleFrom(
-                      primary: Colors.black,
+                      primary: Colors.white,
                       backgroundColor: Colors.transparent,
                       splashFactory: InkSplash.splashFactory,
                       minimumSize: Size(80, 20),
