@@ -127,7 +127,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("새로운 공간 추가 "),
+        title: Text("새로운 전시∙행사 추가 "),
         backgroundColor: Colors.black,
       ),
       body: SafeArea(
