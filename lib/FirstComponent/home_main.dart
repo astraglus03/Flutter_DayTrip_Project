@@ -454,7 +454,7 @@ class Title extends StatelessWidget {
     );
   }
 }
-
+// 최신 피드
 class RecentPost extends StatefulWidget {
   final List<String> imagePaths;
   final List<RecentPostInfo> postInfoList;
@@ -474,6 +474,15 @@ class RecentPost extends StatefulWidget {
 class _RecentPostState extends State<RecentPost> {
   @override
   Widget build(BuildContext context) {
+    if (widget.imagePaths.isEmpty || widget.postInfoList.isEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 200,
+        child: Center(
+          child: Text('최신 게시물이 없습니다.'),
+        ),
+      );
+    }
     return CarouselSlider(
       options: CarouselOptions(
         height: 300,
@@ -490,15 +499,13 @@ class _RecentPostState extends State<RecentPost> {
               onTap: () async {
                 String location = '';
 
-                // Assume location and locationName are in the space collection
+
                 QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
                     .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
                     .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
                     .get();
 
-                // Check if the query has any results
                 if (spaceSnapshot.docs.isNotEmpty) {
-                  // Get the first document (assuming unique locationName values)
                   location = spaceSnapshot.docs.first.get('location');
                 }
 
@@ -763,9 +770,15 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_sat.clear();
     exhibitions_sun.clear();
 
+    DateTime now = DateTime.now();
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1)); // 이번 주의 시작
+    DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday)); // 이번 주의 끝
+
     for (int i = 0; i < db_exhibi_date.length; i++) {
       String exhibiDate = db_exhibi_date[i]['exhibi_date'];
       print(getDayFromDate(exhibiDate));
+
+      DateTime parsedExhibiDate = DateFormat('yyyy년 MM월 dd일').parse(exhibiDate, true);
 
       String spaceName = db_spaceName[i]['spaceName'];
       String locationName = db_locationName[i]['locationName'];
@@ -807,39 +820,42 @@ class _SelectedDayState extends State<SelectedDay> {
         },
       );
 
-      if(getDayFromDate(exhibiDate) == '월'){
-        setState(() {
-          exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-        });
-      }
-      else if(getDayFromDate(exhibiDate) == '화'){
-        setState(() {
-          exhibitions_tue.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+      if (parsedExhibiDate.isAfter(startOfWeek) && parsedExhibiDate.isBefore(endOfWeek)) {
+        if(getDayFromDate(exhibiDate) == '월' && _selectedDay == '월'){
+          setState(() {
+            exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          });
+        }
+        else if(getDayFromDate(exhibiDate) == '화' && _selectedDay == '화'){
+          setState(() {
+            exhibitions_tue.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
 
-        });
-      }else if(getDayFromDate(exhibiDate) == '수'){
-        setState(() {
-          exhibitions_wed.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-          ex_DATE = exhibiName;
-        });
-      }else if(getDayFromDate(exhibiDate) == '목'){
-        setState(() {
-          exhibitions_thu.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-        });
-      }else if(getDayFromDate(exhibiDate) == '금'){
-        setState(() {
-          exhibitions_fri.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-        });
-      }else if(getDayFromDate(exhibiDate) == '토'){
-        setState(() {
-          exhibitions_sat.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-        });
-      }else if(getDayFromDate(exhibiDate) == '일'){
-        setState(() {
-          exhibitions_sun.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
-        });
+          });
+        }else if(getDayFromDate(exhibiDate) == '수'&& _selectedDay == '수'){
+          setState(() {
+            exhibitions_wed.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            ex_DATE = exhibiName;
+          });
+        }else if(getDayFromDate(exhibiDate) == '목'&& _selectedDay == '목'){
+          setState(() {
+            exhibitions_thu.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          });
+        }else if(getDayFromDate(exhibiDate) == '금'){
+          setState(() {
+            exhibitions_fri.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          });
+        }else if(getDayFromDate(exhibiDate) == '토'){
+          setState(() {
+            exhibitions_sat.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          });
+        }else if(getDayFromDate(exhibiDate) == '일'){
+          setState(() {
+            exhibitions_sun.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+          });
+        }
       }
-    }
+      }
+
   }
 
   // 실제 위젯에 넣는 부분
@@ -925,7 +941,6 @@ class _SelectedDayState extends State<SelectedDay> {
       ),
     );
   }
-
 
 
   String getDayFromDate(String date) {
