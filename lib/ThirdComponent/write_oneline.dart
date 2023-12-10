@@ -242,6 +242,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
 
                 SizedBox(height: 20,),
                 Row(
+                  mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                   children: [
                     buildButton('카페'),
                     SizedBox(width: 10),
@@ -251,7 +252,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                     SizedBox(width: 10),
                     buildButton('학교건물'),
                     SizedBox(width: 10),
-                    buildButton('주차장'),
+                    buildButton('문화'),
                     SizedBox(width: 10),
                   ],
                 ),
