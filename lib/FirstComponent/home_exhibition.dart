@@ -179,13 +179,29 @@ Widget YourWidgetForExhibition(
   );
 }
 
-
+// 일 필터링
 String getDayFromDate(String date) {
   var formatter = DateFormat('d');
   DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(date);
   String day = formatter.format(parsedDate);
   print('파싱된 날짜: $parsedDate, 요일: $day');
   return day;
+}
+// 월 필터링
+String getMonthFromDate(String date) {
+  var formatter = DateFormat('M');
+  DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(date);
+  String month = formatter.format(parsedDate);
+  print('파싱된 월: $parsedDate, 월: $month');
+  return month;
+}
+// 년도 필터링
+String getYearFromDate(String date) {
+  var formatter = DateFormat('yyyy');
+  DateTime parsedDate = DateFormat('yyyy년 MM월 dd일').parse(date);
+  String year = formatter.format(parsedDate);
+  print('파싱된 날짜: $parsedDate, 요일: $year');
+  return year;
 }
 
 // 전시 전체보기
@@ -242,7 +258,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(DateFormat('yyyy년 MM월').format(currentDate),
+                  Text(DateFormat('yyyy년 MM월').format(selectedDate),
                       textAlign: TextAlign.center), // 현재 날짜 표시),
                   IconButton(
                     icon: Icon(Icons.arrow_drop_down),
@@ -268,7 +284,6 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                   //onDaySelected1(selectedDayIndex); // 변환된 값을 전달
                 });
                 print('datepickercustom에서 출력: ${selectedDayIndex}'); // 며칠 클릭하면, 그 숫자 출력
-
                 exhibitions_1.clear();exhibitions_2.clear();exhibitions_3.clear();
                 exhibitions_4.clear();exhibitions_5.clear();exhibitions_6.clear();
                 exhibitions_7.clear();exhibitions_8.clear();exhibitions_9.clear();
@@ -288,9 +303,8 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 style: TextStyle(fontSize: 13, color: Colors.grey,),
             ),
             if (selectedDay.isNotEmpty) // 선택된 날짜에 맞게 정보 표시
-              SelectedDay(selectedDayIndex: selectedDayIndex),
-
-
+              SelectedDay(selectedDayIndex: selectedDayIndex,
+                          selectedDate: selectedDate),
           ],
         )
     );
@@ -331,11 +345,23 @@ class _HomeExhibitionState extends State<HomeExhibition> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height,
           child: Center(
             child: MainCalendar(
               onDaySelected: (date, focusedDate) {
                 setState(() {
+                  exhibitions_1=[];exhibitions_2=[];exhibitions_3=[];
+                  exhibitions_4=[];exhibitions_5=[];exhibitions_6=[];
+                  exhibitions_7=[];exhibitions_8=[];exhibitions_9=[];
+                  exhibitions_10=[];exhibitions_11=[];exhibitions_12=[];
+                  exhibitions_13=[];exhibitions_14=[];exhibitions_15=[];
+                  exhibitions_16=[];exhibitions_17=[];exhibitions_18=[];
+                  exhibitions_19=[];exhibitions_20=[];exhibitions_21=[];
+                  exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
+                  exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
+                  exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
+
+
                   selectedDate = date;
                   selectedDay = DateFormat('d').format(date); // 선택된 날짜로 '일' 값을 문자열로 업데이트
 
@@ -347,7 +373,6 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 print('Selected day: ${selectedDayIndex}'); // 며칠 클릭하면, 그 숫자 출력
               },
               selectedDate: selectedDate,
-
               selectedIndex: selectedDayIndex, // 현재 선택된 날짜 인덱스 전달
             ),
           ),
@@ -380,8 +405,8 @@ class DatePickerCustom extends StatefulWidget {
 class _DatePickerCustomState extends State<DatePickerCustom> {
   int selectedIndex = DateTime.now().day - 1; // 오늘 날짜가 기본으로 선택됨
   DateTime now = DateTime.now();
-  late DateTime lastDayOfMonth = DateTime(now.year, now.month+1, 0); // 일 기준에 맞추기 위해
-  late DateTime lastDayOfMonth2 = DateTime(now.year, now.month, 0); //요일 기준으로는 맞음. 하지만 '일' 기준으로는 다음 달 정보가 들어옴
+  late DateTime lastDayOfMonth; // 일 기준에 맞추기 위해
+  late DateTime lastDayOfMonth2; //요일 기준으로는 맞음. 하지만 '일' 기준으로는 다음 달 정보가 들어옴
 
   DateTime selectedDate = DateTime.now(); //
   DateTime currentDate = DateTime.now(); // 현재 날짜 저장
@@ -397,7 +422,8 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
   void initState() {
     super.initState();
     //lastDayOfMonth = DateTime(now.year, now.month + 1, 1).subtract(Duration(days: 1)); // 마지막 날짜 가져오기 위해
-
+    lastDayOfMonth = DateTime(now.year, now.month+1, 0);
+    lastDayOfMonth2 = DateTime(now.year, now.month, 0);
     _controller = ScrollController();
 
     // 초기 오늘 날짜가 자동으로 중앙에 오도록
@@ -405,13 +431,10 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
       screenWidth = MediaQuery.of(context).size.width;
       itemWidth = 58.0; // 각 항목의 너비 (날짜 항목의 너비)
 
-
       scrollPosition = (widget.selectedDate.day - 1) * itemWidth - screenWidth / 2 + itemWidth / 2;
       // 선택된 날짜의 인덱스에 따른 초기 스크롤 위치 계산
       _controller.jumpTo(scrollPosition); // 스크롤 위치로 이동
-
     });
-
   }
 
   @override
@@ -436,8 +459,9 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
 
   @override
   Widget build(BuildContext context) {
-    //selectedIndex = widget.selectedDayIndex; // Add this line
-    //selectedIndex = widget.selectedDayIndex; //widget.selectedDayIndex: 메인캘린더에서 선택 날짜 인덱스 / selectedIndex: 수평 캘린더 선택 인덱스 (동기화)
+    lastDayOfMonth = DateTime(widget.selectedDate.year, widget.selectedDate.month+1, 0); // 일 기준에 맞추기 위해
+    lastDayOfMonth2 = DateTime(widget.selectedDate.year, widget.selectedDate.month, 0);
+
     print('selectedIndex: $selectedIndex');
     print('widget.selectedDayIndex: ${widget.selectedDayIndex}');
     return PreferredSize(
@@ -530,8 +554,9 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
 // 선택한 날짜마다 다른 전시&행사 정보
 class SelectedDay extends StatefulWidget {
   final int selectedDayIndex;
+  final DateTime selectedDate;
 
-  const SelectedDay({required this.selectedDayIndex,});
+  const SelectedDay({required this.selectedDayIndex, required this.selectedDate,});
 
   @override
   _SelectedDayState createState() => _SelectedDayState();
@@ -539,12 +564,14 @@ class SelectedDay extends StatefulWidget {
 
 class _SelectedDayState extends State<SelectedDay> {
   late int _selectedDayIndex;
+  late DateTime _selectedDate = widget.selectedDate;
 
   @override
   void initState() {
     super.initState();
     _selectedDayIndex = widget.selectedDayIndex;
     initializeDateFormatting('ko_KR');
+    _selectedDate = widget.selectedDate;
   }
 
   // 날짜 선택할 때마다 다른 정보 나올 수 있게 업데이트 //init 메서드 쓰면 안 됨. 업데이트 안 되기 때문
@@ -552,24 +579,21 @@ class _SelectedDayState extends State<SelectedDay> {
   void didUpdateWidget(covariant SelectedDay oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.selectedDayIndex != widget.selectedDayIndex) {
-      updateSelectedDay(widget.selectedDayIndex);
-    }
+    if (oldWidget.selectedDate != widget.selectedDate && oldWidget.selectedDayIndex != widget.selectedDayIndex) {
 
+      updateSelectedDay(widget.selectedDate, widget.selectedDayIndex);
+      //_fetchExhibitionsForSelectedDay();
+    }
   }
 
-  void updateSelectedDay(int day) {
+  void updateSelectedDay(DateTime date, int day) {
     setState(() {
       _selectedDayIndex = day;
-      //exhibitions_4.clear(); // 기존 전시 정보를 비웁니다.
-      //exhibitions_5.clear(); // 기존 전시 정보를 비웁니다.
-      _fetchExhibitionsForSelectedDay();
+      _selectedDate = date;
 
-      //_fetchExhibitionsForSelectedDay();
+      _fetchExhibitionsForSelectedDay();
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -647,7 +671,7 @@ class _SelectedDayState extends State<SelectedDay> {
         // Your onTap logic here
       },
       child: Container(
-        height: 580,
+        height: 490,
         child: selectedList.isEmpty
             ? Center(child: Text('정보가 없습니다.'))
             : SingleChildScrollView(
@@ -673,6 +697,11 @@ class _SelectedDayState extends State<SelectedDay> {
     for (int i = 0; i < db_exhibi_date.length; i++) {
       String exhibiDate = db_exhibi_date[i]['exhibi_date'];
       print(getDayFromDate(exhibiDate));
+      print('fetch 셀렉 월');
+      print(widget.selectedDate.month);
+
+      String selectedMonth = widget.selectedDate.month.toString();
+      String selectedYear = widget.selectedDate.year.toString();
 
       String spaceName = db_spaceName[i]['spaceName'];
       String locationName = db_locationName[i]['locationName'];
@@ -714,65 +743,65 @@ class _SelectedDayState extends State<SelectedDay> {
         },
       );
 
-      if(getDayFromDate(exhibiDate) == '1') {
+      if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '1') {
         exhibitions_1.add(exhibitionWidget);
-      } else if(getDayFromDate(exhibiDate) == '2'){
+      } else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '2'){
         exhibitions_2.add(exhibitionWidget);
-      } else if(getDayFromDate(exhibiDate) == '3'){
+      } else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '3'){
         exhibitions_3.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '4'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '4'){
         exhibitions_4.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '5'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '5'){
         exhibitions_5.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '6'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '6'){
         exhibitions_6.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '7'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '7'){
         exhibitions_7.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '8'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '8'){
         exhibitions_8.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '9'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '9'){
         exhibitions_9.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '10'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '10'){
         exhibitions_10.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '11'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '11'){
         exhibitions_11.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '12'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '12'){
         exhibitions_12.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '13'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '13'){
         exhibitions_13.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '14'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '14'){
         exhibitions_14.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '15'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '15'){
         exhibitions_15.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '16'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '16'){
         exhibitions_16.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '17'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '17'){
         exhibitions_17.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '18'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '18'){
         exhibitions_18.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '19'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '19'){
         exhibitions_19.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '20'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '20'){
         exhibitions_20.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '21'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '21'){
         exhibitions_21.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '22'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '22'){
         exhibitions_22.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '23'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '23'){
         exhibitions_23.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '24'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '24'){
         exhibitions_24.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '25'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '25'){
         exhibitions_25.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '26'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '26'){
         exhibitions_26.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '27'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '27'){
         exhibitions_27.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '28'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '28'){
         exhibitions_28.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '29'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '29'){
         exhibitions_29.add(exhibitionWidget);
-      }else if(getDayFromDate(exhibiDate) == '30'){
+      }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '30'){
         exhibitions_30.add(exhibitionWidget);
       }
 
@@ -781,6 +810,8 @@ class _SelectedDayState extends State<SelectedDay> {
     print(db_exhibi_date);
     print(db_exhibi_name);
     print(db_exhibi_tag);
+
+
 
   }
 
@@ -818,7 +849,7 @@ class _MainCalendarState extends State<MainCalendar> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.7,
         child: Column(
           children: [
             // 날짜를 표시하는 캘린더 위젯
