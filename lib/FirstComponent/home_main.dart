@@ -115,13 +115,53 @@ class _HomeMainState extends State<HomeMain> {
   // 각 이미지별 좋아요 상태를 저장하는 리스트
   List<bool> isLiked = List.generate(3, (index) => false);
 
-  Future<void> toggleLike(String pid, bool isLiked) async {
+  Future<void> toggleLike1(String pid, bool isLiked) async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       String uid = user.uid;
 
       int index = recentPostInfoList.indexWhere((post) => post.pid == pid);
+      if (index != -1) {
+        try {
+          final usersCollectionRef =
+          FirebaseFirestore.instance.collection('users');
+          final querySnapshot = await usersCollectionRef.get();
+
+          for (final userDoc in querySnapshot.docs) {
+            final postCollectionRef = userDoc.reference.collection('post');
+            final postDoc = await postCollectionRef.doc(pid).get();
+
+            if (postDoc.exists) {
+              DocumentReference postDocRef = postDoc.reference;
+
+              if (isLiked) {
+                await postDocRef.update({
+                  'likes': FieldValue.arrayUnion([uid]),
+                });
+                print("Liked post successfully");
+              } else {
+                await postDocRef.update({
+                  'likes': FieldValue.arrayRemove([uid]),
+                });
+                print("Unliked post successfully");
+              }
+            }
+          }
+        } catch (error) {
+          print('Error toggling like: $error');
+        }
+      }
+    }
+  }
+
+  Future<void> toggleLike2(String pid, bool isLiked) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      int index = popularPostInfoList.indexWhere((post) => post.pid == pid);
       if (index != -1) {
         try {
           final usersCollectionRef =
@@ -177,7 +217,7 @@ class _HomeMainState extends State<HomeMain> {
             RecentPost(
               imagePaths: recentImagePaths.take(3).toList(),
               postInfoList: recentPostInfoList,
-              onLikeButtonPressed: toggleLike, // Pass the toggleLike function
+              onLikeButtonPressed: toggleLike1, // Pass the toggleLike function
             ),
             SizedBox(height: 20),
             Title(
@@ -246,7 +286,7 @@ class _HomeMainState extends State<HomeMain> {
             PopularPost(
               imagePaths: popularImagePaths.take(3).toList(), // 3장까지만 가져오기
               postInfoList: popularPostInfoList,
-              onLikeButtonPressed: toggleLike,
+              onLikeButtonPressed: toggleLike2,
             ),
           ],
         ),
@@ -304,9 +344,11 @@ class _HomeMainState extends State<HomeMain> {
           data.containsKey('spaceName') ? data['spaceName'] : '';
           String image = data.containsKey('image') ? data['image'] : '';
           String pid = data.containsKey('pid') ? data['pid'] : '';
-          String writtenTime = data.containsKey('writtenTime') ? data['writtenTime'] : '';
-          String tag = data.containsKey('tag') ? data['tag']: '';
-          String locationName = data.containsKey('locationName') ? data['locationName']: '';
+          String writtenTime =
+          data.containsKey('writtenTime') ? data['writtenTime'] : '';
+          String tag = data.containsKey('tag') ? data['tag'] : '';
+          String locationName =
+          data.containsKey('locationName') ? data['locationName'] : '';
 
           if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
             updatedRecentImagePaths.add(image);
@@ -316,25 +358,62 @@ class _HomeMainState extends State<HomeMain> {
               image: image,
               pid: pid,
               writtenTime: writtenTime,
-              tag : tag,
+              tag: tag,
               locationName: locationName,
             ));
           }
 
-          if (writtenTime.isNotEmpty) {
-            updatedPopularImagePaths.add(image);
-
-            updatedPopularPostInfoList.add(PopularPostInfo(
-              spaceName: spaceName,
-              image: image,
-              pid: pid,
-              writtenTime: writtenTime,
-              tag : tag,
-              locationName: locationName,
-            ));
-          }
-
+          // if (writtenTime.isNotEmpty) {
+          //   updatedPopularImagePaths.add(image);
+          //
+          //   updatedPopularPostInfoList.add(PopularPostInfo(
+          //     spaceName: spaceName,
+          //     image: image,
+          //     pid: pid,
+          //     writtenTime: writtenTime,
+          //     tag: tag,
+          //     locationName: locationName,
+          //   ));
+          // }
         }
+      }
+
+      final postsCollectionRef = FirebaseFirestore.instance.collectionGroup('post');
+      final popularPostsQuerySnapshot = await postsCollectionRef
+          .orderBy('likes', descending: true)
+          .limit(3)
+          .get();
+
+      for (final popularPostDoc in popularPostsQuerySnapshot.docs) {
+        final data = popularPostDoc.data();
+        String spaceName =
+        data.containsKey('spaceName') ? data['spaceName'] : '';
+        String image = data.containsKey('image') ? data['image'] : '';
+        String pid = data.containsKey('pid') ? data['pid'] : '';
+        String writtenTime =
+        data.containsKey('writtenTime') ? data['writtenTime'] : '';
+        String tag = data.containsKey('tag') ? data['tag'] : '';
+        String locationName =
+        data.containsKey('locationName') ? data['locationName'] : '';
+
+        int likesCount = 0;
+        if (data.containsKey('likes')) {
+          if (data['likes'] is List) {
+            likesCount = data['likes'].length;
+          }
+        }
+
+        updatedPopularImagePaths.add(image);
+
+        updatedPopularPostInfoList.add(PopularPostInfo(
+          spaceName: spaceName,
+          image: image,
+          pid: pid,
+          writtenTime: writtenTime,
+          tag: tag,
+          locationName: locationName,
+          likesCount:likesCount,
+        ));
       }
 
       setState(() {
@@ -408,6 +487,7 @@ class PopularPostInfo {
   final String writtenTime;
   final String tag;
   final String locationName;
+  int? likesCount;
   bool isLiked;
 
   PopularPostInfo({
@@ -417,6 +497,7 @@ class PopularPostInfo {
     required this.writtenTime,
     required this.tag,
     required this.locationName,
+    this.likesCount,
     this.isLiked = false,
   });
 }
@@ -1045,10 +1126,25 @@ class _PopularPostState extends State<PopularPost> {
                         widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
 
                         setState(() {
+                          if (widget.postInfoList[index].likesCount != null) {
+                            if (isCurrentlyLiked) {
+                              widget.postInfoList[index].likesCount = widget.postInfoList[index].likesCount! - 1;
+                            } else {
+                              widget.postInfoList[index].likesCount = widget.postInfoList[index].likesCount! + 1;
+                            }
+                          }
                           widget.postInfoList[index].isLiked = !isCurrentlyLiked;
                         });
                       },
                     ),
+                  ),
+
+                  Positioned(
+                    top: 40,
+                    right: 20,
+                    child: Text("+${widget.postInfoList[index].likesCount}", style: TextStyle(
+                      color: Colors.red,
+                    ),),
                   ),
                 ],
               ),

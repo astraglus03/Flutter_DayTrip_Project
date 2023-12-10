@@ -213,7 +213,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                   Container(
                     height: 60,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         buildButton('카페'),
                         SizedBox(width: 10),
@@ -222,8 +222,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                         buildButton('편의점'),
                         SizedBox(width: 10),
                         buildButton('학교건물'),
-                        SizedBox(width: 10),
-                        buildButton('주차장'),
                         SizedBox(width: 10),
                       ],
                     ),
