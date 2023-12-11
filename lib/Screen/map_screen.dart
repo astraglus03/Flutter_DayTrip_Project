@@ -167,7 +167,7 @@ class _MapScreenState extends State<MapScreen> {
               (isTeamProjectSelected && tag == '음식점') ||
               (isExerciseSelected && tag == '편의점') ||
               (isWalkingSelected && tag == '학교건물') ||
-              (isRestSelected && tag == '주차장')) {
+              (isRestSelected && tag == '문화')) {
             if (locationString != null) {
               // 위치 데이터 파싱 및 LatLng 객체 생성
               final cleanString = locationString.replaceAll('LatLng(', '').replaceAll(')', '');
@@ -365,7 +365,7 @@ class _MapScreenState extends State<MapScreen> {
                 _buildSearchButton('음식점', isTeamProjectSelected),
                 _buildSearchButton('편의점', isExerciseSelected),
                 _buildSearchButton('학교건물', isWalkingSelected),
-                _buildSearchButton('주차장', isRestSelected),
+                _buildSearchButton('문화', isRestSelected),
               ],
             ),
 
@@ -430,7 +430,7 @@ class _MapScreenState extends State<MapScreen> {
                 case '학교건물':
                   isWalkingSelected = !isWalkingSelected;
                   break;
-                case '주차장':
+                case '문화':
                   isRestSelected = !isRestSelected;
                   break;
               }
