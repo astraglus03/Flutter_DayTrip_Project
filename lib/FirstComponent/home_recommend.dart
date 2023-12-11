@@ -170,7 +170,7 @@ class Result extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: currentPlaces!.length,
+              itemCount: currentPlaces!.length < 5 ? currentPlaces!.length : 5,
               itemBuilder: (BuildContext context, int index) {
                 String placeName = currentPlaces![index];
                 print('추천태그:${placesData[index]['originTag']}');

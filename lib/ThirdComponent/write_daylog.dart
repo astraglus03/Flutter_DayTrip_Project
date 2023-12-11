@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/model_db/postmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -80,24 +83,39 @@ class _WriteDayLogState extends State<WriteDayLog> {
     });
   }
 
-  Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
-    try {
-      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images')
-          .child(DateTime.now().millisecondsSinceEpoch.toString());
 
-      await ref.putFile(imageFile);
-      String imageUrl = await ref.getDownloadURL();
-      return imageUrl;
+  Future<String?> uploadCompressedImageToFirebaseStorage(File imageFile) async {
+    try {
+      List<int> imageBytes = await imageFile.readAsBytes();
+      Uint8List uint8List = Uint8List.fromList(imageBytes); // List<int>를 Uint8List로 변환
+
+      Uint8List compressedImageBytes = await FlutterImageCompress.compressWithList(
+        uint8List,
+        minHeight: 1920, // 압축 후 이미지의 최소 높이
+        minWidth: 1080, // 압축 후 이미지의 최소 너비
+        quality: 80, // 이미지 품질 (0-100)
+      );
+
+      File compressedImageFile = File('${imageFile.path}_compressed.jpg');
+      await compressedImageFile.writeAsBytes(compressedImageBytes);
+
+      final Reference storageReference = FirebaseStorage.instance.ref().child('images')
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
+      await storageReference.putFile(compressedImageFile);
+      final String downloadUrl = await storageReference.getDownloadURL();
+
+      // 압축된 이미지 업로드 후 압축된 파일 삭제
+      await compressedImageFile.delete();
+
+      return downloadUrl;
     } catch (e) {
-      print('이미지 업로드 오류: $e');
+      print('Error uploading image: $e');
       return null;
     }
   }
 
   Future<void> createPost() async {
-    final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
+    final String? imageUrl = await uploadCompressedImageToFirebaseStorage(selectedGalleryImage!);
     final user = FirebaseAuth.instance.currentUser!;
     final uuid = Uuid();
 
