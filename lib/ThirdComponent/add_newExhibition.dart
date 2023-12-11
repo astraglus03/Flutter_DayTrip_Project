@@ -13,6 +13,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:final_project/Screen/map_screen.dart';
 
 class AddNewExhibition extends StatefulWidget {
   const AddNewExhibition({super.key});
@@ -31,11 +32,27 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
   DateTime selectedDate = DateTime.now();
   TextEditingController _textEditingController = TextEditingController();
   TextEditingController _textEditingController1 = TextEditingController();
+  Set<Marker> _markers = {};
 
   void _onMapTapped(LatLng location) async {
     setState(() {
-      newSpaceLocation = location; // 터치한 위치의 좌표를 저장
+      newSpaceLocation = location;
       spacexy = newSpaceLocation.toString();
+
+      // Clear existing markers
+      _markers.clear();
+
+      // Add a marker for the tapped location
+      _markers.add(
+        Marker(
+          markerId: MarkerId('newSpace'),
+          position: location,
+          infoWindow: InfoWindow(
+            title: '추가 할 공간의 위치',
+            snippet: '위도: ${location.latitude}, 경도: ${location.longitude}',
+          ),
+        ),
+      );
     });
   }
 
@@ -177,14 +194,15 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                       onMapCreated: (controller) {
                         setState(() {
                           mapController = controller;
+                          controller.setMapStyle(darkMapStyle);
                         });
                       },
                       onTap: _onMapTapped,
                       initialCameraPosition: CameraPosition(
-
                         target: LatLng(36.83407, 127.1793),
                         zoom: 15.0,
                       ),
+                      markers: _markers,
                     ),
                   ),
 

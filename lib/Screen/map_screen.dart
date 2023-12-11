@@ -430,7 +430,7 @@ class _MapScreenState extends State<MapScreen> {
                 case '학교건물':
                   isWalkingSelected = !isWalkingSelected;
                   break;
-                case '주차장':
+                case '문화':
                   isRestSelected = !isRestSelected;
                   break;
               }
