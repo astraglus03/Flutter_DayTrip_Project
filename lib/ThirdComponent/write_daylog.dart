@@ -414,30 +414,51 @@ class _WriteDayLogState extends State<WriteDayLog> {
                 SizedBox(height: 30,),
 
                 InkWell(
-                  onTap: selectedTitle !=null && hashTagButton !=null && selectedGalleryImage !=null  ? () {
+                  onTap: () {
                     print(selectedTitle);
                     print(hashTagButton);
                     print(selectedGalleryImage);
                     print(_textEditingController.text);
 
-                    // 데이로그 업로드 하는 부분
-                    // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
-                    Navigator.pop(context);
-                    createPost();
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context){
-                      Future.delayed(Duration(seconds: 2), () {
-                        Navigator.of(context).pop();
-                      });
+                    if (selectedTitle == null || hashTagButton == null || selectedGalleryImage == null) {
 
-                      return AlertDialog(
-                        title: Text('데이로그 업로드가 완료되었습니다.'),
-                        content: Text('다른사람의 게시물과 내가 작성한 게시물은 네번째 페이지에서 확인하세요! 내 게시물은 다섯번째 페이지에 있습니다.'),
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('경고'),
+                            content: Text('빈 칸을 모두 채워주세요.'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('닫기'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      // 데이로그 업로드 하는 부분
+                      // 재민이가 수정하면 이후에 해당 위젯 추가하면 됩니당.
+                      Navigator.pop(context);
+                      createPost();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          Future.delayed(Duration(seconds: 2), () {
+                            Navigator.of(context).pop();
+                          });
+
+                          return AlertDialog(
+                            title: Text('데이로그 업로드가 완료되었습니다.'),
+                            content: Text('다른사람의 게시물과 내가 작성한 게시물은 네번째 페이지에서 확인하세요! 내 게시물은 다섯번째 페이지에 있습니다.'),
+                          );
+                        },
                       );
                     }
-                    );
-                  } : null,
+                  },
                   child: Container(
                     height: 55,
                     width: double.infinity,
@@ -454,6 +475,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),

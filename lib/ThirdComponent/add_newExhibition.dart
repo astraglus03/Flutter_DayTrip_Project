@@ -203,10 +203,10 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         zoom: 15.0,
                       ),
                       markers: _markers,
+                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                        Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
+                      ].toSet(),
 
-                        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                          Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
-                        ].toSet(),
                     ),
                   ),
 
@@ -352,23 +352,44 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
 
                   InkWell(
                     onTap: () {
-                      String enteredText = _textEditingController.text;
-                      print('입력된 텍스트: $enteredText');
-                      Navigator.pop(context);
-                      showDialog(
+                      if(_textEditingController.text == null || _textEditingController1.text==null || spacexy == null || selectedGalleryImage == null || hashTagButton == null) {
+                        showDialog(
                           context: context,
-                          builder: (BuildContext context){
-                            Future.delayed(Duration(seconds: 1), () {
-                              Navigator.of(context).pop();
-                            });
-
+                          builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('행사가 추가되었습니다'),
-                              content: Text('한 줄 평 작성할 때 확인 가능합니다.'),
+                              title: Text('경고'),
+                              content: Text('빈 칸을 모두 채워주세요.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the alert dialog
+                                  },
+                                  child: Text('확인'),
+                                ),
+                              ],
                             );
-                          }
-                      );
-                      createSpace();
+                          },
+                        );
+                      }else {
+                        String enteredText = _textEditingController.text;
+                        print('입력된 텍스트: $enteredText');
+                        Navigator.pop(context);
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              Future.delayed(Duration(seconds: 1), () {
+                                Navigator.of(context).pop();
+                              });
+
+                              return AlertDialog(
+                                title: Text('행사가 추가되었습니다'),
+                                content: Text('한 줄 평 작성할 때 확인 가능합니다.'),
+                              );
+                            }
+                        );
+                        createSpace();
+                      }
                     },
                     child: Container(
                       height: 55,
