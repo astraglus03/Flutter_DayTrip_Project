@@ -88,7 +88,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
     return userImages;
   }
 
-
   @override
   Widget build(BuildContext context) {
     print('spaceName: ${widget.exhibiName}');
