@@ -298,7 +298,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _updateAllLocations().then((value) {
-      _foodmarker();
+      // _foodmarker();
     });
     _getCurrentLocation();
   }
@@ -466,23 +466,23 @@ class _MapScreenState extends State<MapScreen> {
   }
 
 
-  void _foodmarker() async {
-    final Marker marker = Marker(
-      markerId: MarkerId(exampleLocation.toString()),
-      position: exampleLocation,
-      infoWindow: InfoWindow(
-        title: '식당 위치',
-        snippet: '여기에 있습니다.',
-      ),
-      onTap: () {
-        _fetchFoodMarkerData(exampleLocation);
-      },
-    );
-
-    setState(() {
-      _markers.add(marker);
-    });
-  }
+  // void _foodmarker() async {
+  //   final Marker marker = Marker(
+  //     markerId: MarkerId(exampleLocation.toString()),
+  //     position: exampleLocation,
+  //     infoWindow: InfoWindow(
+  //       title: '식당 위치',
+  //       snippet: '여기에 있습니다.',
+  //     ),
+  //     onTap: () {
+  //       _fetchFoodMarkerData(exampleLocation);
+  //     },
+  //   );
+  //
+  //   setState(() {
+  //     _markers.add(marker);
+  //   });
+  // }
 
   void _fetchFoodMarkerData(LatLng location) async {
     try {

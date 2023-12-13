@@ -578,7 +578,6 @@ class _RecentPostState extends State<RecentPost> {
               onTap: () async {
                 String location = '';
 
-
                 QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
                     .collectionGroup('space') // 전체에서 space 컬렉션을 탐색
                     .where('locationName', isEqualTo: widget.postInfoList[index].locationName)
@@ -595,7 +594,7 @@ class _RecentPostState extends State<RecentPost> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context, ) => PlaceBlogScreen(
+                    builder: (context) => PlaceBlogScreen(
                       image: widget.postInfoList[index].image,
                       location: location,
                       locationName: widget.postInfoList[index].locationName,
