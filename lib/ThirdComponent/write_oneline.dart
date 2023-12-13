@@ -279,6 +279,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                         },
                       );
                     } else {
+                      Navigator.pop(context);
                       createOneLine();
                       showDialog(
                         context: context,
