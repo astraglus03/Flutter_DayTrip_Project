@@ -29,19 +29,13 @@ List<String> contents = [];
 
 class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
   int selectedUserIndex = -1; // 선택된 사용자를 추적하기 위한 변수
-  List<String> userPosts = [
-    '사용자 1의 글입니다.',
-    '사용자 2의 글입니다.',
-    '사용자 3의 글입니다.',
-    '사용자 4의 글입니다.',
-  ];
 
 
   List<String> userImages = []; // 사용자 이미지 URL 목록
 
   Future<void> loadUserImages() async {
     userImages = await getUserImages(widget.spaceName);
-    setState(() {}); // 이 부분을 추가하여 화면을 갱신합니다.
+    setState(() {});
 
     print(userImages);
   }
@@ -160,15 +154,11 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                                 children: [
                                   IconButton(
                                     icon: Icon(Icons.home_outlined, color: Colors.white,),
-                                    onPressed: () {
-                                      // 메뉴 버튼 동작
-                                    },
+                                    onPressed: () {},
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.more_horiz, color: Colors.white,),
-                                    onPressed: () {
-                                      // 메뉴 버튼 동작
-                                    },
+                                    onPressed: () {},
                                   ),
                                 ],
                               ),
@@ -187,7 +177,7 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     children: List.generate(userImages.length, (index) {
                       return InkWell(
                         onTap: () {
-                          // 사용자 선택 시 처리
+
                           setState(() {
                             selectedUserIndex = index;
                           });
@@ -209,7 +199,6 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                     }),
                   ),
 
-                  // 선택된 사용자가 쓴 글 표시
                   // 선택된 사용자가 쓴 글 표시
                   Container(
                     padding: EdgeInsets.all(16.0),

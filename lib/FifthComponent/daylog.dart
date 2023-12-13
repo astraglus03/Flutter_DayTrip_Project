@@ -221,7 +221,6 @@ class MyPostList extends StatelessWidget {
           spacing: 6.0,
           runSpacing: 8.0,
           children: postList.asMap().entries.map((entry) {
-            // entry.key is the index, entry.value is the MyPostInfo object
             return PostItem(postInfo: entry.value, index: entry.key);
           }).toList(),
         ),

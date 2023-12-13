@@ -66,7 +66,6 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                // 바텀 시트 위의 공간 height(빠른 체크인 위의 여백공간 조절)
                 height: 30,
               ),
               ListTile(

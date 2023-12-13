@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:final_project/model_db/space.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:final_project/Screen/map_screen.dart';
@@ -34,10 +36,8 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       newSpaceLocation = location;
       spacexy = newSpaceLocation.toString();
 
-      // Clear existing markers
       _markers.clear();
 
-      // Add a marker for the tapped location
       _markers.add(
         Marker(
           markerId: MarkerId('newSpace'),
@@ -65,7 +65,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   }
 
   void dispose() {
-    // 페이지가 dispose될 때 컨트롤러를 정리합니다.
     _textEditingController.dispose();
     super.dispose();
   }
@@ -86,24 +85,39 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   }
 
 
-  Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
+  Future<String?> uploadCompressedImageToFirebaseStorage(File imageFile) async {
     try {
-      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images')
-          .child(DateTime.now().millisecondsSinceEpoch.toString());
+      List<int> imageBytes = await imageFile.readAsBytes();
+      Uint8List uint8List = Uint8List.fromList(imageBytes); // List<int>를 Uint8List로 변환
 
-      await ref.putFile(imageFile);
-      String imageUrl = await ref.getDownloadURL();
-      return imageUrl;
+      Uint8List compressedImageBytes = await FlutterImageCompress.compressWithList(
+        uint8List,
+        minHeight: 1920, // 압축 후 이미지의 최소 높이
+        minWidth: 1080, // 압축 후 이미지의 최소 너비
+        quality: 80, // 이미지 품질
+      );
+
+      File compressedImageFile = File('${imageFile.path}_compressed.jpg');
+      await compressedImageFile.writeAsBytes(compressedImageBytes);
+
+      final Reference storageReference = FirebaseStorage.instance.ref().child('images')
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
+      await storageReference.putFile(compressedImageFile);
+      final String downloadUrl = await storageReference.getDownloadURL();
+
+      // 압축된 이미지 업로드 후 압축된 파일 삭제
+      await compressedImageFile.delete();
+
+      return downloadUrl;
     } catch (e) {
-      print('이미지 업로드 오류: $e');
+      print('Error uploading image: $e');
       return null;
     }
   }
 
+
   Future<void> createSpace() async {
-    final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
+    final String? imageUrl = await uploadCompressedImageToFirebaseStorage(selectedGalleryImage!);
 
     if (imageUrl != null) {
       final String address = await _getAddressFromLatLng(newSpaceLocation!);
@@ -188,7 +202,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     height: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26, //Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -200,7 +214,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                           Text("위도: ${newSpaceLocation?.latitude ?? ''}"),
                           SizedBox(height: 5,),
                           Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
-
                         ],
                       ),
                     ),
@@ -213,7 +226,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26, //Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -319,7 +332,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
           color: Colors.white,

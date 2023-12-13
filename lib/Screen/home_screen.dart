@@ -1,6 +1,5 @@
 import 'package:final_project/FirstComponent/home_main.dart';
 import 'package:flutter/material.dart';
-
 import '../FirstComponent/home_recommend.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:final_project/model_db/space.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -36,10 +38,8 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       newSpaceLocation = location;
       spacexy = newSpaceLocation.toString();
 
-      // Clear existing markers
       _markers.clear();
 
-      // Add a marker for the tapped location
       _markers.add(
         Marker(
           markerId: MarkerId('newSpace'),
@@ -66,30 +66,44 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
   }
 
   void dispose() {
-    // 페이지가 dispose될 때 컨트롤러를 정리합니다.
+    // 페이지가 dispose될 때 컨트롤러 삭제
     _textEditingController.dispose();
     _textEditingController1.dispose();
     super.dispose();
   }
 
-  Future<String?> uploadImageToFirebaseStorage(File imageFile) async {
+  Future<String?> uploadCompressedImageToFirebaseStorage(File imageFile) async {
     try {
-      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images')
-          .child(DateTime.now().millisecondsSinceEpoch.toString());
+      List<int> imageBytes = await imageFile.readAsBytes();
+      Uint8List uint8List = Uint8List.fromList(imageBytes); // List<int>를 Uint8List로 변환
 
-      await ref.putFile(imageFile);
-      String imageUrl = await ref.getDownloadURL();
-      return imageUrl;
+      Uint8List compressedImageBytes = await FlutterImageCompress.compressWithList(
+        uint8List,
+        minHeight: 1920, // 압축 후 이미지의 최소 높이
+        minWidth: 1080, // 압축 후 이미지의 최소 너비
+        quality: 80, // 이미지 품질
+      );
+
+      File compressedImageFile = File('${imageFile.path}_compressed.jpg');
+      await compressedImageFile.writeAsBytes(compressedImageBytes);
+
+      final Reference storageReference = FirebaseStorage.instance.ref().child('images')
+          .child(DateTime.now().millisecondsSinceEpoch.toString());
+      await storageReference.putFile(compressedImageFile);
+      final String downloadUrl = await storageReference.getDownloadURL();
+
+      // 압축된 이미지 업로드 후 압축된 파일 삭제
+      await compressedImageFile.delete();
+
+      return downloadUrl;
     } catch (e) {
-      print('이미지 업로드 오류: $e');
+      print('Error uploading image: $e');
       return null;
     }
   }
 
   Future<void> createSpace() async {
-    final String? imageUrl = await uploadImageToFirebaseStorage(selectedGalleryImage!);
+    final String? imageUrl = await uploadCompressedImageToFirebaseStorage(selectedGalleryImage!);
 
     if (imageUrl != null) {
       final String formattedDateString = DateFormat('yyyy년 MM월 dd일').format(selectedDate);
@@ -397,7 +411,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(color: Colors.white, width: 1.0,)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

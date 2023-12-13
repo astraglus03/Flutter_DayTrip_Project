@@ -86,7 +86,6 @@ class _WriteOneLineState extends State<WriteOneLine> {
           .doc(oneLine.oneLineContent)
           .set(oneLine.toJson());
     } catch (e) {
-      // 문서를 가져오는 도중에 오류 발생 시 처리할 내용
       print('Error fetching document: $e');
     }
   }
@@ -300,7 +299,6 @@ class _WriteOneLineState extends State<WriteOneLine> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ),

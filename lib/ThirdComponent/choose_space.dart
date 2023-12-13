@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/model_db/space.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChooseSpace extends StatefulWidget {
@@ -20,18 +19,14 @@ class _ChooseSpaceState extends State<ChooseSpace> {
   Future<void> fetchSpaceModels() async {
     final userRef = FirebaseFirestore.instance.collection('users');
 
-    // 'users' 컬렉션의 모든 문서 가져오기
     QuerySnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
 
     List<SpaceModel> fetchedSpaceModels = []; // SpaceModel 객체를 담을 리스트
 
-    // 각 사용자 문서에서 'space' 컬렉션의 문서 가져오기
     for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
-      // 현재 사용자 문서에서 'space' 컬렉션 가져오기
       QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
       await userDoc.reference.collection('space').get();
 
-      // 각 'space' 컬렉션의 문서를 SpaceModel 객체로 변환하여 리스트에 추가
       spaceSnapshot.docs.forEach((spaceDoc) {
         Map<String, dynamic> data = spaceDoc.data();
         SpaceModel spaceModel = SpaceModel(
@@ -46,7 +41,7 @@ class _ChooseSpaceState extends State<ChooseSpace> {
     }
 
     setState(() {
-      spaceModels = fetchedSpaceModels; // 가져온 SpaceModel 객체 리스트를 상태에 설정
+      spaceModels = fetchedSpaceModels;
     });
   }
 
