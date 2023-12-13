@@ -13,6 +13,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:final_project/Screen/map_screen.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
+
 
 class AddNewExhibition extends StatefulWidget {
   const AddNewExhibition({super.key});
@@ -173,7 +176,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                     },
                     child: Container(
                       width: 100,
-                      height: 110,
+                      height: 120,
                       decoration: BoxDecoration(
                         border: Border.all(width: 1, color: Colors.grey),
                       ),
@@ -200,11 +203,16 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         zoom: 15.0,
                       ),
                       markers: _markers,
+                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                        Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
+                      ].toSet(),
+
                     ),
                   ),
 
                   SizedBox(height: 20,),
-                  /*
+
+
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -213,26 +221,22 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                       color: Colors.black26, //Colors.grey[300],
                     ),
 
-                    /*child: Padding(
+                    child: Padding(
                       padding: const EdgeInsets.only(left: 15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text("위도: ${newSpaceLocation?.latitude ?? ''}"),
-                          //SizedBox(height: 5,),
-                          //Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
+                          SizedBox(height: 5,),
+                          Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
 
                         ],
                       ),
                     ),
-
-                     */
                   ),
 
-                   */
-
-                  //SizedBox(height: 20,),
+                  SizedBox(height: 20,),
 
                   Container(
                     width: double.infinity,

@@ -845,7 +845,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_sun.clear();
 
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1)); // 이번 주의 시작
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday)); // 이번 주의 시작
     DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday)); // 이번 주의 끝
 
     for (int i = 0; i < db_exhibi_date.length; i++) {
@@ -861,7 +861,7 @@ class _SelectedDayState extends State<SelectedDay> {
       String exhibiName = db_exhibi_name[i]['exhibi_name'];
       String exhibiloation = db_exhibi_location[i]['location'];
 
-      Widget exhibitionWidget = YourWidgetForExhibition(
+      Widget exhibitionWidget = WidgetExhibition(
         image,
         locationName,
         exhibiTag,
@@ -933,7 +933,7 @@ class _SelectedDayState extends State<SelectedDay> {
   }
 
   // 실제 위젯에 넣는 부분
-  Widget YourWidgetForExhibition(
+  Widget WidgetExhibition(
       String image,
       String locationName,
       String exhibi_tag,
