@@ -73,22 +73,22 @@ Future<void> _updateAllLocations() async {
   }
 }
 
-late List<Widget> exhibitions_1 = [];late List<Widget> exhibitions_2 = [];
-late List<Widget> exhibitions_3 = [];late List<Widget> exhibitions_4 = [];
-late List<Widget> exhibitions_5 = [];late List<Widget> exhibitions_6 = [];
-late List<Widget> exhibitions_7 = [];late List<Widget> exhibitions_8 = [];
-late List<Widget> exhibitions_9 = [];late List<Widget> exhibitions_10 = [];
-late List<Widget> exhibitions_11 = [];late List<Widget> exhibitions_12 = [];
-late List<Widget> exhibitions_13 = [];late List<Widget> exhibitions_14 = [];
-late List<Widget> exhibitions_15 = [];late List<Widget> exhibitions_16 = [];
-late List<Widget> exhibitions_17 = [];late List<Widget> exhibitions_18 = [];
-late List<Widget> exhibitions_19 = [];late List<Widget> exhibitions_20 = [];
-late List<Widget> exhibitions_21 = [];late List<Widget> exhibitions_22 = [];
-late List<Widget> exhibitions_23 = [];late List<Widget> exhibitions_24 = [];
-late List<Widget> exhibitions_25 = [];late List<Widget> exhibitions_26 = [];
-late List<Widget> exhibitions_27 = [];late List<Widget> exhibitions_28 = [];
-late List<Widget> exhibitions_29 = [];late List<Widget> exhibitions_30 = [];
-late List<Widget> exhibitions_31 = [];
+late List<Widget> exhibitions_1;late List<Widget> exhibitions_2;
+late List<Widget> exhibitions_3;late List<Widget> exhibitions_4;
+late List<Widget> exhibitions_5;late List<Widget> exhibitions_6;
+late List<Widget> exhibitions_7;late List<Widget> exhibitions_8;
+late List<Widget> exhibitions_9;late List<Widget> exhibitions_10;
+late List<Widget> exhibitions_11;late List<Widget> exhibitions_12;
+late List<Widget> exhibitions_13;late List<Widget> exhibitions_14;
+late List<Widget> exhibitions_15;late List<Widget> exhibitions_16;
+late List<Widget> exhibitions_17;late List<Widget> exhibitions_18;
+late List<Widget> exhibitions_19;late List<Widget> exhibitions_20;
+late List<Widget> exhibitions_21;late List<Widget> exhibitions_22;
+late List<Widget> exhibitions_23;late List<Widget> exhibitions_24;
+late List<Widget> exhibitions_25;late List<Widget> exhibitions_26;
+late List<Widget> exhibitions_27;late List<Widget> exhibitions_28;
+late List<Widget> exhibitions_29;late List<Widget> exhibitions_30;
+late List<Widget> exhibitions_31;
 
 // 실제 위젯에 넣는 부분
 Widget WidgetExhibition(
@@ -566,9 +566,24 @@ class _SelectedDayState extends State<SelectedDay> {
   @override
   void initState() {
     super.initState();
-    _selectedDayIndex = widget.selectedDayIndex;
     initializeDateFormatting('ko_KR');
+    _selectedDayIndex = widget.selectedDayIndex;
     _selectedDate = widget.selectedDate;
+    exhibitions_1=[];exhibitions_2=[];
+    exhibitions_3=[];exhibitions_4=[];
+    exhibitions_5=[];exhibitions_6=[];
+    exhibitions_7=[];exhibitions_8=[];
+    exhibitions_9=[];exhibitions_10=[];
+    exhibitions_11=[];exhibitions_12=[];
+    exhibitions_13=[];exhibitions_15=[];
+    exhibitions_16=[];exhibitions_17=[];
+    exhibitions_18=[];exhibitions_19=[];
+    exhibitions_20=[];exhibitions_21=[];
+    exhibitions_22=[];exhibitions_23=[];
+    exhibitions_24=[];exhibitions_25=[];
+    exhibitions_26=[];exhibitions_27=[];
+    exhibitions_28=[];exhibitions_29=[];
+    exhibitions_30=[];exhibitions_31=[];
 
     _fetchExhibitionsForSelectedDay();
   }
