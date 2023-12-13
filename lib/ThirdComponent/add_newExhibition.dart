@@ -13,6 +13,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:final_project/Screen/map_screen.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
+
 
 class AddNewExhibition extends StatefulWidget {
   const AddNewExhibition({super.key});
@@ -200,6 +203,10 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         zoom: 15.0,
                       ),
                       markers: _markers,
+                        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                          Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
+                        ].toSet(),
+
                     ),
                   ),
 
