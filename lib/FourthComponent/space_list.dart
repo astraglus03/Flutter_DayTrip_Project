@@ -53,11 +53,7 @@ class MySavedList extends StatefulWidget {
 
 class _MySavedListState extends State<MySavedList> {
   bool isLiked = false;
-  final List<String> assetImages = [
-    // 'asset/github.png',
-    // 'asset/apple.jpg',
-    // 'asset/apple.jpg',
-  ];
+  final List<String> assetImages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -171,9 +167,6 @@ class _MySavedListState extends State<MySavedList> {
 }
 
 
-
-
-
 class PostList extends StatefulWidget {
 
   PostList({super.key});
@@ -185,23 +178,7 @@ class PostList extends StatefulWidget {
 class _PostListState extends State<PostList> {
   late List<bool> likedList;
 
-  final List<String> assetImages = [
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-    'asset/github.png',
-    'asset/apple.jpg',
-    'asset/google.png',
-    'asset/apple.jpg',
-    'asset/apple.jpg',
-  ];
+  final List<String> assetImages = [];
 
   @override
   void initState() {

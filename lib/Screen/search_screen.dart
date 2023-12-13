@@ -59,10 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     .toList();
               });
             },
-            onSubmitted: (String value) {
-              // 검색어 제출 시 수행할 동작 추가
-              // 여기에 필요한 동작을 추가하세요.
-            },
+            onSubmitted: (String value) {},
           ),
         ),
       ),
@@ -109,7 +106,6 @@ class _SearchScreenState extends State<SearchScreen> {
         if (spaceSnapshot.docs.isNotEmpty) {
           DocumentSnapshot<Map<String, dynamic>> document = spaceSnapshot.docs.first;
 
-          // Adjust the field names based on your new database structure
           String image = document.data()!['image'];
           String locationString = document.data()!['location'];
           String locationName = document.data()!['locationName'];
@@ -136,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           );
 
-          return; // Stop iterating once data is found
+          return;
         }
       }
 

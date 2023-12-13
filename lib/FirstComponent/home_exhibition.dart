@@ -4,7 +4,6 @@ import 'package:final_project/const/colors.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; // DateFormat을 사용하기 위해 import
 import 'package:intl/date_symbol_data_local.dart';
-
 import '../Screen/exhibi_blog_screen.dart'; // 이거 써야 한국어 적용됨.
 
 List<Map<String, dynamic>> db_exhibi_date = [];
@@ -37,21 +36,19 @@ Future<void> _updateAllLocations() async {
       // "space" 컬렉션의 각 문서에 대한 작업 수행
       spaceSnapshot.docs
           .forEach((DocumentSnapshot<Map<String, dynamic>> document) {
-        final locationString = document.data()!['location'];
-        final name = document.data()!['name'];
         final spaceName = document.data()!['spaceName'];
         String locationName =
-            document.data()!['locationName'] ?? ''; // 또는 다른 기본값 설정
+            document.data()!['locationName'] ?? '';
         String location =
-            document.data()!['location'] ?? ''; // 또는 다른 기본값 설정
-        String image = document.data()!['image'] ?? ''; // 또는 다른 기본값 설정
+            document.data()!['location'] ?? '';
+        String image = document.data()!['image'] ?? '';
         String exhibi_date =
-            document.data()!['exhibi_date'] ?? ''; // 또는 다른 기본값 설정
+            document.data()!['exhibi_date'] ?? '';
         String exhibi_tag =
-            document.data()!['exhibi_tag'] ?? ''; // 또는 다른 기본값 설정
+            document.data()!['exhibi_tag'] ?? '';
         String exhibi_name =
-            document.data()!['exhibi_name'] ?? ''; // 또는 다른 기본값 설정
-        String tag = document.data()!['tag'] ?? ''; // 또는 다른 기본값 설정
+            document.data()!['exhibi_name'] ?? '';
+        String tag = document.data()!['tag'] ?? '';
 
         if (exhibi_date.isNotEmpty && tag == '문화') {
           db_spaceName.add({'spaceName': spaceName});
@@ -111,7 +108,7 @@ Widget YourWidgetForExhibition(
           Expanded(
             flex: 1,
             child: GestureDetector(
-              onTap: onTap, // 이 부분을 추가하여 전체 행에 대한 터치 처리를 수행합니다.
+              onTap: onTap,
               child: Container(
                 height: 120.0,
                 width: 50.0,
@@ -256,7 +253,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(DateFormat('yyyy년 MM월').format(selectedDate),
-                      textAlign: TextAlign.center), // 현재 날짜 표시),
+                      textAlign: TextAlign.center),
                   IconButton(
                     icon: Icon(Icons.arrow_drop_down),
                     onPressed: () {
@@ -291,7 +288,6 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 exhibitions_22.clear();exhibitions_23.clear();exhibitions_24.clear();
                 exhibitions_25.clear();exhibitions_26.clear();exhibitions_27.clear();
                 exhibitions_28.clear();exhibitions_29.clear();exhibitions_30.clear();
-                //_fetchExhibitionsForSelectedDay();
               },
             ),
             Text(
@@ -664,7 +660,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
     return GestureDetector(
       onTap: () {
-        // Your onTap logic here
+
       },
       child: Container(
         height: 490,
@@ -715,7 +711,6 @@ class _SelectedDayState extends State<SelectedDay> {
         exhibiloation,
 
         onTap: () {
-          // onTap 이벤트 처리
           print('전시물이 탭되었습니다!');
           print(image);
           print(exhibiloation);

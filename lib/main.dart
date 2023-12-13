@@ -1,4 +1,3 @@
-import 'package:final_project/Screen/main_screen.dart';
 import 'package:final_project/login/auth_page.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:final_project/firebase_options.dart';
