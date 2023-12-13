@@ -233,6 +233,7 @@ class _HomeMainState extends State<HomeMain> {
                 exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
                 exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
                 exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
+                exhibitions_31=[];
                 db_exhibi_date = [];
                 db_exhibi_name = [];
                 db_exhibi_tag = [];
