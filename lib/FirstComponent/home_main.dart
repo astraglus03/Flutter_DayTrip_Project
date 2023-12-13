@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // 이 부분은 날짜 형식을 지역에 맞게 설정하기 위해 필요한 패키지입니다.
 
+
 List<Map<String, dynamic>> db_exhibi_date = [];
 List<Map<String, dynamic>> db_exhibi_location = [];
 List<Map<String, dynamic>> db_exhibi_name = [];
@@ -17,6 +18,8 @@ List<Map<String, dynamic>> db_exhibi_tag = [];
 List<Map<String, dynamic>> db_image = [];
 List<Map<String, dynamic>> db_locationName = [];
 List<Map<String, dynamic>> db_spaceName = [];
+
+
 
 late String ex_DATE = '';
 
@@ -233,6 +236,7 @@ class _HomeMainState extends State<HomeMain> {
                 exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
                 exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
                 exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
+                exhibitions_31=[];
                 db_exhibi_date = [];
                 db_exhibi_name = [];
                 db_exhibi_tag = [];
@@ -755,7 +759,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_fri = [];
     exhibitions_sat = [];
 
-    //_fetchExhibitionsForSelectedDay();
+    _fetchExhibitionsForSelectedDay();
   }
 
   @override
@@ -764,6 +768,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
     if (oldWidget.selectedDay != widget.selectedDay) {
       updateSelectedDay(widget.selectedDay);
+      _selectedDay = widget.selectedDay;
     }
   }
 
@@ -771,7 +776,7 @@ class _SelectedDayState extends State<SelectedDay> {
   void updateSelectedDay(String day) {
     setState(() {
       _selectedDay = day;
-      exhibitions.clear(); // 기존 전시 정보를 비웁니다.
+      //exhibitions.clear(); // 기존 전시 정보를 비웁니다.
       _fetchExhibitionsForSelectedDay();
     });
   }
@@ -806,11 +811,14 @@ class _SelectedDayState extends State<SelectedDay> {
     return GestureDetector(
       onTap: () {
         print('전시를 탭했습니다: $ex_DATE');
-        print('sdfsdfsdfs $exhibitions_mon');
+        print('월요일 !!!!!!!!!! $exhibitions_mon');
+        /*
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeRecent()),
+          //MaterialPageRoute(builder: (context) => HomeRecent()),
         );
+
+         */
       },
       child: Container(
         height: 240,
@@ -844,7 +852,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_sun.clear();
 
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1)); // 이번 주의 시작
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday)); // 이번 주의 시작
     DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday)); // 이번 주의 끝
 
     for (int i = 0; i < db_exhibi_date.length; i++) {
@@ -860,7 +868,7 @@ class _SelectedDayState extends State<SelectedDay> {
       String exhibiName = db_exhibi_name[i]['exhibi_name'];
       String exhibiloation = db_exhibi_location[i]['location'];
 
-      Widget exhibitionWidget = YourWidgetForExhibition(
+      Widget exhibitionWidget = WidgetExhibition(
         image,
         locationName,
         exhibiTag,
@@ -932,7 +940,7 @@ class _SelectedDayState extends State<SelectedDay> {
   }
 
   // 실제 위젯에 넣는 부분
-  Widget YourWidgetForExhibition(
+  Widget WidgetExhibition(
       String image,
       String locationName,
       String exhibi_tag,
