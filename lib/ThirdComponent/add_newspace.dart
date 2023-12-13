@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:final_project/Screen/map_screen.dart';
@@ -37,10 +36,8 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       newSpaceLocation = location;
       spacexy = newSpaceLocation.toString();
 
-      // Clear existing markers
       _markers.clear();
 
-      // Add a marker for the tapped location
       _markers.add(
         Marker(
           markerId: MarkerId('newSpace'),
@@ -68,7 +65,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
   }
 
   void dispose() {
-    // 페이지가 dispose될 때 컨트롤러를 정리합니다.
     _textEditingController.dispose();
     super.dispose();
   }
@@ -98,7 +94,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
         uint8List,
         minHeight: 1920, // 압축 후 이미지의 최소 높이
         minWidth: 1080, // 압축 후 이미지의 최소 너비
-        quality: 80, // 이미지 품질 (0-100)
+        quality: 80, // 이미지 품질
       );
 
       File compressedImageFile = File('${imageFile.path}_compressed.jpg');
@@ -206,7 +202,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     height: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26, //Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -218,7 +214,6 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                           Text("위도: ${newSpaceLocation?.latitude ?? ''}"),
                           SizedBox(height: 5,),
                           Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
-
                         ],
                       ),
                     ),
@@ -231,7 +226,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26, //Colors.grey[300],
+                      color: Colors.black26,
                     ),
 
                     child: Padding(
@@ -337,7 +332,7 @@ class _AddNewSpaceState extends State<AddNewSpace> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
           color: Colors.white,

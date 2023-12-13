@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:uuid/uuid.dart';
 
 class SpaceInfo {
@@ -93,7 +92,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
         uint8List,
         minHeight: 1920, // 압축 후 이미지의 최소 높이
         minWidth: 1080, // 압축 후 이미지의 최소 너비
-        quality: 80, // 이미지 품질 (0-100)
+        quality: 80, // 이미지 품질
       );
 
       File compressedImageFile = File('${imageFile.path}_compressed.jpg');
@@ -126,17 +125,16 @@ class _WriteDayLogState extends State<WriteDayLog> {
       final String writtenTime = DateFormat('yyyy/MM/dd - HH:mm:ss').format(DateTime.now());
 
       final post = PostModel(
-        pid:uuid.v4(),            // 게시물 id
-        uid:user.uid,        // 사용자id
-        postContent:_textEditingController.text, // 게시물 내용
-        image: imageUrl,      // 게시물 사진
-        spaceName:selectedTitle!,   // 공간 이름
-        date:parsedDate,      // 작성 날짜
-        tag:spaceTag.toString(),         // 태그
-        recomTag:hashTagButton.toString(),    // 추천 태그
-        // good:1,           // 좋아요
-        locationName: spaceLocation.toString(), // 공간 주소
-        writtenTime: writtenTime, // 작성 시간
+        pid:uuid.v4(),
+        uid:user.uid,
+        postContent:_textEditingController.text,
+        image: imageUrl,
+        spaceName:selectedTitle!,
+        date:parsedDate,
+        tag:spaceTag.toString(),
+        recomTag:hashTagButton.toString(),
+        locationName: spaceLocation.toString(),
+        writtenTime: writtenTime,
       );
 
       final userCollectionRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -153,17 +151,14 @@ class _WriteDayLogState extends State<WriteDayLog> {
   Future<void> fetchSpaceModels() async {
     final userRef = FirebaseFirestore.instance.collection('users');
 
-    // 'users' 컬렉션의 모든 문서 가져오기
     QuerySnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
 
     List<SpaceInfo> fetchedSpaceModels = []; // SpaceModel 객체를 담을 리스트
 
     for (QueryDocumentSnapshot userDoc in userSnapshot.docs) {
-      // 현재 사용자 문서에서 'space' 컬렉션 가져오기
       QuerySnapshot<Map<String, dynamic>> spaceSnapshot =
       await userDoc.reference.collection('space').get();
 
-      // 각 'space' 컬렉션의 문서를 SpaceModel 객체로 변환하여 리스트에 추가
       spaceSnapshot.docs.forEach((spaceDoc) {
         Map<String, dynamic> data = spaceDoc.data();
         SpaceInfo spaceModel = SpaceInfo(
@@ -177,7 +172,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
     }
 
     setState(() {
-      spaceInfoList = fetchedSpaceModels; // 가져온 SpaceModel 객체 리스트를 상태에 설정
+      spaceInfoList = fetchedSpaceModels;
     });
   }
 
@@ -334,8 +329,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
                 ),
 
                 Container(
-                  height: 1, // 선의 높이
-                  color: Colors.grey[300], // 선의 색상
+                  height: 1,
+                  color: Colors.grey[300],
                 ),
 
                 Container(
@@ -373,8 +368,8 @@ class _WriteDayLogState extends State<WriteDayLog> {
                 ),
 
                 Container(
-                  height: 1, // 선의 높이
-                  color: Colors.grey[300], // 선의 색상
+                  height: 1,
+                  color: Colors.grey[300],
                 ),
 
                 Container(
@@ -507,7 +502,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
         return Container(
           padding: EdgeInsets.all(16),
           child: ListView.builder(
-            itemCount: spaceInfoList?.length ?? 0, // null 체크 후 항목 개수 확인
+            itemCount: spaceInfoList?.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
                 onTap: () {
@@ -529,7 +524,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
                       Expanded(
                         flex: 1,
                         child: Image.network(
-                          spaceInfoList?[index].imagePath ?? '', // null 체크 후 이미지 경로 확인
+                          spaceInfoList?[index].imagePath ?? '',
                           width: 50,
                           height: 50,
                         ),
@@ -540,14 +535,14 @@ class _WriteDayLogState extends State<WriteDayLog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              spaceInfoList?[index].title ?? '', // null 체크 후 타이틀 확인
+                              spaceInfoList?[index].title ?? '',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              spaceInfoList?[index].location ?? '', // null 체크 후 위치 확인
+                              spaceInfoList?[index].location ?? '',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -589,7 +584,7 @@ class _WriteDayLogState extends State<WriteDayLog> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(
           color: Colors.white,

@@ -6,8 +6,8 @@ import 'package:final_project/login/services/auth_service.dart';
 class MainViewModel {
   final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
   final SocialLogin _socialLogin;
-  bool isLogined = false; //처음에 로그인 안 되어 있음
-  kakao.User? user; //카카오톡에서 사용자 정보를 저장하는 객체 User를 nullable 변수로 선언
+  bool isLogined = false;
+  kakao.User? user;
   MainViewModel(this._socialLogin);
 
   Future login() async {
@@ -29,7 +29,7 @@ class MainViewModel {
     print("로그아웃하기전에 정보 ${user!.kakaoAccount}");
     await _socialLogin.logout(); //로그아웃 실행
     await FirebaseAuth.instance.signOut();
-    isLogined = false; //로그인되어 있는지를 저장하는 변수 false값 저장
-    user = null; //user 객체 null
+    isLogined = false;
+    user = null;
   }
 }

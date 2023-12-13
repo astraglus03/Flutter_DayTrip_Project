@@ -5,7 +5,7 @@ import 'package:final_project/Screen/map_screen.dart';
 
 class HomeRecomDetail extends StatefulWidget {
   final String placeName;
-  final String? tag; // 추가된 부분
+  final String? tag;
   final String? originTag;
   final String? locationName;
   final String? imagePath;
@@ -39,12 +39,12 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
 
       if (querySnapshot.docs.isNotEmpty) {
         String? location = querySnapshot.docs.first['location'];
-        print('김건동: $location');
+        // print('김건동: $location');
 
         LatLng? newLocation = getLatLngFromString(location);
         if (newLocation != null) {
           setState(() {
-            convertedLocation = newLocation; // newLocation을 convertedLocation에 직접 할당
+            convertedLocation = newLocation;
           });
           print("바뀐위치: $convertedLocation");
         }

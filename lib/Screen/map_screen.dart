@@ -410,12 +410,7 @@ class _MapScreenState extends State<MapScreen> {
           borderRadius: BorderRadius.circular(30.0),
           onTap: () {
             _updatefilterLocations();
-            // 여기에 버튼이 눌렸을 때 수행할 로직을 추가합니다.
-            // 예를 들어, 선택된 상태를 설정하고 해당하는 작업을 트리거할 수 있습니다.
-            // 이 예제에서는 선택된 레이블을 출력합니다.
-            print('선택된 항목: $label');
 
-            // 같은 버튼을 두 번 눌렀을 때 체크가 해제되도록 토글합니다.
             setState(() {
               switch (label) {
                 case '카페':
@@ -506,7 +501,6 @@ class _MapScreenState extends State<MapScreen> {
         if (spaceSnapshot.docs.isNotEmpty) {
           DocumentSnapshot<Map<String, dynamic>> document = spaceSnapshot.docs.first;
 
-          // Adjust the field names based on your new database structure
           String image = document.data()!['image'];
           String locationString = document.data()!['location'];
           String locationName = document.data()!['locationName'];
@@ -521,7 +515,7 @@ class _MapScreenState extends State<MapScreen> {
           DBtag = tag;
 
           _showFoodDialog(image, locationString, locationName, spaceName, tag);
-          return; // Stop iterating once data is found
+          return;
         }
       }
 
@@ -538,7 +532,7 @@ class _MapScreenState extends State<MapScreen> {
         return AlertDialog(
           title: Text('$spaceName'),
           content: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
+            width: MediaQuery.of(context).size.width * 0.8,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -592,8 +586,8 @@ class _MapScreenState extends State<MapScreen> {
         Flexible(
           child: Text(
             text,
-            overflow: TextOverflow.ellipsis,  // 오버플로우 처리
-            maxLines: 2,  // 텍스트 한 줄로 제한
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ),
       ],

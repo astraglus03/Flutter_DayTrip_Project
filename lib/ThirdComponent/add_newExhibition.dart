@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -39,10 +38,8 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       newSpaceLocation = location;
       spacexy = newSpaceLocation.toString();
 
-      // Clear existing markers
       _markers.clear();
 
-      // Add a marker for the tapped location
       _markers.add(
         Marker(
           markerId: MarkerId('newSpace'),
@@ -69,7 +66,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
   }
 
   void dispose() {
-    // 페이지가 dispose될 때 컨트롤러를 정리합니다.
+    // 페이지가 dispose될 때 컨트롤러 삭제
     _textEditingController.dispose();
     _textEditingController1.dispose();
     super.dispose();
@@ -84,7 +81,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
         uint8List,
         minHeight: 1920, // 압축 후 이미지의 최소 높이
         minWidth: 1080, // 압축 후 이미지의 최소 너비
-        quality: 80, // 이미지 품질 (0-100)
+        quality: 80, // 이미지 품질
       );
 
       File compressedImageFile = File('${imageFile.path}_compressed.jpg');
@@ -414,7 +411,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
       ),
       style: ButtonStyle(
         backgroundColor: hashTagButton == buttonText
-            ? MaterialStateProperty.all<Color>(Colors.orange) // 선택된 버튼의 배경색
+            ? MaterialStateProperty.all<Color>(Colors.orange)
             : MaterialStateProperty.all<Color>(Colors.transparent),
         side: MaterialStateProperty.all(BorderSide(color: Colors.white, width: 1.0,)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

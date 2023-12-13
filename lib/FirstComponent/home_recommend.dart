@@ -10,16 +10,11 @@ class HomeRecommend extends StatefulWidget {
 }
 
 class _HomeRecommendState extends State<HomeRecommend> {
-  Map<String, List<String>> tagsToPlaces = {
-    '운동': ['프라임홀', '학술정보관 열람실 2층'],
-    '팀플': ['세미나실', '한누리관 7층'],
-    // 다른 태그와 해당 장소들을 추가하세요.
-  };
 
   List<String>? currentPlaces;
   String? selectedTag;
 
-  List<Map<String, dynamic>> placesData = []; // placesData를 클래스 레벨 변수로 정의
+  List<Map<String, dynamic>> placesData = [];
 
   Future<void> fetchPlacesByTag(String tag) async {
     try {
@@ -60,7 +55,7 @@ class _HomeRecommendState extends State<HomeRecommend> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0), // Column 전체에 대한 패딩
+        padding: EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -91,7 +86,7 @@ class _HomeRecommendState extends State<HomeRecommend> {
               updatePlaces: updatePlaces,
               currentPlaces: currentPlaces,
               tag: selectedTag,
-              placesData: placesData, // placesData를 Result 위젯에 전달
+              placesData: placesData,
             ),
             SizedBox(height: 20),
           ],
@@ -116,7 +111,6 @@ class _HomeRecommendState extends State<HomeRecommend> {
             await fetchPlacesByTag(selectedTag!);
 
             List<String> places = placesData.map((data) => data['spaceName'] as String).toList();
-            // Update places with spaceNames
             updatePlaces(label, places);
           },
           child: Container(

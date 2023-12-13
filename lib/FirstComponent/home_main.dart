@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart'; // 이 부분은 날짜 형식을 지역에 맞게 설정하기 위해 필요한 패키지입니다.
 
 List<Map<String, dynamic>> db_exhibi_date = [];
@@ -52,8 +51,8 @@ Future<void> _updateAllLocations() async {
       // "space" 컬렉션의 각 문서에 대한 작업 수행
       spaceSnapshot.docs
           .forEach((DocumentSnapshot<Map<String, dynamic>> document) {
-        final locationString = document.data()!['location'];
-        final name = document.data()!['name'];
+        // final locationString = document.data()!['location'];
+        // final name = document.data()!['name'];
         final spaceName = document.data()!['spaceName'];
         String locationName =
             document.data()!['locationName'] ?? ''; // 또는 다른 기본값 설정
@@ -217,7 +216,7 @@ class _HomeMainState extends State<HomeMain> {
             RecentPost(
               imagePaths: recentImagePaths.take(3).toList(),
               postInfoList: recentPostInfoList,
-              onLikeButtonPressed: toggleLike1, // Pass the toggleLike function
+              onLikeButtonPressed: toggleLike1,
             ),
             SizedBox(height: 20),
             Title(
@@ -431,7 +430,6 @@ class _HomeMainState extends State<HomeMain> {
     final now = DateTime.now();
     final parsedTime = DateFormat('yyyy/MM/dd - HH:mm:ss').parse(writtenTime);
 
-    // Compare the year, month, and day of both dates
     return now.year == parsedTime.year &&
         now.month == parsedTime.month &&
         now.day == parsedTime.day;
@@ -629,16 +627,13 @@ class _RecentPostState extends State<RecentPost> {
                             : Icons.favorite_border, color: Colors.red,
                       ),
                       onPressed: () {
-                        // Toggle like status when the button is pressed
                         bool isCurrentlyLiked =
                             widget.postInfoList[index].isLiked;
                         String pid = widget.postInfoList[index].pid;
 
-                        // Call the function to handle like button press
                         widget.onLikeButtonPressed(pid, !isCurrentlyLiked);
 
                         setState(() {
-                          // Update the like status in the UI
                           widget.postInfoList[index].isLiked =
                           !isCurrentlyLiked;
                         });
@@ -806,8 +801,6 @@ class _SelectedDayState extends State<SelectedDay> {
       selectedList = exhibitions_sun;
     }
     else {
-      // 다른 요일에 대한 처리
-      // 예: 기본 리스트나 오류 처리 등
       selectedList = []; // 기본적으로 빈 리스트로 설정
     }
 
@@ -897,41 +890,41 @@ class _SelectedDayState extends State<SelectedDay> {
               ),
             ),
           );
-          // 원하는 동작을 추가하세요.
+
         },
       );
 
       if (parsedExhibiDate.isAfter(startOfWeek) && parsedExhibiDate.isBefore(endOfWeek)) {
         if(getDayFromDate(exhibiDate) == '월' && _selectedDay == '월'){
           setState(() {
-            exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_mon.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
           });
         }
         else if(getDayFromDate(exhibiDate) == '화' && _selectedDay == '화'){
           setState(() {
-            exhibitions_tue.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_tue.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
 
           });
         }else if(getDayFromDate(exhibiDate) == '수'&& _selectedDay == '수'){
           setState(() {
-            exhibitions_wed.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_wed.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
             ex_DATE = exhibiName;
           });
         }else if(getDayFromDate(exhibiDate) == '목'&& _selectedDay == '목'){
           setState(() {
-            exhibitions_thu.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_thu.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
           });
         }else if(getDayFromDate(exhibiDate) == '금'){
           setState(() {
-            exhibitions_fri.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_fri.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
           });
         }else if(getDayFromDate(exhibiDate) == '토'){
           setState(() {
-            exhibitions_sat.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_sat.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
           });
         }else if(getDayFromDate(exhibiDate) == '일'){
           setState(() {
-            exhibitions_sun.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가합니다.
+            exhibitions_sun.add(exhibitionWidget); // 선택된 요일과 매칭되는 경우에만 리스트에 추가
           });
         }
       }
@@ -958,7 +951,7 @@ class _SelectedDayState extends State<SelectedDay> {
             Expanded(
               flex: 1,
               child: GestureDetector(
-                onTap: onTap, // 이 부분을 추가하여 전체 행에 대한 터치 처리를 수행합니다.
+                onTap: onTap,
                 child: Container(
                   height: 120.0,
                   width: 50.0,
@@ -1036,7 +1029,7 @@ class _SelectedDayState extends State<SelectedDay> {
 // 인기 게시물
 class PopularPost extends StatefulWidget {
   final List<String> imagePaths;
-  final List<PopularPostInfo> postInfoList; // List of RecentPostInfo objects
+  final List<PopularPostInfo> postInfoList;
   final Function(String, bool) onLikeButtonPressed;
 
   const PopularPost({

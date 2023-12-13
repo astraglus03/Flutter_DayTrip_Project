@@ -132,13 +132,13 @@ class _PostTabState extends State<PostTab> {
                           SizedBox(height: 8),
                           Text(
                             info['spaceName'],
-                            overflow: TextOverflow.ellipsis, // 텍스트가 너무 길 경우 생략 처리
+                            overflow: TextOverflow.ellipsis,
                             maxLines: 3,
                           ),
                           //Text(info['pid']),
                           Text(
                             info['locationName'],
-                            overflow: TextOverflow.ellipsis, // 텍스트가 너무 길 경우 생략 처리
+                            overflow: TextOverflow.ellipsis,
                             maxLines: 3,
                           ),
                         ],
@@ -333,8 +333,6 @@ class _PostTabState extends State<PostTab> {
             updateSpecificTab(pid, isLiked, 3); // 3번탭: 편의점
             updateSpecificTab(pid, isLiked, 4); // 4번탭: 학교공간
             updateSpecificTab(pid, isLiked, 5); // 5번탭: 문화
-
-
             updateSpecificTab(pid, isLiked, 0); // 0번탭: 전체
           }
         }

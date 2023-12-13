@@ -41,7 +41,7 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
 
   Future<void> loadUserImages() async {
     userImages = await getUserImages(widget.exhibiName);
-    setState(() {}); // 이 부분을 추가하여 화면을 갱신합니다.
+    setState(() {});
 
     print(userImages);
   }
@@ -53,9 +53,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
   }
 
   Future<List<String>> getUserImages(String spaceName) async {
-
-
-    // 'users' 컬렉션에 대한 참조
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     // 'users' 컬렉션의 모든 문서를 가져오기
@@ -185,7 +182,7 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
                     children: List.generate(userImages.length, (index) {
                       return InkWell(
                         onTap: () {
-                          // 사용자 선택 시 처리
+
                           setState(() {
                             selectedUserIndex = index;
                           });
@@ -207,7 +204,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
                     }),
                   ),
 
-                  // 선택된 사용자가 쓴 글 표시
                   // 선택된 사용자가 쓴 글 표시
                   Container(
                     padding: EdgeInsets.all(16.0),

@@ -41,7 +41,6 @@ class _SavedPostListState extends State<SavedPostList> {
       if (user != null) {
         String uid = user.uid;
 
-        // Fetch the document reference for the post
         QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
             .collectionGroup('post')
             .where('pid', isEqualTo: pid)
@@ -54,7 +53,6 @@ class _SavedPostListState extends State<SavedPostList> {
 
           bool isLiked = postDoc.get('likes').contains(uid);
           print("상태: ${isLiked}");
-            // Remove user's UID from likes array
             await postDocRef.update({
               'likes': FieldValue.arrayRemove([uid]),
             });
@@ -103,9 +101,9 @@ class _SavedPostListState extends State<SavedPostList> {
           stream: likedPostsStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // 로딩 중일 때의 UI
+              return CircularProgressIndicator(); // 로딩중
             } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}'); // 에러 발생 시 UI
+              return Text('Error: ${snapshot.error}');
             } else if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
               return SizedBox(
                 width: double.infinity,
@@ -120,12 +118,12 @@ class _SavedPostListState extends State<SavedPostList> {
                     ),
                   ),
                 ),
-              ); // 데이터가 없을 때의 UI
+              );
             } else {
               return GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // Display three items in a row
+                  crossAxisCount: 3,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
                 ),
@@ -137,7 +135,6 @@ class _SavedPostListState extends State<SavedPostList> {
                     return GestureDetector(
                       onTap: () async {
                         String location = '';
-
                         QuerySnapshot spaceSnapshot = await FirebaseFirestore.instance
                             .collectionGroup('space')
                             .where('locationName', isEqualTo: postData['locationName'])
@@ -207,7 +204,7 @@ class _SavedPostListState extends State<SavedPostList> {
                       ),
                     );
                   } else {
-                    return SizedBox(); // Return an empty SizedBox if postData is null
+                    return SizedBox();
                   }
                 },
               );
