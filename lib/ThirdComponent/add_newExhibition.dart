@@ -203,10 +203,10 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                         zoom: 15.0,
                       ),
                       markers: _markers,
+
                         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
                           Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
                         ].toSet(),
-
                     ),
                   ),
 

@@ -8,7 +8,7 @@ class HomeRecomDetail extends StatefulWidget {
   final String? tag;
   final String? originTag;
   final String? locationName;
-  final String? imagePath;
+  late String? imagePath;
 
   HomeRecomDetail({
     required this.placeName,
@@ -38,6 +38,13 @@ class _HomeRecomDetailState extends State<HomeRecomDetail> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
+        String? fetchedImagePath = querySnapshot.docs.first['image'];
+
+        if (fetchedImagePath != null) {
+          setState(() {
+            widget.imagePath = fetchedImagePath;
+          });
+        }
         String? location = querySnapshot.docs.first['location'];
         // print('김건동: $location');
 

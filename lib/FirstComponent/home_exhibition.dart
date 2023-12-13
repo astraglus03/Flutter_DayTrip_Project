@@ -88,12 +88,10 @@ late List<Widget> exhibitions_23 = [];late List<Widget> exhibitions_24 = [];
 late List<Widget> exhibitions_25 = [];late List<Widget> exhibitions_26 = [];
 late List<Widget> exhibitions_27 = [];late List<Widget> exhibitions_28 = [];
 late List<Widget> exhibitions_29 = [];late List<Widget> exhibitions_30 = [];
-
-
-
+late List<Widget> exhibitions_31 = [];
 
 // 실제 위젯에 넣는 부분
-Widget YourWidgetForExhibition(
+Widget WidgetExhibition(
     String image,
     String locationName,
     String exhibi_tag,
@@ -237,6 +235,8 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
                 exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
                 exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
+                exhibitions_31=[];
+
                 db_exhibi_date = [];
                 db_exhibi_name = [];
                 db_exhibi_tag = [];
@@ -291,6 +291,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                 exhibitions_22.clear();exhibitions_23.clear();exhibitions_24.clear();
                 exhibitions_25.clear();exhibitions_26.clear();exhibitions_27.clear();
                 exhibitions_28.clear();exhibitions_29.clear();exhibitions_30.clear();
+                exhibitions_31.clear();
               },
             ),
             Text(
@@ -356,7 +357,7 @@ class _HomeExhibitionState extends State<HomeExhibition> {
                   exhibitions_22=[];exhibitions_23=[];exhibitions_24=[];
                   exhibitions_25=[];exhibitions_26=[];exhibitions_27=[];
                   exhibitions_28=[];exhibitions_29=[];exhibitions_30=[];
-
+                  exhibitions_31=[];
 
                   selectedDate = date;
                   selectedDay = DateFormat('d').format(date); // 선택된 날짜로 '일' 값을 문자열로 업데이트
@@ -568,6 +569,8 @@ class _SelectedDayState extends State<SelectedDay> {
     _selectedDayIndex = widget.selectedDayIndex;
     initializeDateFormatting('ko_KR');
     _selectedDate = widget.selectedDate;
+
+    _fetchExhibitionsForSelectedDay();
   }
 
   // 날짜 선택할 때마다 다른 정보 나올 수 있게 업데이트 //init 메서드 쓰면 안 됨. 업데이트 안 되기 때문
@@ -576,7 +579,6 @@ class _SelectedDayState extends State<SelectedDay> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.selectedDate != widget.selectedDate && oldWidget.selectedDayIndex != widget.selectedDayIndex) {
-
       updateSelectedDay(widget.selectedDate, widget.selectedDayIndex);
       //_fetchExhibitionsForSelectedDay();
     }
@@ -657,7 +659,9 @@ class _SelectedDayState extends State<SelectedDay> {
     }else if (_selectedDayIndex.toString() == '29') {
       selectedList = exhibitions_29;
     }else if (_selectedDayIndex.toString() == '30') {
-      selectedList = exhibitions_30;
+      selectedList = exhibitions_31;
+    }else if (_selectedDayIndex.toString() == '31') {
+      selectedList = exhibitions_31;
     }else {
       selectedList = []; // 기본적으로 빈 리스트로 설정
     }
@@ -706,7 +710,7 @@ class _SelectedDayState extends State<SelectedDay> {
       String exhibiName = db_exhibi_name[i]['exhibi_name'];
       String exhibiloation = db_exhibi_location[i]['location'];
 
-      Widget exhibitionWidget = YourWidgetForExhibition(
+      Widget exhibitionWidget = WidgetExhibition(
         image,
         locationName,
         exhibiTag,
@@ -738,6 +742,7 @@ class _SelectedDayState extends State<SelectedDay> {
         },
       );
 
+      // 날짜 며칠 비교
       if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '1') {
         exhibitions_1.add(exhibitionWidget);
       } else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth && getDayFromDate(exhibiDate) == '2'){
@@ -798,6 +803,8 @@ class _SelectedDayState extends State<SelectedDay> {
         exhibitions_29.add(exhibitionWidget);
       }else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '30'){
         exhibitions_30.add(exhibitionWidget);
+      } else if(getYearFromDate(exhibiDate) == selectedYear && getMonthFromDate(exhibiDate) == selectedMonth &&getDayFromDate(exhibiDate) == '31'){
+        exhibitions_31.add(exhibitionWidget);
       }
 
     }
@@ -805,8 +812,6 @@ class _SelectedDayState extends State<SelectedDay> {
     print(db_exhibi_date);
     print(db_exhibi_name);
     print(db_exhibi_tag);
-
-
 
   }
 

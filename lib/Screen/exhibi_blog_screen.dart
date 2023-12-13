@@ -88,7 +88,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
     return userImages;
   }
 
-
   @override
   Widget build(BuildContext context) {
     print('spaceName: ${widget.exhibiName}');
@@ -284,10 +283,14 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
                           children: [
                             Icon(Icons.place, size: 24.0, color: Colors.blue), // 장소 아이콘
                             SizedBox(width: 8.0),
-                            Text(
-                              '공연,전시 이름 : ${widget.exhibiName}',
-                              style: TextStyle(fontSize: 18.0),
-                            ),
+                            Expanded(
+                                child: Text(
+                                  '공연,전시 이름 : ${widget.exhibiName}',
+                                  style: TextStyle(fontSize: 18.0),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                ),
+                              ),
                           ],
                         ),
                         SizedBox(height: 10,),
