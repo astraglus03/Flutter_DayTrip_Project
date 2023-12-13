@@ -60,6 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
               });
             },
             onSubmitted: (String value) {},
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ),
