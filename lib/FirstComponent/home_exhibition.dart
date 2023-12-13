@@ -295,13 +295,13 @@ class _HomeExhibitionState extends State<HomeExhibition> {
               },
             ),
             Text(
-                "전시 ∙ 행사 일정은 주최측 사정에 따라 변경될 수 있습니다.",
-                textAlign: TextAlign.start, // 왼쪽 정렬
-                style: TextStyle(fontSize: 13, color: Colors.grey,),
+              "전시 ∙ 행사 일정은 주최측 사정에 따라 변경될 수 있습니다.",
+              textAlign: TextAlign.start, // 왼쪽 정렬
+              style: TextStyle(fontSize: 13, color: Colors.grey,),
             ),
             if (selectedDay.isNotEmpty) // 선택된 날짜에 맞게 정보 표시
               SelectedDay(selectedDayIndex: selectedDayIndex,
-                          selectedDate: selectedDate),
+                  selectedDate: selectedDate),
           ],
         )
     );
@@ -470,16 +470,16 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
         child: Row(
           children: List.generate(
             lastDayOfMonth.day, // 개수
-            (index) {
+                (index) {
               final currentDate = lastDayOfMonth2.add(Duration(days: index + 1));
               final dayName = DateFormat('E', 'ko_KR').format(currentDate); // 예) 월, 화 등
 
               // 선택된 날짜에 대한 스타일을 변경하기 위한 부분 (메인 캘린더에서 선택했을 때도 연동됨)
               final isSelected = index == widget.selectedDayIndex-1 || (index == DateTime.now().day - 1 && widget.selectedDayIndex == 0);
-                                          // 인덱스는 0부터 시작함         // 처음에는 무조건 오늘 날짜에 주황색 동그라미로 초기화하기 위해
+              // 인덱스는 0부터 시작함         // 처음에는 무조건 오늘 날짜에 주황색 동그라미로 초기화하기 위해
               return Padding(
                 padding:
-                    EdgeInsets.only(left: index == 0 ? 16.0 : 0.0, right: 16.0),
+                EdgeInsets.only(left: index == 0 ? 16.0 : 0.0, right: 16.0),
                 child: GestureDetector(
                   onTap: () => setState(() {
                     selectedIndex = index;
