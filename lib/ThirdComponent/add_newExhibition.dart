@@ -173,7 +173,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                     },
                     child: Container(
                       width: 100,
-                      height: 120,
+                      height: 110,
                       decoration: BoxDecoration(
                         border: Border.all(width: 1, color: Colors.grey),
                       ),
@@ -204,8 +204,7 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                   ),
 
                   SizedBox(height: 20,),
-
-
+                  /*
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -214,22 +213,26 @@ class _AddNewExhibitionState extends State<AddNewExhibition> {
                       color: Colors.black26, //Colors.grey[300],
                     ),
 
-                    child: Padding(
+                    /*child: Padding(
                       padding: const EdgeInsets.only(left: 15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text("위도: ${newSpaceLocation?.latitude ?? ''}"),
-                          SizedBox(height: 5,),
-                          Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
+                          //SizedBox(height: 5,),
+                          //Text("경도: ${newSpaceLocation?.longitude ?? ''}"),
 
                         ],
                       ),
                     ),
+
+                     */
                   ),
 
-                  SizedBox(height: 20,),
+                   */
+
+                  //SizedBox(height: 20,),
 
                   Container(
                     width: double.infinity,
