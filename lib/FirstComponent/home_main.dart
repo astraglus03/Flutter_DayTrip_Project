@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // 이 부분은 날짜 형식을 지역에 맞게 설정하기 위해 필요한 패키지입니다.
 
+
 List<Map<String, dynamic>> db_exhibi_date = [];
 List<Map<String, dynamic>> db_exhibi_location = [];
 List<Map<String, dynamic>> db_exhibi_name = [];
@@ -17,6 +18,8 @@ List<Map<String, dynamic>> db_exhibi_tag = [];
 List<Map<String, dynamic>> db_image = [];
 List<Map<String, dynamic>> db_locationName = [];
 List<Map<String, dynamic>> db_spaceName = [];
+
+
 
 late String ex_DATE = '';
 
@@ -756,7 +759,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_fri = [];
     exhibitions_sat = [];
 
-    //_fetchExhibitionsForSelectedDay();
+    _fetchExhibitionsForSelectedDay();
   }
 
   @override
@@ -765,6 +768,7 @@ class _SelectedDayState extends State<SelectedDay> {
 
     if (oldWidget.selectedDay != widget.selectedDay) {
       updateSelectedDay(widget.selectedDay);
+      _selectedDay = widget.selectedDay;
     }
   }
 
@@ -772,7 +776,7 @@ class _SelectedDayState extends State<SelectedDay> {
   void updateSelectedDay(String day) {
     setState(() {
       _selectedDay = day;
-      exhibitions.clear(); // 기존 전시 정보를 비웁니다.
+      //exhibitions.clear(); // 기존 전시 정보를 비웁니다.
       _fetchExhibitionsForSelectedDay();
     });
   }
@@ -807,7 +811,7 @@ class _SelectedDayState extends State<SelectedDay> {
     return GestureDetector(
       onTap: () {
         print('전시를 탭했습니다: $ex_DATE');
-        print('sdfsdfsdfs $exhibitions_mon');
+        print('월요일 !!!!!!!!!! $exhibitions_mon');
         /*
         Navigator.push(
           context,
@@ -848,7 +852,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_sun.clear();
 
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday -1)); // 이번 주의 시작
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday)); // 이번 주의 시작
     DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday)); // 이번 주의 끝
 
     for (int i = 0; i < db_exhibi_date.length; i++) {

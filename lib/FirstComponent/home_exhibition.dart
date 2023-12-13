@@ -569,6 +569,8 @@ class _SelectedDayState extends State<SelectedDay> {
     _selectedDayIndex = widget.selectedDayIndex;
     initializeDateFormatting('ko_KR');
     _selectedDate = widget.selectedDate;
+
+    _fetchExhibitionsForSelectedDay();
   }
 
   // 날짜 선택할 때마다 다른 정보 나올 수 있게 업데이트 //init 메서드 쓰면 안 됨. 업데이트 안 되기 때문
