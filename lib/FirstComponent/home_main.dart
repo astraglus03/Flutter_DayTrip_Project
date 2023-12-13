@@ -808,10 +808,13 @@ class _SelectedDayState extends State<SelectedDay> {
       onTap: () {
         print('전시를 탭했습니다: $ex_DATE');
         print('sdfsdfsdfs $exhibitions_mon');
+        /*
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeRecent()),
+          //MaterialPageRoute(builder: (context) => HomeRecent()),
         );
+
+         */
       },
       child: Container(
         height: 240,
@@ -845,7 +848,7 @@ class _SelectedDayState extends State<SelectedDay> {
     exhibitions_sun.clear();
 
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday)); // 이번 주의 시작
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday -1)); // 이번 주의 시작
     DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday)); // 이번 주의 끝
 
     for (int i = 0; i < db_exhibi_date.length; i++) {
