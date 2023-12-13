@@ -9,12 +9,14 @@ class OneLineInfo {
   final String date;
   final String locationName;
   final String tag;
+  final String oneLineContent;
 
   OneLineInfo({
     required this.spaceName,
     required this.date,
     required this.locationName,
     required this.tag,
+    required this.oneLineContent,
   });
 }
 
@@ -68,12 +70,14 @@ class _DayLogState extends State<DayLog> {
     setState(() {
       oneLineInfoList = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data();
+        String oneLineContent = data.containsKey('oneLineContent') ? data['oneLineContent'] : '';
         String spaceName = data.containsKey('spaceName') ? data['spaceName'] : '';
         String date = data.containsKey('date') ? data['date'] : '';
         String locationName = data.containsKey('locationName') ? data['locationName'] : '';
         String tag = data.containsKey('tag') ? data['tag'] : '';
 
         return OneLineInfo(
+          oneLineContent : oneLineContent,
           spaceName: spaceName,
           date: date,
           locationName: locationName,
@@ -371,6 +375,16 @@ class MyWrittenPost extends StatelessWidget {
                             width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
                             child: Text(
                               '${postInfo.locationName}',
+                              style: TextStyle(color: Colors.white),
+                              maxLines: 2, // 최대 두 줄까지 표시
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(height: 10,),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.8, // 예시로 80%의 가로 공간만 사용합니다.
+                            child: Text(
+                              '한 줄 메모: ${postInfo.oneLineContent}',
                               style: TextStyle(color: Colors.white),
                               maxLines: 2, // 최대 두 줄까지 표시
                               overflow: TextOverflow.ellipsis,
