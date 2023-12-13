@@ -54,7 +54,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
 
   Future<List<String>> getUserImages(String spaceName) async {
 
-
     // 'users' 컬렉션에 대한 참조
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -90,7 +89,6 @@ class _ExhibiBlogScreenState extends State<ExhibiBlogScreen> {
 
     return userImages;
   }
-
 
   @override
   Widget build(BuildContext context) {

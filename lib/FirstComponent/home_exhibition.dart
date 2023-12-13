@@ -92,9 +92,6 @@ late List<Widget> exhibitions_25 = [];late List<Widget> exhibitions_26 = [];
 late List<Widget> exhibitions_27 = [];late List<Widget> exhibitions_28 = [];
 late List<Widget> exhibitions_29 = [];late List<Widget> exhibitions_30 = [];
 
-
-
-
 // 실제 위젯에 넣는 부분
 Widget YourWidgetForExhibition(
     String image,
@@ -580,7 +577,6 @@ class _SelectedDayState extends State<SelectedDay> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.selectedDate != widget.selectedDate && oldWidget.selectedDayIndex != widget.selectedDayIndex) {
-
       updateSelectedDay(widget.selectedDate, widget.selectedDayIndex);
       //_fetchExhibitionsForSelectedDay();
     }
