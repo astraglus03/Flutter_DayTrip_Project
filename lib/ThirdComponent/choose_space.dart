@@ -58,6 +58,7 @@ class _ChooseSpaceState extends State<ChooseSpace> {
           children: [
             SizedBox(height: 10,),
             // 검색창
+            /*
             Container(
               height: 40,
               child: TextField(
@@ -81,7 +82,7 @@ class _ChooseSpaceState extends State<ChooseSpace> {
               ),
             ),
 
-            SizedBox(height: 10,),
+            SizedBox(height: 10,),*/
 
             Expanded(
               child: spaceModels == null

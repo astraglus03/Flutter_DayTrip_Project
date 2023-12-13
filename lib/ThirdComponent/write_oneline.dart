@@ -23,9 +23,9 @@ class WriteOneLine extends StatefulWidget {
 class _WriteOneLineState extends State<WriteOneLine> {
   DateTime selectedDate = DateTime.now();
   String? hashTagButton = '';
-  late String? selectedImage;
-  late String? selectedTitle;
-  late String? selectedLocation;
+  late String? selectedImage = '';
+  late String? selectedTitle = '';
+  late String? selectedLocation = '';
   TextEditingController _textEditingController = TextEditingController();
 
   void selectButton(String buttonText) {
@@ -260,11 +260,30 @@ class _WriteOneLineState extends State<WriteOneLine> {
 
                 InkWell(
                   onTap: () {
-                    Navigator.pop(context);
-                    createOneLine();
-                    showDialog(
+                    if (hashTagButton == '' || selectedTitle == '' || _textEditingController == '') {
+                      showDialog(
                         context: context,
-                        builder: (BuildContext context){
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('경고'),
+                            content: Text('빈 칸을 모두 채워주세요.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close the alert dialog
+                                },
+                                child: Text('확인'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.pop(context);
+                      createOneLine();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
                           Future.delayed(Duration(seconds: 1), () {
                             Navigator.of(context).pop();
                           });
@@ -273,8 +292,9 @@ class _WriteOneLineState extends State<WriteOneLine> {
                             title: Text('한 줄 메모가 저장되었습니다'),
                             content: Text('마이페이지에서 확인하세요.'),
                           );
-                        }
-                    );
+                        },
+                      );
+                    }
                   },
                   child: Container(
                     width: double.infinity,
@@ -299,6 +319,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),
@@ -367,7 +388,7 @@ class _WriteOneLineState extends State<WriteOneLine> {
       child: Text(
         buttonText,
         style: TextStyle(
-          color: Colors.white
+            color: Colors.white
         ),
       ),
       style: ButtonStyle(
