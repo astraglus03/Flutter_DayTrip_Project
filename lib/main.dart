@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-
+  //안뇽^^
   kakao.KakaoSdk.init(nativeAppKey: 'e11e8a91b02bdea5a6288b2908f79a2e');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
