@@ -59,6 +59,7 @@ dependencies:
   dio: ^5.3.4
   path: ^1.8.3
   firebase_storage: ^11.5.2
+  flutter_naver_login: ^1.8.0
 
 
 dev_dependencies:

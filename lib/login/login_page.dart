@@ -148,10 +148,18 @@ class _LoginPageState extends State<LoginPage> {
                       width: 25,
                     ),
                     SquareTile(
+                        imagePath: 'asset/naver.png',
+                        onTap: () async {
+                          await viewModel.login();
+                        } ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    SquareTile(
                         imagePath: 'asset/kakao.png',
                         onTap: () async {
                           await viewModel.login();
-                    } )
+                        } ),
                   ],
                 ),
 
