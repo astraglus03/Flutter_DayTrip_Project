@@ -98,6 +98,7 @@ class _AllPostListState extends State<AllPostList> {
   }
 
   Future<void> fetchAllPostModel() async {
+    User? user = FirebaseAuth.instance.currentUser;
     if (mounted) {
       try {
         QuerySnapshot<Map<String, dynamic>> usersQuerySnapshot =
@@ -118,8 +119,11 @@ class _AllPostListState extends State<AllPostList> {
             String date = data.containsKey('date') ? data['date'] : '';
             String postContent = data.containsKey('postContent') ? data['postContent'] : '';
             String locationName = data.containsKey('locationName') ? data['locationName'] ?? '' : '';
+            //여기서 likes에 있는 값도 가져와야 함.
+            List<String> likes = data.containsKey('likes') ? List<String>.from(data['likes']) : [];
 
-            bool isLiked = likeState.likedPostIds.contains(pid);
+            bool isLiked = likes.contains(user!.uid);
+            //bool isLiked = likeState.likedPostIds.contains(pid);
 
             return AllPostInfo(
               spaceName: spaceName,
@@ -149,6 +153,7 @@ class _AllPostListState extends State<AllPostList> {
 
   @override
   Widget build(BuildContext context) {
+    print(likeState);
     return SingleChildScrollView(
       child: Column(
         children: [

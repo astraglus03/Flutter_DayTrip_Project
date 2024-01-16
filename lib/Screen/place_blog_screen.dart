@@ -115,17 +115,17 @@ class _PlaceBlogScreenState extends State<PlaceBlogScreen> {
                         height: 400,
                         child: Image.network(widget.image, fit: BoxFit.cover,),
                       ),
-                      Positioned(
-                        bottom: 6.0,
-                        left: 16.0,
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            '${widget.spaceName}\n\n${widget.locationName}\n\n${widget.tag}',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                        ),
-                      ),
+                      // Positioned(
+                      //   bottom: 6.0,
+                      //   left: 16.0,
+                      //   child: Padding(
+                      //     padding: EdgeInsets.all(16.0),
+                      //     child: Text(
+                      //       '${widget.spaceName}\n\n${widget.locationName}\n\n${widget.tag}',
+                      //       style: TextStyle(fontSize: 18.0),
+                      //     ),
+                      //   ),
+                      // ),
                       Positioned(
                         top: 0,
                         left: 0,

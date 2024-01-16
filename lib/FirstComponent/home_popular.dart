@@ -216,13 +216,17 @@ class _PostTabState extends State<PostTab> {
         data.containsKey('locationName') ? data['locationName'] : '';
         String writtenTime =
         data.containsKey('writtenTime') ? data['writtenTime'] : '';
+        //한 번 수정을 해봤음
+        List<String> likes = data.containsKey('likes') ? List<String>.from(data['likes']) : [];
+        print(likes);
 
-        int likesCount = 0;
-        if (data.containsKey('likes')) {
-          if (data['likes'] is List) {
-            likesCount = data['likes'].length;
-          }
-        }
+        //이렇게 해도 되지 않을까 해서 바꿔봄
+        int likesCount = likes.length;
+        // if (data.containsKey('likes')) {
+        //   if (data['likes'] is List) {
+        //     likesCount = data['likes'].length;
+        //   }
+        // }
 
 
         // 0번 탭 - 전체 정보 가져오기
