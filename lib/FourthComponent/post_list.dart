@@ -40,13 +40,13 @@ class AllPostList extends StatefulWidget {
 
 class _AllPostListState extends State<AllPostList> {
   late List<AllPostInfo> allPostInfoList;
-  late LikeState likeState;
+  //late LikeState likeState;
 
   @override
   void initState() {
     super.initState();
     allPostInfoList = [];
-    likeState = Provider.of<LikeState>(context, listen: false);
+    //likeState = Provider.of<LikeState>(context, listen: false);
     fetchAllPostModel();
   }
 
@@ -74,7 +74,7 @@ class _AllPostListState extends State<AllPostList> {
               await postDocRef.update({
                 'likes': FieldValue.arrayUnion([uid]),
               });
-              likeState.toggleLike(pid); // 좋아요 상태 변경
+              //likeState.toggleLike(pid); // 좋아요 상태 변경
               setState(() {
                 allPostInfoList[index].isLiked = true;
               });
@@ -83,7 +83,7 @@ class _AllPostListState extends State<AllPostList> {
               await postDocRef.update({
                 'likes': FieldValue.arrayRemove([uid]),
               });
-              likeState.toggleLike(pid); // 좋아요 상태 변경
+              //likeState.toggleLike(pid); // 좋아요 상태 변경
               setState(() {
                 allPostInfoList[index].isLiked = false;
               });
@@ -121,7 +121,6 @@ class _AllPostListState extends State<AllPostList> {
             String locationName = data.containsKey('locationName') ? data['locationName'] ?? '' : '';
             //여기서 likes에 있는 값도 가져와야 함.
             List<String> likes = data.containsKey('likes') ? List<String>.from(data['likes']) : [];
-
             bool isLiked = likes.contains(user!.uid);
             //bool isLiked = likeState.likedPostIds.contains(pid);
 
@@ -153,7 +152,6 @@ class _AllPostListState extends State<AllPostList> {
 
   @override
   Widget build(BuildContext context) {
-    print(likeState);
     return SingleChildScrollView(
       child: Column(
         children: [

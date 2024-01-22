@@ -328,6 +328,7 @@ class _HomeMainState extends State<HomeMain> {
 
   // 최신 피드 db
   Future<void> fetchRecentPostModel() async {
+    User? user = FirebaseAuth.instance.currentUser;
     try {
       final usersCollectionRef = FirebaseFirestore.instance.collection('users');
 
@@ -352,6 +353,9 @@ class _HomeMainState extends State<HomeMain> {
           String tag = data.containsKey('tag') ? data['tag'] : '';
           String locationName =
           data.containsKey('locationName') ? data['locationName'] : '';
+          //수정한 부분
+          List<String> likes = data.containsKey('likes') ? List<String>.from(data['likes']) : [];
+          bool isLiked = likes.contains(user!.uid);
 
           if (writtenTime.isNotEmpty && _isToday(writtenTime)) {
             updatedRecentImagePaths.add(image);
@@ -363,6 +367,7 @@ class _HomeMainState extends State<HomeMain> {
               writtenTime: writtenTime,
               tag: tag,
               locationName: locationName,
+              isLiked: isLiked,
             ));
           }
 
@@ -398,13 +403,11 @@ class _HomeMainState extends State<HomeMain> {
         String tag = data.containsKey('tag') ? data['tag'] : '';
         String locationName =
         data.containsKey('locationName') ? data['locationName'] : '';
+        //수정한 부분
+        List<String> likes = data.containsKey('likes') ? List<String>.from(data['likes']) : [];
+        bool isLiked = likes.contains(user!.uid);
 
-        int likesCount = 0;
-        if (data.containsKey('likes')) {
-          if (data['likes'] is List) {
-            likesCount = data['likes'].length;
-          }
-        }
+        int likesCount = likes.length;
 
         updatedPopularImagePaths.add(image);
 
@@ -416,6 +419,7 @@ class _HomeMainState extends State<HomeMain> {
           tag: tag,
           locationName: locationName,
           likesCount:likesCount,
+          isLiked: isLiked,
         ));
       }
 
