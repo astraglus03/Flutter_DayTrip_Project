@@ -1,12 +1,39 @@
+import 'package:final_project/FifthComponent/daylog.dart';
+import 'package:final_project/FifthComponent/introduce_logout.dart';
+import 'package:final_project/FifthComponent/post_titlebar.dart';
 import 'package:flutter/material.dart';
 
 class MyPageScreen extends StatelessWidget {
-  const MyPageScreen({super.key});
+  const MyPageScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text("다섯번째 화면"),
-    );;
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverFillRemaining(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(height: 20,),
+
+                    // 자기 소개글 입력 및 로그아웃
+                    IntroduceAndLogout(),
+
+                    SizedBox(height: 20,),
+
+                    PostTitleBar(),
+                    // My Page
+                    DayLog(),
+
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
